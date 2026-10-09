@@ -8,6 +8,8 @@ import ArticleCard from '@/components/ArticleCard';
 import ArticleDetail from '@/components/ArticleDetail';
 import TeamSection from '@/components/TeamSection';
 import Footer from '@/components/Footer';
+import type {User} from '@supabase/supabase-js';
+import AuthModal from '@/components/AuthModal';
 
 export default function App() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -17,7 +19,8 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-
+  const [user, setUser] = useState<User | null>(null);
+  const [authOpen, setAuthOpen] = useState(false);
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -47,6 +50,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    
     fetchData();
   }, [fetchData]);
 
