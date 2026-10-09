@@ -8,7 +8,7 @@ import ArticleCard from '@/components/ArticleCard';
 import ArticleDetail from '@/components/ArticleDetail';
 import TeamSection from '@/components/TeamSection';
 import Footer from '@/components/Footer';
-import type {User} from '@supabase/supabase-js';
+import type { User } from '@supabase/supabase-js';
 import AuthModal from '@/components/AuthModal';
 
 export default function App() {
@@ -21,6 +21,7 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [user, setUser] = useState<User | null>(null);
   const [authOpen, setAuthOpen] = useState(false);
+
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -50,9 +51,16 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    
     fetchData();
   }, [fetchData]);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null));
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => sub.subscription.unsubscribe();
+  }, []);
 
   const handleCategoryChange = (cat: string | null) => {
     setActiveCategory(cat);
@@ -76,16 +84,27 @@ export default function App() {
   if (selectedArticle) {
     return (
       <div className="min-h-screen bg-white">
-        <Header activeCategory={activeCategory} onCategoryChange={handleCategoryChange} />
+        <Header
+          activeCategory={activeCategory}
+          onCategoryChange={handleCategoryChange}
+          user={user}
+          onLoginClick={() => setAuthOpen(true)}
+        />
         <ArticleDetail article={selectedArticle} onBack={() => setSelectedArticle(null)} />
         <Footer onCategoryClick={(c) => handleCategoryChange(c)} />
+        <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-white">
-      <Header activeCategory={activeCategory} onCategoryChange={handleCategoryChange} />
+      <Header
+        activeCategory={activeCategory}
+        onCategoryChange={handleCategoryChange}
+        user={user}
+        onLoginClick={() => setAuthOpen(true)}
+      />
       <Hero />
 
       {/* Featured strip — category highlights */}
@@ -159,6 +178,7 @@ export default function App() {
       )}
 
       <Footer onCategoryClick={(c) => handleCategoryChange(c)} />
+      <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
     </div>
   );
 }
