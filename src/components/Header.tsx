@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Newspaper, LogOut } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
-import { supabase, categoryLabels, formatDate } from '@/lib/supabase';
+import { supabase, categoryLabels, formatDate, getUserProfile } from '@/lib/supabase';
 
 type Props = {
   activeCategory: string | null;
@@ -35,13 +35,13 @@ function UserMenu({ user, onLoginClick }: { user: User | null; onLoginClick: () 
     );
   }
 
-  const name = (user.user_metadata?.full_name as string) || user.email?.split('@')[0] || 'Bạn';
-  const avatarUrl = user.user_metadata?.avatar_url as string | undefined;
+  const { name, email, avatarUrl, provider } = getUserProfile(user);
+  const providerLabel: Record<string, string> = { google: 'Google', facebook: 'Facebook', email: 'Email' };
   const avatar = (size: string) => (
     <div
       className={`${size} flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 font-bold text-white`}
     >
-      {avatarUrl ? <img src={avatarUrl} alt={name} className="h-full w-full object-cover" /> : name.charAt(0).toUpperCase()}
+      {avatarUrl ? <img src={avatarUrl} alt={name} referrerPolicy="no-referrer" className="h-full w-full object-cover" /> : name.charAt(0).toUpperCase()}
     </div>
   );
 
@@ -57,10 +57,12 @@ function UserMenu({ user, onLoginClick }: { user: User | null; onLoginClick: () 
             {avatar('h-12 w-12 text-lg')}
             <div className="min-w-0">
               <p className="truncate font-bold text-gray-900">{name}</p>
-              <p className="truncate text-xs text-gray-500">{user.email}</p>
+              {email && <p className="truncate text-xs text-gray-500">{email}</p>}
             </div>
           </div>
-          <p className="mt-3 text-xs text-gray-400">Tham gia: {formatDate(user.created_at)}</p>
+          <p className="mt-3 text-xs text-gray-400">
+            Đăng nhập bằng {providerLabel[provider] ?? provider} · Tham gia: {formatDate(user.created_at)}
+          </p>
           <button
             onClick={() => {
               supabase.auth.signOut();
