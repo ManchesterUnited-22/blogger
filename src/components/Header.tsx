@@ -36,7 +36,7 @@ function UserMenu({ user, onLoginClick }: { user: User | null; onLoginClick: () 
   }
 
   const { name, email, avatarUrl, provider } = getUserProfile(user);
-  const providerLabel: Record<string, string> = { google: 'Google', facebook: 'Facebook', email: 'Email' };
+  const providerLabel: Record<string, string> = { google: 'Google', email: 'Email' };
   const avatar = (size: string) => (
     <div
       className={`${size} flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 font-bold text-white`}

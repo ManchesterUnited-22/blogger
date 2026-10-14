@@ -4,7 +4,7 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-export type OAuthProvider = 'google' | 'facebook';
+export type OAuthProvider = 'google';
 
 export function signInWithProvider(provider: OAuthProvider) {
   return supabase.auth.signInWithOAuth({
@@ -12,7 +12,7 @@ export function signInWithProvider(provider: OAuthProvider) {
     options: {
       redirectTo: window.location.origin,
       // Facebook: xin quyền đọc email + ảnh đại diện
-      ...(provider === 'facebook' ? { scopes: 'email,public_profile' } : {}),
+      
     },
   });
 }
@@ -27,13 +27,7 @@ export type UserProfile = {
 /** Gom thông tin hiển thị của user, hỗ trợ cả email/password, Google và Facebook. */
 export function getUserProfile(user: User): UserProfile {
   const m = (user.user_metadata ?? {}) as Record<string, unknown>;
-
-  // Facebook đôi khi trả picture dạng { data: { url } }
-  const pic = m.picture as unknown;
-  const pictureUrl =
-    typeof pic === 'string' ? pic : ((pic as { data?: { url?: string } } | undefined)?.data?.url ?? null);
-
-  let avatarUrl = (m.avatar_url as string) || pictureUrl || null;
+  let avatarUrl = (m.avatar_url as string) || (m.picture as string) || null;
   // Google trả ảnh nhỏ (=s96-c) -> đổi sang kích thước lớn hơn cho nét
   if (avatarUrl && avatarUrl.includes('googleusercontent.com')) {
     avatarUrl = avatarUrl.replace(/=s\d+-c$/, '=s256-c');
