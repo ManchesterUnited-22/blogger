@@ -8,6 +8,7 @@ export type Post = {
   title: string;
   content: string;
   cover_url: string | null;
+  category: string
   created_at: string;
 };
 

@@ -13,6 +13,7 @@ import AuthModal from '@/components/AuthModal';
 import ProfilePage from '@/components/ProfilePage';
 import PostCard from '@/components/PostCard';
 import PostDetail from '@/components/PostDetail';
+import MembersSection, { type Member } from '@/components/MembersSection';
 import { makeExcerpt, type Post } from '@/lib/posts';
 
 export default function App() {
@@ -28,6 +29,7 @@ export default function App() {
   const [view, setView] = useState<'home' | 'profile'>('home');
   const [posts, setPosts] = useState<Post[]>([]);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [members, setMembers] = useState<Member[]>([]);
 
   const fetchPosts = useCallback(async () => {
     const { data, error } = await supabase
@@ -42,6 +44,20 @@ export default function App() {
   useEffect(() => {
     fetchPosts();
   }, [fetchPosts]);
+
+  // Danh sách thành viên (người đã đăng ký / đăng nhập blog)
+  const fetchMembers = useCallback(async () => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, full_name, avatar_url')
+      .order('created_at', { ascending: true })
+      .limit(60);
+    if (!error) setMembers((data as Member[]) ?? []);
+  }, []);
+
+  useEffect(() => {
+    fetchMembers();
+  }, [fetchMembers]);
 
   // Đăng xuất khi đang ở trang cá nhân -> về trang chủ
   useEffect(() => {
@@ -121,10 +137,17 @@ export default function App() {
   });
 
   const filteredPosts = posts.filter((p) => {
+    if (activeCategory && p.category !== activeCategory) return false;
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
     return p.title.toLowerCase().includes(q) || makeExcerpt(p.content, 2000).toLowerCase().includes(q);
   });
+
+  // Số bài viết của từng thành viên (hiện ở khối "Cây bút đồng hành")
+  const postCounts = posts.reduce<Record<string, number>>((acc, p) => {
+    acc[p.user_id] = (acc[p.user_id] ?? 0) + 1;
+    return acc;
+  }, {});
 
   // Các trang con: chi tiết bài viết, trang cá nhân, chi tiết tin
   if (selectedPost || selectedArticle || (view === 'profile' && user)) {
@@ -173,7 +196,9 @@ export default function App() {
         <section className="mx-auto max-w-6xl px-6 pt-12">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
             {Object.entries(categoryLabels).map(([key, label]) => {
-              const count = articles.filter((a) => a.category === key).length;
+              const count =
+                articles.filter((a) => a.category === key).length +
+                posts.filter((p) => p.category === key).length;
               const cat = categoryColors[key];
               return (
                 <button
@@ -211,7 +236,7 @@ export default function App() {
       </section>
 
       {/* Bài viết từ cộng đồng (blog của người dùng) */}
-      {!activeCategory && filteredPosts.length > 0 && (
+      {filteredPosts.length > 0 && (
         <section className="mx-auto max-w-6xl px-6 pt-8">
           <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-teal-700">
             <PenLine className="h-4 w-4" />
@@ -247,6 +272,11 @@ export default function App() {
           </div>
         )}
       </section>
+
+      {/* Thành viên cộng đồng */}
+      {!activeCategory && !searchQuery && members.length > 0 && (
+        <MembersSection members={members} postCounts={postCounts} currentUserId={user?.id} />
+      )}
 
       {/* Team section */}
       {!activeCategory && !searchQuery && authors.length > 0 && (

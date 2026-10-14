@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { User } from '@supabase/supabase-js';
-import { ArrowLeft, Eye, EyeOff, ImagePlus, Loader2, Send, Trash2 } from 'lucide-react';
-import { supabase, formatDate, getUserProfile } from '@/lib/supabase';
+import { ArrowLeft, Eye, EyeOff, ImagePlus, Loader2, Pencil, Save, Send, Trash2, X } from 'lucide-react';
+import { supabase, formatDate, getUserProfile, categoryLabels } from '@/lib/supabase';
 import {
   POST_BUCKET,
   extractCover,
@@ -34,6 +34,9 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [category, setCategory] = useState('tin-tuc');
+  const formRef = useRef<HTMLElement>(null);
 
   const loadMyPosts = useCallback(async () => {
     setLoadingPosts(true);
@@ -90,6 +93,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
       title: title.trim(),
       content: content.trim(),
       cover_url: extractCover(content),
+      category,
     });
     setPublishing(false);
 
@@ -112,8 +116,72 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
       setError('Xóa bài thất bại: ' + error.message);
       return;
     }
+    if (editingId === post.id) cancelEdit();
     const paths = imagePathsInContent(post.content);
     if (paths.length) await supabase.storage.from(POST_BUCKET).remove(paths);
+    loadMyPosts();
+    onPostsChanged();
+  };
+
+  // Nạp bài viết vào form để chỉnh sửa
+  const startEdit = (post: Post) => {
+    setError(null);
+    setSuccess(null);
+    setEditingId(post.id);
+    setTitle(post.title);
+    setContent(post.content);
+    setCategory(post.category ?? 'tin-tuc');
+    setPreview(false);
+    formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setTitle('');
+    setContent('');
+    setPreview(false);
+    setError(null);
+    setCategory('tin-tuc');
+  };
+
+  // Lưu thay đổi: cập nhật bài, bài trên trang chủ tự đổi theo
+  const handleSave = async () => {
+    if (!editingId) return;
+    setError(null);
+    setSuccess(null);
+    if (!title.trim()) return setError('Bạn chưa nhập tiêu đề.');
+    if (!content.trim()) return setError('Bạn chưa viết nội dung.');
+    const old = myPosts.find((p) => p.id === editingId);
+    if (!old) return;
+    if (!window.confirm('Lưu thay đổi và đăng lại bài viết này?')) return;
+
+    setPublishing(true);
+    const newContent = content.trim();
+    const { data, error } = await supabase
+      .from('posts')
+      .update({
+        title: title.trim(),
+        content: newContent,
+        cover_url: extractCover(newContent),
+        category,
+      })
+      .eq('id', editingId)
+      .eq('user_id', user.id)
+      .select('id');
+    setPublishing(false);
+
+    if (error || !data?.length) {
+      setError('Lưu bài thất bại: ' + (error?.message ?? 'không có quyền sửa bài này.'));
+      return;
+    }
+
+    // Xóa khỏi Storage những ảnh đã bị gỡ khỏi bài
+    const stillUsed = new Set(imagePathsInContent(newContent));
+    const removed = imagePathsInContent(old.content).filter((p) => !stillUsed.has(p));
+    if (removed.length) await supabase.storage.from(POST_BUCKET).remove(removed);
+
+    cancelEdit();
+    setSuccess('Đã cập nhật bài viết!');
     loadMyPosts();
     onPostsChanged();
   };
@@ -147,9 +215,11 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
         </div>
       </div>
 
-      {/* Viết bài */}
-      <section className="mt-8 rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-        <h2 className="text-xl font-extrabold text-gray-900">Viết bài mới</h2>
+      {/* Viết bài / Chỉnh sửa bài */}
+      <section ref={formRef} className="mt-8 rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
+        <h2 className="text-xl font-extrabold text-gray-900">
+          {editingId ? 'Chỉnh sửa bài viết' : 'Viết bài mới'}
+        </h2>
 
         <div className="mt-4 space-y-3">
           <input
@@ -159,6 +229,11 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
             maxLength={150}
             onChange={(e) => setTitle(e.target.value)}
           />
+          <select className={inputCls} value={category} onChange={(e) => setCategory(e.target.value)}>
+  {Object.entries(categoryLabels).map(([key, label]) => (
+    <option key={key} value={key}>{label}</option>
+  ))}
+</select>
 
           {preview ? (
             <div className="min-h-[12rem] rounded-xl border border-gray-200 bg-gray-50 p-4 text-gray-700">
@@ -203,15 +278,34 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
               {preview ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               {preview ? 'Tiếp tục viết' : 'Xem trước'}
             </button>
-            <button
-              type="button"
-              onClick={handlePublish}
-              disabled={publishing || uploading}
-              className="ml-auto inline-flex items-center gap-2 rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white hover:bg-teal-600 disabled:opacity-60"
-            >
-              {publishing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-              Đăng bài
-            </button>
+            <div className="ml-auto flex gap-2">
+              {editingId && (
+                <button
+                  type="button"
+                  onClick={cancelEdit}
+                  disabled={publishing}
+                  className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 disabled:opacity-60"
+                >
+                  <X className="h-4 w-4" />
+                  Hủy
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={editingId ? handleSave : handlePublish}
+                disabled={publishing || uploading}
+                className="inline-flex items-center gap-2 rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white hover:bg-teal-600 disabled:opacity-60"
+              >
+                {publishing ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : editingId ? (
+                  <Save className="h-4 w-4" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
+                {editingId ? 'Lưu thay đổi' : 'Đăng bài'}
+              </button>
+            </div>
           </div>
           <p className="text-xs text-gray-400">Ảnh tối đa 3MB (JPG, PNG, WEBP, GIF). Ảnh đầu tiên sẽ làm nền mờ cho bài trên trang chủ.</p>
         </div>
@@ -236,6 +330,13 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
                 <button onClick={() => onOpenPost(p)} className="min-w-0 flex-1 text-left">
                   <div className="truncate font-bold text-gray-900 hover:text-teal-600">{p.title}</div>
                   <div className="text-xs text-gray-400">{formatDate(p.created_at)}</div>
+                </button>
+                <button
+                  onClick={() => startEdit(p)}
+                  aria-label="Sửa bài"
+                  className="rounded-full p-2 text-gray-400 hover:bg-teal-50 hover:text-teal-600"
+                >
+                  <Pencil className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => handleDelete(p)}
