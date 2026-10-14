@@ -21,7 +21,7 @@ export default function Hero() {
       <div className="relative mx-auto max-w-6xl px-6 py-16 lg:py-24">
         <div className="grid items-center gap-10 lg:grid-cols-[1.2fr_0.8fr]">
           {/* Left content */}
-          <div>
+          <div className="hero-fade-up">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-orange-100 px-4 py-2 text-sm font-semibold text-orange-700">
               <Sparkles className="h-4 w-4" />
               Blog về Quy Nhơn — Thành phố biển miền Trung
@@ -38,7 +38,7 @@ export default function Hero() {
             <div className="mt-8 flex flex-wrap gap-6">
               <div className="text-center">
                 <div className="text-3xl font-bold text-teal-600">15</div>
-                <div className="text-sm text-gray-500">Thành viên</div>
+                <div className="text-sm text-gray-500">Cây bút trẻ</div>
               </div>
              
               <div className="text-center">
@@ -57,8 +57,8 @@ export default function Hero() {
           </div>
 
           {/* Right — Vietnam map + location card */}
-          <div className="relative flex flex-col items-center gap-4">
-            <div className="rounded-3xl bg-white/80 p-8 shadow-xl backdrop-blur-sm border border-teal-100">
+          <div className="hero-slide-in relative flex flex-col items-center gap-4">
+            <div className="hero-float rounded-3xl bg-white/80 p-8 shadow-xl backdrop-blur-sm border border-teal-100">
               <VietnamMap />
             </div>
             <div className="rounded-2xl bg-white/80 px-6 py-4 shadow-lg backdrop-blur-sm border border-orange-100 flex items-center gap-3">

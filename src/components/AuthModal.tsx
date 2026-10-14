@@ -70,7 +70,7 @@ export default function AuthModal({ open, onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl"
+        className="modal-enter relative w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <button onClick={onClose} className="absolute right-4 top-4 text-gray-400 hover:text-gray-700">

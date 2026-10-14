@@ -1,3 +1,89 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 600ms ease var(--reveal-delay, 0ms),
+      transform 600ms ease var(--reveal-delay, 0ms);
+  }
+
+  .scroll-reveal-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes hero-float {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
+@keyframes modal-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.hero-fade-up {
+  animation: hero-fade-up 700ms ease both;
+}
+
+.hero-slide-in {
+  animation: hero-slide-in 800ms 150ms ease both;
+}
+
+.hero-float {
+  animation: hero-float 6s ease-in-out infinite;
+}
+
+.modal-enter {
+  animation: modal-enter 180ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal,
+  .hero-fade-up,
+  .hero-slide-in,
+  .hero-float,
+  .modal-enter {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

@@ -1,22 +1,39 @@
 import { useEffect, useRef, useState } from 'react';
-import { Newspaper, LogOut, UserRound } from 'lucide-react';
+import { Newspaper, LogOut, UserRound, Trash2 } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
-import { supabase, formatDate, getUserProfile } from '@/lib/supabase';
+import { supabase, formatDate, getUserProfile, deleteMyAccount } from '@/lib/supabase';
 
 type Props = {
   user: User | null;
   onLoginClick: () => void;
-  onProfileClick: ()=> void;
+  onProfileClick: () => void;
+  onAccountDeleted: () => void;
 };
 
-
-function UserMenu({ user, onLoginClick, onProfileClick }: { user: User | null; onLoginClick: () => void; onProfileClick: () => void }) {
+function UserMenu({
+  user,
+  onLoginClick,
+  onProfileClick,
+  onAccountDeleted,
+}: {
+  user: User | null;
+  onLoginClick: () => void;
+  onProfileClick: () => void;
+  onAccountDeleted: () => void;
+}) {
   const [open, setOpen] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onDown = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+        setConfirming(false);
+        setDeleteError(null);
+      }
     };
     document.addEventListener('mousedown', onDown);
     return () => document.removeEventListener('mousedown', onDown);
@@ -43,6 +60,20 @@ function UserMenu({ user, onLoginClick, onProfileClick }: { user: User | null; o
     </div>
   );
 
+  const handleDelete = async () => {
+    setDeleting(true);
+    setDeleteError(null);
+    const { error } = await deleteMyAccount();
+    setDeleting(false);
+    if (error) {
+      setDeleteError(error.message || 'Không thể xóa tài khoản, vui lòng thử lại.');
+      return;
+    }
+    setOpen(false);
+    setConfirming(false);
+    onAccountDeleted();
+  };
+
   return (
     <div ref={ref} className="relative">
       <button onClick={() => setOpen((o) => !o)} aria-label="Tài khoản" className="rounded-full ring-2 ring-white shadow">
@@ -61,7 +92,7 @@ function UserMenu({ user, onLoginClick, onProfileClick }: { user: User | null; o
           <p className="mt-3 text-xs text-gray-400">
             Đăng nhập bằng {providerLabel[provider] ?? provider} · Tham gia: {formatDate(user.created_at)}
           </p>
-                    <button
+          <button
             onClick={() => {
               onProfileClick();
               setOpen(false);
@@ -79,13 +110,48 @@ function UserMenu({ user, onLoginClick, onProfileClick }: { user: User | null; o
           >
             <LogOut className="h-4 w-4" /> Đăng xuất
           </button>
+
+          {!confirming ? (
+            <button
+              onClick={() => setConfirming(true)}
+              className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+            >
+              <Trash2 className="h-4 w-4" /> Xóa tài khoản
+            </button>
+          ) : (
+            <div className="mt-2 rounded-xl border border-red-200 bg-red-50 p-3">
+              <p className="text-xs text-red-700">
+                Tài khoản và các bài viết của bạn sẽ bị xóa vĩnh viễn, không thể khôi phục. Bạn chắc chắn chứ?
+              </p>
+              {deleteError && <p className="mt-2 text-xs font-medium text-red-800">{deleteError}</p>}
+              <div className="mt-3 flex gap-2">
+                <button
+                  onClick={() => {
+                    setConfirming(false);
+                    setDeleteError(null);
+                  }}
+                  disabled={deleting}
+                  className="flex-1 rounded-lg bg-white py-1.5 text-xs font-medium text-gray-700 ring-1 ring-gray-200 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  Hủy
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={deleting}
+                  className="flex-1 rounded-lg bg-red-600 py-1.5 text-xs font-semibold text-white hover:bg-red-700 disabled:opacity-60"
+                >
+                  {deleting ? 'Đang xóa...' : 'Xóa vĩnh viễn'}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
   );
 }
 
-export default function Header({ user, onLoginClick, onProfileClick }: Props) {
+export default function Header({ user, onLoginClick, onProfileClick, onAccountDeleted }: Props) {
   return (
     <nav className="sticky top-0 z-50 border-b border-gray-100 bg-white/90 backdrop-blur-md shadow-sm">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
@@ -98,7 +164,12 @@ export default function Header({ user, onLoginClick, onProfileClick }: Props) {
           </span>
         </div>
 
-        <UserMenu user={user} onLoginClick={onLoginClick} onProfileClick={onProfileClick} />
+        <UserMenu
+          user={user}
+          onLoginClick={onLoginClick}
+          onProfileClick={onProfileClick}
+          onAccountDeleted={onAccountDeleted}
+        />
       </div>
     </nav>
   );

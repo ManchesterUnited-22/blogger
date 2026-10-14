@@ -14,6 +14,7 @@ import PostCard from '@/components/PostCard';
 import PostDetail from '@/components/PostDetail';
 import MembersSection, { type Member } from '@/components/MembersSection';
 import { makeExcerpt, type Post } from '@/lib/posts';
+import ScrollReveal from '@/components/ScrollReveal';
 
 export default function App() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -61,6 +62,15 @@ export default function App() {
   useEffect(() => {
     if (!user && view === 'profile') setView('home');
   }, [user, view]);
+
+  // Sau khi xóa tài khoản: về trang chủ và tải lại danh sách thành viên + bài viết
+  const handleAccountDeleted = () => {
+    setView('home');
+    setSelectedPost(null);
+    setSelectedArticle(null);
+    fetchMembers();
+    fetchPosts();
+  };
 
   // Đổi trang thì cuộn lên đầu
   useEffect(() => {
@@ -141,6 +151,7 @@ export default function App() {
           user={user}
           onLoginClick={() => setAuthOpen(true)}
           onProfileClick={openProfile}
+          onAccountDeleted={handleAccountDeleted}
         />
         {selectedPost ? (
           <PostDetail post={selectedPost} onBack={() => setSelectedPost(null)} />
@@ -171,6 +182,7 @@ export default function App() {
         user={user}
         onLoginClick={() => setAuthOpen(true)}
         onProfileClick={openProfile}
+        onAccountDeleted={handleAccountDeleted}
       />
       <Hero />
 
@@ -202,7 +214,9 @@ export default function App() {
           </div>
           <div className="grid gap-6 md:grid-cols-2">
             {filteredPosts.map((post) => (
-              <PostCard key={post.id} post={post} onClick={() => setSelectedPost(post)} />
+              <ScrollReveal key={post.id} delay={(filteredPosts.indexOf(post) % 4) * 70}>
+                <PostCard post={post} onClick={() => setSelectedPost(post)} />
+              </ScrollReveal>
             ))}
           </div>
         </section>
@@ -224,7 +238,9 @@ export default function App() {
           <div className="grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filteredArticles.map((article) => (
               <div key={article.id} className="h-full">
-                <ArticleCard article={article} onClick={() => setSelectedArticle(article)} />
+                <ScrollReveal delay={(filteredArticles.indexOf(article) % 6) * 60} className="h-full">
+                  <ArticleCard article={article} onClick={() => setSelectedArticle(article)} />
+                </ScrollReveal>
               </div>
             ))}
           </div>

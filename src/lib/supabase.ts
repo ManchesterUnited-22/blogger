@@ -16,6 +16,14 @@ export function signInWithProvider(provider: OAuthProvider) {
     },
   });
 }
+/** Xóa vĩnh viễn tài khoản đang đăng nhập, rồi đăng xuất khỏi máy này. */
+export async function deleteMyAccount() {
+  const { error } = await supabase.rpc('delete_my_account');
+  if (error) return { error };
+  // Tài khoản đã bị xóa trên server -> chỉ cần xóa phiên cục bộ
+  await supabase.auth.signOut({ scope: 'local' });
+  return { error: null };
+}
 
 export type UserProfile = {
   name: string;
