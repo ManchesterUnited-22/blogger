@@ -1,6 +1,6 @@
 import { Calendar } from 'lucide-react';
 import type { Article } from '@/lib/supabase';
-import { categoryLabels, categoryColors, formatDate } from '@/lib/supabase';
+import { formatDate } from '@/lib/supabase';
 
 type Props = {
   article: Article;
@@ -8,8 +8,6 @@ type Props = {
 };
 
 export default function ArticleCard({ article, onClick }: Props) {
-  const cat = categoryColors[article.category] ?? categoryColors['tin-tuc'];
-
   return (
     <article
       onClick={onClick}
@@ -21,10 +19,6 @@ export default function ArticleCard({ article, onClick }: Props) {
           alt={article.title}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        <div className={`absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r ${cat.gradient}`} />
-        <span className={`absolute left-3 top-3 rounded-full px-3 py-1 text-xs font-bold text-white ${cat.solid}`}>
-          {categoryLabels[article.category] ?? article.category}
-        </span>
       </div>
       <div className="flex flex-1 flex-col p-5">
         <h3 className="line-clamp-2 text-lg font-bold leading-snug text-gray-900 group-hover:text-teal-600 transition-colors">

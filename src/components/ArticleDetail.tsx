@@ -1,6 +1,6 @@
 import { Calendar, Clock, ArrowLeft, Share2 } from 'lucide-react';
 import type { Article } from '@/lib/supabase';
-import { categoryLabels, categoryColors, formatDate } from '@/lib/supabase';
+import { formatDate } from '@/lib/supabase';
 
 type Props = {
   article: Article;
@@ -8,8 +8,6 @@ type Props = {
 };
 
 export default function ArticleDetail({ article, onBack }: Props) {
-  const cat = categoryColors[article.category] ?? categoryColors['tin-tuc'];
-
   return (
     <article className="mx-auto max-w-3xl px-6 py-10">
       <button
@@ -20,11 +18,7 @@ export default function ArticleDetail({ article, onBack }: Props) {
         Quay lại trang chủ
       </button>
 
-      <span className={`inline-block rounded-full px-3 py-1 text-xs font-bold text-white ${cat.solid}`}>
-        {categoryLabels[article.category] ?? article.category}
-      </span>
-
-      <h1 className="mt-4 text-3xl font-extrabold leading-tight text-gray-900 lg:text-4xl">
+      <h1 className="text-3xl font-extrabold leading-tight text-gray-900 lg:text-4xl">
         {article.title}
       </h1>
 

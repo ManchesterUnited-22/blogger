@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { User } from '@supabase/supabase-js';
-import { ArrowLeft, Eye, EyeOff, ImagePlus, Loader2, Pencil, Save, Send, Trash2, X } from 'lucide-react';
-import { supabase, formatDate, getUserProfile, categoryLabels } from '@/lib/supabase';
+import { ArrowLeft, Eye, EyeOff, ImagePlus, Loader2, Pencil, Save, Send, Trash2, X, Camera } from 'lucide-react';
+import { supabase, formatDate, getUserProfile } from '@/lib/supabase';
 import {
   POST_BUCKET,
   extractCover,
@@ -9,6 +9,7 @@ import {
   uploadPostImage,
   type Post,
 } from '@/lib/posts';
+import BodyEditor, { type BodyEditorHandle } from '@/components/BodyEditor';
 import PostContent from '@/components/PostContent';
 
 type Props = {
@@ -20,6 +21,12 @@ type Props = {
 
 export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }: Props) {
   const profile = getUserProfile(user);
+    // Ảnh gốc của Google (nếu có) để người dùng quay lại dùng
+  const rawMeta = (user.user_metadata ?? {}) as Record<string, unknown>;
+  let googleAvatar = ((rawMeta.avatar_url as string) || (rawMeta.picture as string) || null);
+  if (googleAvatar && googleAvatar.includes('googleusercontent.com')) {
+    googleAvatar = googleAvatar.replace(/=s\d+-c$/, '=s256-c');
+  }
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -32,11 +39,17 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
   const [myPosts, setMyPosts] = useState<Post[]>([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
 
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const editorRef = useRef<BodyEditorHandle>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [category, setCategory] = useState('tin-tuc');
   const formRef = useRef<HTMLElement>(null);
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [nameInput, setNameInput] = useState('');
+  const [avatarInput, setAvatarInput] = useState<string | null>(null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const avatarFileRef = useRef<HTMLInputElement>(null);
 
   const loadMyPosts = useCallback(async () => {
     setLoadingPosts(true);
@@ -54,6 +67,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
   }, [loadMyPosts]);
 
   // Chèn ảnh tại vị trí con trỏ trong ô viết bài
+    // Chèn ảnh tại vị trí con trỏ trong khung viết bài
   const handlePickImage = async (file: File | undefined) => {
     if (!file) return;
     setError(null);
@@ -61,16 +75,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
     setUploading(true);
     try {
       const url = await uploadPostImage(user.id, file);
-      const ta = textareaRef.current;
-      const start = ta?.selectionStart ?? content.length;
-      const end = ta?.selectionEnd ?? start;
-      const insert = `\n![](${url})\n`;
-      setContent(content.slice(0, start) + insert + content.slice(end));
-      setTimeout(() => {
-        ta?.focus();
-        const pos = start + insert.length;
-        ta?.setSelectionRange(pos, pos);
-      }, 0);
+      editorRef.current?.insertImage(url);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Không tải được ảnh.');
     } finally {
@@ -93,7 +98,6 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
       title: title.trim(),
       content: content.trim(),
       cover_url: extractCover(content),
-      category,
     });
     setPublishing(false);
 
@@ -130,7 +134,6 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
     setEditingId(post.id);
     setTitle(post.title);
     setContent(post.content);
-    setCategory(post.category ?? 'tin-tuc');
     setPreview(false);
     formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
@@ -141,7 +144,6 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
     setContent('');
     setPreview(false);
     setError(null);
-    setCategory('tin-tuc');
   };
 
   // Lưu thay đổi: cập nhật bài, bài trên trang chủ tự đổi theo
@@ -163,7 +165,6 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
         title: title.trim(),
         content: newContent,
         cover_url: extractCover(newContent),
-        category,
       })
       .eq('id', editingId)
       .eq('user_id', user.id)
@@ -185,6 +186,52 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
     loadMyPosts();
     onPostsChanged();
   };
+    const startEditProfile = () => {
+    setNameInput(profile.name);
+    setAvatarInput(profile.avatarUrl);
+    setProfileError(null);
+    setEditingProfile(true);
+  };
+
+  const cancelEditProfile = () => {
+    setEditingProfile(false);
+    setProfileError(null);
+  };
+
+  const handlePickAvatar = async (file: File | undefined) => {
+    if (!file) return;
+    setProfileError(null);
+    setAvatarUploading(true);
+    try {
+      const url = await uploadPostImage(user.id, file);
+      setAvatarInput(url);
+    } catch (e) {
+      setProfileError(e instanceof Error ? e.message : 'Không tải được ảnh.');
+    } finally {
+      setAvatarUploading(false);
+      if (avatarFileRef.current) avatarFileRef.current.value = '';
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    setProfileError(null);
+    const name = nameInput.trim();
+    if (!name) return setProfileError('Tên không được để trống.');
+    if (name.length > 50) return setProfileError('Tên tối đa 50 ký tự.');
+
+    setSavingProfile(true);
+    const { error } = await supabase.auth.updateUser({
+      data: { custom_name: name, custom_avatar: avatarInput },
+    });
+    setSavingProfile(false);
+
+    if (error) return setProfileError('Lưu hồ sơ thất bại: ' + error.message);
+
+    setEditingProfile(false);
+    setSuccess('Đã cập nhật hồ sơ!');
+    loadMyPosts();
+    onPostsChanged();
+  };
 
   const inputCls =
     'w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-100';
@@ -199,20 +246,109 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
         Quay lại trang chủ
       </button>
 
-      {/* Thông tin cá nhân */}
-      <div className="flex items-center gap-4 rounded-2xl bg-gradient-to-br from-teal-50 to-cyan-50 p-6 ring-1 ring-gray-100">
-        <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 text-3xl font-bold text-white shadow">
-          {profile.avatarUrl ? (
-            <img src={profile.avatarUrl} alt={profile.name} referrerPolicy="no-referrer" className="h-full w-full object-cover" />
-          ) : (
-            profile.name.charAt(0).toUpperCase()
+           {/* Thông tin cá nhân */}
+      <div className="rounded-2xl bg-gradient-to-br from-teal-50 to-cyan-50 p-6 ring-1 ring-gray-100">
+        <div className="flex items-center gap-4">
+          <div className="relative shrink-0">
+            <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 text-3xl font-bold text-white shadow">
+              {(editingProfile ? avatarInput : profile.avatarUrl) ? (
+                <img
+                  src={(editingProfile ? avatarInput : profile.avatarUrl) as string}
+                  alt={profile.name}
+                  referrerPolicy="no-referrer"
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                (editingProfile ? nameInput || profile.name : profile.name).charAt(0).toUpperCase()
+              )}
+            </div>
+            {editingProfile && (
+              <>
+                <input
+                  ref={avatarFileRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  onChange={(e) => handlePickAvatar(e.target.files?.[0])}
+                />
+                <button
+                  type="button"
+                  onClick={() => avatarFileRef.current?.click()}
+                  disabled={avatarUploading}
+                  aria-label="Đổi ảnh đại diện"
+                  className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-gray-900 text-white shadow hover:bg-teal-600 disabled:opacity-60"
+                >
+                  {avatarUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
+                </button>
+              </>
+            )}
+          </div>
+
+          <div className="min-w-0 flex-1">
+            {editingProfile ? (
+              <input
+                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-lg font-bold text-gray-900 outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-100"
+                placeholder="Tên hiển thị"
+                value={nameInput}
+                maxLength={50}
+                onChange={(e) => setNameInput(e.target.value)}
+              />
+            ) : (
+              <h1 className="truncate text-2xl font-extrabold text-gray-900">{profile.name}</h1>
+            )}
+            {profile.email && <p className="truncate text-sm text-gray-500">{profile.email}</p>}
+            <p className="mt-1 text-xs text-gray-400">{myPosts.length} bài viết</p>
+          </div>
+
+          {!editingProfile && (
+            <button
+              type="button"
+              onClick={startEditProfile}
+              className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-gray-200 hover:bg-gray-50"
+            >
+              <Pencil className="h-4 w-4" />
+              Sửa hồ sơ
+            </button>
           )}
         </div>
-        <div className="min-w-0">
-          <h1 className="truncate text-2xl font-extrabold text-gray-900">{profile.name}</h1>
-          {profile.email && <p className="truncate text-sm text-gray-500">{profile.email}</p>}
-          <p className="mt-1 text-xs text-gray-400">{myPosts.length} bài viết</p>
-        </div>
+
+        {editingProfile && (
+          <div className="mt-4 space-y-3">
+                        {googleAvatar && avatarInput !== googleAvatar && (
+              <button
+                type="button"
+                onClick={() => setAvatarInput(googleAvatar)}
+                className="rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-700 ring-1 ring-gray-200 hover:bg-gray-50"
+              >
+                Dùng lại ảnh Google
+              </button>
+            )}
+            {profileError && <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-600">{profileError}</p>}
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-xs text-gray-400">Ảnh tối đa 3MB. Tên và ảnh mới sẽ áp dụng cho cả các bài đã đăng.</p>
+              <div className="flex shrink-0 gap-2">
+                <button
+                  type="button"
+                  onClick={cancelEditProfile}
+                  disabled={savingProfile}
+                  className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-700 ring-1 ring-gray-200 hover:bg-gray-50 disabled:opacity-60"
+                >
+                  <X className="h-4 w-4" />
+                  Hủy
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveProfile}
+                  disabled={savingProfile || avatarUploading}
+                  className="inline-flex items-center gap-2 rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white hover:bg-teal-600 disabled:opacity-60"
+                >
+                  {savingProfile ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                  Lưu
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Viết bài / Chỉnh sửa bài */}
@@ -229,24 +365,17 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
             maxLength={150}
             onChange={(e) => setTitle(e.target.value)}
           />
-          <select className={inputCls} value={category} onChange={(e) => setCategory(e.target.value)}>
-  {Object.entries(categoryLabels).map(([key, label]) => (
-    <option key={key} value={key}>{label}</option>
-  ))}
-</select>
 
           {preview ? (
             <div className="min-h-[12rem] rounded-xl border border-gray-200 bg-gray-50 p-4 text-gray-700">
               {content.trim() ? <PostContent content={content} /> : <p className="text-gray-400">Chưa có nội dung.</p>}
             </div>
           ) : (
-            <textarea
-              ref={textareaRef}
-              className={`${inputCls} min-h-[12rem] resize-y leading-relaxed`}
-              placeholder="Hôm nay bạn muốn chia sẻ điều gì? Bấm 'Chèn ảnh' để thêm ảnh vào đúng vị trí con trỏ."
+            <BodyEditor
+              ref={editorRef}
               value={content}
-              maxLength={20000}
-              onChange={(e) => setContent(e.target.value)}
+              onChange={setContent}
+              placeholder="Hôm nay bạn muốn chia sẻ điều gì? Bấm 'Chèn ảnh' để thêm ảnh vào đúng vị trí con trỏ."
             />
           )}
 

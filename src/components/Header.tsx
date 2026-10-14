@@ -1,17 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { Newspaper, LogOut, UserRound } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
-import { supabase, categoryLabels, formatDate, getUserProfile } from '@/lib/supabase';
+import { supabase, formatDate, getUserProfile } from '@/lib/supabase';
 
 type Props = {
-  activeCategory: string | null;
-  onCategoryChange: (cat: string | null) => void;
   user: User | null;
   onLoginClick: () => void;
   onProfileClick: ()=> void;
 };
 
-const categories = Object.entries(categoryLabels);
+
 function UserMenu({ user, onLoginClick, onProfileClick }: { user: User | null; onLoginClick: () => void; onProfileClick: () => void }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -48,7 +46,7 @@ function UserMenu({ user, onLoginClick, onProfileClick }: { user: User | null; o
   return (
     <div ref={ref} className="relative">
       <button onClick={() => setOpen((o) => !o)} aria-label="Tài khoản" className="rounded-full ring-2 ring-white shadow">
-        {avatar('h-9 w-9 text-sm')}
+        {avatar('h-11 w-11 text-base')}
       </button>
 
       {open && (
@@ -87,7 +85,7 @@ function UserMenu({ user, onLoginClick, onProfileClick }: { user: User | null; o
   );
 }
 
-export default function Header({ activeCategory, onCategoryChange, user, onLoginClick, onProfileClick }: Props) {
+export default function Header({ user, onLoginClick, onProfileClick }: Props) {
   return (
     <nav className="sticky top-0 z-50 border-b border-gray-100 bg-white/90 backdrop-blur-md shadow-sm">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
@@ -100,56 +98,7 @@ export default function Header({ activeCategory, onCategoryChange, user, onLogin
           </span>
         </div>
 
-        <div className="hidden items-center gap-1 md:flex">
-          <button
-            onClick={() => onCategoryChange(null)}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
-              activeCategory === null
-                ? 'bg-gray-900 text-white'
-                : 'text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-            Tất cả
-          </button>
-          {categories.map(([key, label]) => (
-            <button
-              key={key}
-              onClick={() => onCategoryChange(key)}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
-                activeCategory === key
-                  ? 'bg-gray-900 text-white'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-
         <UserMenu user={user} onLoginClick={onLoginClick} onProfileClick={onProfileClick} />
-      </div>
-
-      {/* Mobile category scroll */}
-      <div className="flex gap-1 overflow-x-auto px-6 pb-2 md:hidden">
-        <button
-          onClick={() => onCategoryChange(null)}
-          className={`whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium ${
-            activeCategory === null ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600'
-          }`}
-        >
-          Tất cả
-        </button>
-        {categories.map(([key, label]) => (
-          <button
-            key={key}
-            onClick={() => onCategoryChange(key)}
-            className={`whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium ${
-              activeCategory === key ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600'
-            }`}
-          >
-            {label}
-          </button>
-        ))}
       </div>
     </nav>
   );

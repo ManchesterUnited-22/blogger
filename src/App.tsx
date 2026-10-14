@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Loader2, PenLine, Search } from 'lucide-react';
 import { supabase, type Article, type Author } from '@/lib/supabase';
-import { categoryLabels, categoryColors } from '@/lib/supabase';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import ArticleCard from '@/components/ArticleCard';
@@ -21,7 +20,6 @@ export default function App() {
   const [authors, setAuthors] = useState<Author[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [user, setUser] = useState<User | null>(null);
@@ -115,29 +113,15 @@ export default function App() {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  const handleCategoryChange = (cat: string | null) => {
-    setActiveCategory(cat);
-    setSelectedArticle(null);
-    setSelectedPost(null);
-    setView('home');
-    if (cat) {
-      setTimeout(() => {
-        document.getElementById('feed')?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-    }
-  };
-
   const filteredArticles = articles.filter((a) => {
-    const matchesCategory = !activeCategory || a.category === activeCategory;
     const matchesSearch =
       !searchQuery ||
       a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       a.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
+    return matchesSearch;
   });
 
   const filteredPosts = posts.filter((p) => {
-    if (activeCategory && p.category !== activeCategory) return false;
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
     return p.title.toLowerCase().includes(q) || makeExcerpt(p.content, 2000).toLowerCase().includes(q);
@@ -154,8 +138,6 @@ export default function App() {
     return (
       <div className="min-h-screen bg-white">
         <Header
-          activeCategory={activeCategory}
-          onCategoryChange={handleCategoryChange}
           user={user}
           onLoginClick={() => setAuthOpen(true)}
           onProfileClick={openProfile}
@@ -170,11 +152,14 @@ export default function App() {
               user={user}
               onBack={() => setView('home')}
               onOpenPost={setSelectedPost}
-              onPostsChanged={fetchPosts}
+              onPostsChanged={() => {
+                fetchPosts();
+                fetchMembers();
+              }}
             />
           )
         )}
-        <Footer onCategoryClick={(c) => handleCategoryChange(c)} />
+        <Footer />
         <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
       </div>
     );
@@ -183,44 +168,17 @@ export default function App() {
   return (
     <div className="min-h-screen bg-white">
       <Header
-        activeCategory={activeCategory}
-        onCategoryChange={handleCategoryChange}
         user={user}
         onLoginClick={() => setAuthOpen(true)}
         onProfileClick={openProfile}
       />
       <Hero />
 
-      {/* Featured strip — category highlights */}
-      {!activeCategory && !searchQuery && articles.length > 0 && (
-        <section className="mx-auto max-w-6xl px-6 pt-12">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-            {Object.entries(categoryLabels).map(([key, label]) => {
-              const count =
-                articles.filter((a) => a.category === key).length +
-                posts.filter((p) => p.category === key).length;
-              const cat = categoryColors[key];
-              return (
-                <button
-                  key={key}
-                  onClick={() => handleCategoryChange(key)}
-                  className={`group relative overflow-hidden rounded-2xl p-5 text-left shadow-sm ring-1 ring-gray-100 transition-all hover:-translate-y-1 hover:shadow-lg ${cat.bg}`}
-                >
-                  <div className={`mb-2 h-2 w-12 rounded-full bg-gradient-to-r ${cat.gradient}`} />
-                  <div className={`text-lg font-bold ${cat.text}`}>{label}</div>
-                  <div className="text-xs text-gray-500">{count} bài viết</div>
-                </button>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
       {/* Search bar */}
       <section id="feed" className="mx-auto max-w-6xl px-6 pt-10">
         <div className="flex items-center justify-between gap-4">
           <h2 className="text-2xl font-extrabold text-gray-900">
-            {activeCategory ? categoryLabels[activeCategory] : 'Mẩu tin mới nhất'}
+            Mẩu tin mới nhất
           </h2>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -274,16 +232,16 @@ export default function App() {
       </section>
 
       {/* Thành viên cộng đồng */}
-      {!activeCategory && !searchQuery && members.length > 0 && (
+      {!searchQuery && members.length > 0 && (
         <MembersSection members={members} postCounts={postCounts} currentUserId={user?.id} />
       )}
 
       {/* Team section */}
-      {!activeCategory && !searchQuery && authors.length > 0 && (
+      {!searchQuery && authors.length > 0 && (
         <TeamSection authors={authors} />
       )}
 
-      <Footer onCategoryClick={(c) => handleCategoryChange(c)} />
+      <Footer />
       <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
     </div>
   );

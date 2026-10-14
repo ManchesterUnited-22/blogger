@@ -31,10 +31,7 @@ export default function Hero() {
             </h1>
             <p className="mt-4 max-w-xl text-lg leading-relaxed text-gray-600">
               Khám phá Quy Nhơn qua lăng kính của 15 cây bút trẻ — những mẩu tin về
-              <span className="font-semibold text-teal-600"> du lịch</span>,
-              <span className="font-semibold text-orange-600"> ẩm thực</span>,
-              <span className="font-semibold text-rose-600"> lễ hội</span> và
-              <span className="font-semibold text-cyan-600"> văn hóa</span> vùng đất võ Bình Định.
+               vùng đất võ Bình Định.
             </p>
 
             {/* Quick stats */}
@@ -43,10 +40,7 @@ export default function Hero() {
                 <div className="text-3xl font-bold text-teal-600">15</div>
                 <div className="text-sm text-gray-500">Thành viên</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-orange-500">5</div>
-                <div className="text-sm text-gray-500">Chuyên mục</div>
-              </div>
+             
               <div className="text-center">
                 <div className="text-3xl font-bold text-rose-500">100%</div>
                 <div className="text-sm text-gray-500">Đam mê</div>
