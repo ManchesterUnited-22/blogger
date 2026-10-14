@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Newspaper, LogOut } from 'lucide-react';
+import { Newspaper, LogOut, UserRound } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import { supabase, categoryLabels, formatDate, getUserProfile } from '@/lib/supabase';
 
@@ -8,11 +8,11 @@ type Props = {
   onCategoryChange: (cat: string | null) => void;
   user: User | null;
   onLoginClick: () => void;
+  onProfileClick: ()=> void;
 };
 
 const categories = Object.entries(categoryLabels);
-
-function UserMenu({ user, onLoginClick }: { user: User | null; onLoginClick: () => void }) {
+function UserMenu({ user, onLoginClick, onProfileClick }: { user: User | null; onLoginClick: () => void; onProfileClick: () => void }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -63,12 +63,21 @@ function UserMenu({ user, onLoginClick }: { user: User | null; onLoginClick: () 
           <p className="mt-3 text-xs text-gray-400">
             Đăng nhập bằng {providerLabel[provider] ?? provider} · Tham gia: {formatDate(user.created_at)}
           </p>
+                    <button
+            onClick={() => {
+              onProfileClick();
+              setOpen(false);
+            }}
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-gray-900 py-2 text-sm font-medium text-white hover:bg-teal-600"
+          >
+            <UserRound className="h-4 w-4" /> Trang cá nhân
+          </button>
           <button
             onClick={() => {
               supabase.auth.signOut();
               setOpen(false);
             }}
-            className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
           >
             <LogOut className="h-4 w-4" /> Đăng xuất
           </button>
@@ -78,7 +87,7 @@ function UserMenu({ user, onLoginClick }: { user: User | null; onLoginClick: () 
   );
 }
 
-export default function Header({ activeCategory, onCategoryChange, user, onLoginClick }: Props) {
+export default function Header({ activeCategory, onCategoryChange, user, onLoginClick, onProfileClick }: Props) {
   return (
     <nav className="sticky top-0 z-50 border-b border-gray-100 bg-white/90 backdrop-blur-md shadow-sm">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
@@ -117,7 +126,7 @@ export default function Header({ activeCategory, onCategoryChange, user, onLogin
           ))}
         </div>
 
-        <UserMenu user={user} onLoginClick={onLoginClick} />
+        <UserMenu user={user} onLoginClick={onLoginClick} onProfileClick={onProfileClick} />
       </div>
 
       {/* Mobile category scroll */}

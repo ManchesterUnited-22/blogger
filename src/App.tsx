@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Loader2, Search } from 'lucide-react';
+import { Loader2, PenLine, Search } from 'lucide-react';
 import { supabase, type Article, type Author } from '@/lib/supabase';
 import { categoryLabels, categoryColors } from '@/lib/supabase';
 import Header from '@/components/Header';
@@ -10,6 +10,10 @@ import TeamSection from '@/components/TeamSection';
 import Footer from '@/components/Footer';
 import type { User } from '@supabase/supabase-js';
 import AuthModal from '@/components/AuthModal';
+import ProfilePage from '@/components/ProfilePage';
+import PostCard from '@/components/PostCard';
+import PostDetail from '@/components/PostDetail';
+import { makeExcerpt, type Post } from '@/lib/posts';
 
 export default function App() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -21,6 +25,39 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [user, setUser] = useState<User | null>(null);
   const [authOpen, setAuthOpen] = useState(false);
+  const [view, setView] = useState<'home' | 'profile'>('home');
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+
+  const fetchPosts = useCallback(async () => {
+    const { data, error } = await supabase
+      .from('posts')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(50);
+    // Chưa chạy SQL thì bỏ qua, không làm hỏng trang chủ
+    if (!error) setPosts((data as Post[]) ?? []);
+  }, []);
+
+  useEffect(() => {
+    fetchPosts();
+  }, [fetchPosts]);
+
+  // Đăng xuất khi đang ở trang cá nhân -> về trang chủ
+  useEffect(() => {
+    if (!user && view === 'profile') setView('home');
+  }, [user, view]);
+
+  // Đổi trang thì cuộn lên đầu
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [view, selectedPost, selectedArticle]);
+
+  const openProfile = () => {
+    setSelectedArticle(null);
+    setSelectedPost(null);
+    setView('profile');
+  };
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -65,6 +102,8 @@ export default function App() {
   const handleCategoryChange = (cat: string | null) => {
     setActiveCategory(cat);
     setSelectedArticle(null);
+    setSelectedPost(null);
+    setView('home');
     if (cat) {
       setTimeout(() => {
         document.getElementById('feed')?.scrollIntoView({ behavior: 'smooth' });
@@ -81,7 +120,14 @@ export default function App() {
     return matchesCategory && matchesSearch;
   });
 
-  if (selectedArticle) {
+  const filteredPosts = posts.filter((p) => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return p.title.toLowerCase().includes(q) || makeExcerpt(p.content, 2000).toLowerCase().includes(q);
+  });
+
+  // Các trang con: chi tiết bài viết, trang cá nhân, chi tiết tin
+  if (selectedPost || selectedArticle || (view === 'profile' && user)) {
     return (
       <div className="min-h-screen bg-white">
         <Header
@@ -89,8 +135,22 @@ export default function App() {
           onCategoryChange={handleCategoryChange}
           user={user}
           onLoginClick={() => setAuthOpen(true)}
+          onProfileClick={openProfile}
         />
-        <ArticleDetail article={selectedArticle} onBack={() => setSelectedArticle(null)} />
+        {selectedPost ? (
+          <PostDetail post={selectedPost} onBack={() => setSelectedPost(null)} />
+        ) : selectedArticle ? (
+          <ArticleDetail article={selectedArticle} onBack={() => setSelectedArticle(null)} />
+        ) : (
+          user && (
+            <ProfilePage
+              user={user}
+              onBack={() => setView('home')}
+              onOpenPost={setSelectedPost}
+              onPostsChanged={fetchPosts}
+            />
+          )
+        )}
         <Footer onCategoryClick={(c) => handleCategoryChange(c)} />
         <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
       </div>
@@ -104,6 +164,7 @@ export default function App() {
         onCategoryChange={handleCategoryChange}
         user={user}
         onLoginClick={() => setAuthOpen(true)}
+        onProfileClick={openProfile}
       />
       <Hero />
 
@@ -148,6 +209,21 @@ export default function App() {
           </div>
         </div>
       </section>
+
+      {/* Bài viết từ cộng đồng (blog của người dùng) */}
+      {!activeCategory && filteredPosts.length > 0 && (
+        <section className="mx-auto max-w-6xl px-6 pt-8">
+          <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-teal-700">
+            <PenLine className="h-4 w-4" />
+            Bài viết từ cộng đồng
+          </div>
+          <div className="grid gap-6 md:grid-cols-2">
+            {filteredPosts.map((post) => (
+              <PostCard key={post.id} post={post} onClick={() => setSelectedPost(post)} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Aligned article feed */}
       <section className="mx-auto max-w-6xl px-6 py-10">

@@ -1,0 +1,254 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type { User } from '@supabase/supabase-js';
+import { ArrowLeft, Eye, EyeOff, ImagePlus, Loader2, Send, Trash2 } from 'lucide-react';
+import { supabase, formatDate, getUserProfile } from '@/lib/supabase';
+import {
+  POST_BUCKET,
+  extractCover,
+  imagePathsInContent,
+  uploadPostImage,
+  type Post,
+} from '@/lib/posts';
+import PostContent from '@/components/PostContent';
+
+type Props = {
+  user: User;
+  onBack: () => void;
+  onOpenPost: (post: Post) => void;
+  onPostsChanged: () => void;
+};
+
+export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }: Props) {
+  const profile = getUserProfile(user);
+
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [preview, setPreview] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  const [myPosts, setMyPosts] = useState<Post[]>([]);
+  const [loadingPosts, setLoadingPosts] = useState(true);
+
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const loadMyPosts = useCallback(async () => {
+    setLoadingPosts(true);
+    const { data } = await supabase
+      .from('posts')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+    setMyPosts((data as Post[]) ?? []);
+    setLoadingPosts(false);
+  }, [user.id]);
+
+  useEffect(() => {
+    loadMyPosts();
+  }, [loadMyPosts]);
+
+  // Chèn ảnh tại vị trí con trỏ trong ô viết bài
+  const handlePickImage = async (file: File | undefined) => {
+    if (!file) return;
+    setError(null);
+    setSuccess(null);
+    setUploading(true);
+    try {
+      const url = await uploadPostImage(user.id, file);
+      const ta = textareaRef.current;
+      const start = ta?.selectionStart ?? content.length;
+      const end = ta?.selectionEnd ?? start;
+      const insert = `\n![](${url})\n`;
+      setContent(content.slice(0, start) + insert + content.slice(end));
+      setTimeout(() => {
+        ta?.focus();
+        const pos = start + insert.length;
+        ta?.setSelectionRange(pos, pos);
+      }, 0);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Không tải được ảnh.');
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  };
+
+  const handlePublish = async () => {
+    setError(null);
+    setSuccess(null);
+    if (!title.trim()) return setError('Bạn chưa nhập tiêu đề.');
+    if (!content.trim()) return setError('Bạn chưa viết nội dung.');
+
+    setPublishing(true);
+    const { error } = await supabase.from('posts').insert({
+      user_id: user.id,
+      author_name: profile.name,
+      author_avatar: profile.avatarUrl,
+      title: title.trim(),
+      content: content.trim(),
+      cover_url: extractCover(content),
+    });
+    setPublishing(false);
+
+    if (error) {
+      setError('Đăng bài thất bại: ' + error.message);
+      return;
+    }
+    setTitle('');
+    setContent('');
+    setPreview(false);
+    setSuccess('Đã đăng bài! Bài viết sẽ hiện ở trang chủ.');
+    loadMyPosts();
+    onPostsChanged();
+  };
+
+  const handleDelete = async (post: Post) => {
+    if (!window.confirm(`Xóa bài "${post.title}"? Không thể hoàn tác.`)) return;
+    const { error } = await supabase.from('posts').delete().eq('id', post.id);
+    if (error) {
+      setError('Xóa bài thất bại: ' + error.message);
+      return;
+    }
+    const paths = imagePathsInContent(post.content);
+    if (paths.length) await supabase.storage.from(POST_BUCKET).remove(paths);
+    loadMyPosts();
+    onPostsChanged();
+  };
+
+  const inputCls =
+    'w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-100';
+
+  return (
+    <div className="mx-auto max-w-3xl px-6 py-10">
+      <button
+        onClick={onBack}
+        className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-gray-600 transition-colors hover:text-teal-600"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Quay lại trang chủ
+      </button>
+
+      {/* Thông tin cá nhân */}
+      <div className="flex items-center gap-4 rounded-2xl bg-gradient-to-br from-teal-50 to-cyan-50 p-6 ring-1 ring-gray-100">
+        <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 text-3xl font-bold text-white shadow">
+          {profile.avatarUrl ? (
+            <img src={profile.avatarUrl} alt={profile.name} referrerPolicy="no-referrer" className="h-full w-full object-cover" />
+          ) : (
+            profile.name.charAt(0).toUpperCase()
+          )}
+        </div>
+        <div className="min-w-0">
+          <h1 className="truncate text-2xl font-extrabold text-gray-900">{profile.name}</h1>
+          {profile.email && <p className="truncate text-sm text-gray-500">{profile.email}</p>}
+          <p className="mt-1 text-xs text-gray-400">{myPosts.length} bài viết</p>
+        </div>
+      </div>
+
+      {/* Viết bài */}
+      <section className="mt-8 rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
+        <h2 className="text-xl font-extrabold text-gray-900">Viết bài mới</h2>
+
+        <div className="mt-4 space-y-3">
+          <input
+            className={inputCls}
+            placeholder="Tiêu đề bài viết"
+            value={title}
+            maxLength={150}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+
+          {preview ? (
+            <div className="min-h-[12rem] rounded-xl border border-gray-200 bg-gray-50 p-4 text-gray-700">
+              {content.trim() ? <PostContent content={content} /> : <p className="text-gray-400">Chưa có nội dung.</p>}
+            </div>
+          ) : (
+            <textarea
+              ref={textareaRef}
+              className={`${inputCls} min-h-[12rem] resize-y leading-relaxed`}
+              placeholder="Hôm nay bạn muốn chia sẻ điều gì? Bấm 'Chèn ảnh' để thêm ảnh vào đúng vị trí con trỏ."
+              value={content}
+              maxLength={20000}
+              onChange={(e) => setContent(e.target.value)}
+            />
+          )}
+
+          {error && <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p>}
+          {success && <p className="rounded-lg bg-teal-50 px-3 py-2 text-sm text-teal-700">{success}</p>}
+
+          <div className="flex flex-wrap items-center gap-2">
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              className="hidden"
+              onChange={(e) => handlePickImage(e.target.files?.[0])}
+            />
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading || preview}
+              className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+            >
+              {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
+              Chèn ảnh
+            </button>
+            <button
+              type="button"
+              onClick={() => setPreview((p) => !p)}
+              className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+            >
+              {preview ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              {preview ? 'Tiếp tục viết' : 'Xem trước'}
+            </button>
+            <button
+              type="button"
+              onClick={handlePublish}
+              disabled={publishing || uploading}
+              className="ml-auto inline-flex items-center gap-2 rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white hover:bg-teal-600 disabled:opacity-60"
+            >
+              {publishing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              Đăng bài
+            </button>
+          </div>
+          <p className="text-xs text-gray-400">Ảnh tối đa 3MB (JPG, PNG, WEBP, GIF). Ảnh đầu tiên sẽ làm nền mờ cho bài trên trang chủ.</p>
+        </div>
+      </section>
+
+      {/* Bài của tôi */}
+      <section className="mt-10">
+        <h2 className="text-xl font-extrabold text-gray-900">Bài viết của tôi</h2>
+        {loadingPosts ? (
+          <div className="flex justify-center py-10">
+            <Loader2 className="h-6 w-6 animate-spin text-teal-500" />
+          </div>
+        ) : myPosts.length === 0 ? (
+          <p className="py-8 text-center text-sm text-gray-400">Bạn chưa đăng bài nào.</p>
+        ) : (
+          <ul className="mt-4 space-y-3">
+            {myPosts.map((p) => (
+              <li key={p.id} className="flex items-center gap-4 rounded-2xl bg-white p-3 shadow-sm ring-1 ring-gray-100">
+                <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-teal-100 to-cyan-100">
+                  {p.cover_url && <img src={p.cover_url} alt="" className="h-full w-full object-cover" />}
+                </div>
+                <button onClick={() => onOpenPost(p)} className="min-w-0 flex-1 text-left">
+                  <div className="truncate font-bold text-gray-900 hover:text-teal-600">{p.title}</div>
+                  <div className="text-xs text-gray-400">{formatDate(p.created_at)}</div>
+                </button>
+                <button
+                  onClick={() => handleDelete(p)}
+                  aria-label="Xóa bài"
+                  className="rounded-full p-2 text-gray-400 hover:bg-rose-50 hover:text-rose-600"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    </div>
+  );
+}
