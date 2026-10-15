@@ -44,7 +44,8 @@ export default function VietnamMap() {
         </g>
 
         {/* Quy Nhơn: to hơn, giữ hiệu ứng nảy + toả sóng */}
-        <g className="animate-bounce" style={{ animationDuration: '2s' }}>
+                {/* Quy Nhơn: chấm đứng yên đúng tọa độ, chỉ có vòng sóng toả ra */}
+        <g>
           <circle
             cx="367"
             cy="391"
@@ -55,7 +56,6 @@ export default function VietnamMap() {
             style={{ animationDuration: '2s', transformOrigin: 'center', transformBox: 'fill-box' }}
           />
           <circle cx="367" cy="391" r="9" fill="#f97316" stroke="white" strokeWidth="2.5" />
-          <path d="M 367 400 L 367 415" stroke="#f97316" strokeWidth="3" strokeLinecap="round" />
         </g>
         <text
           x="384"
