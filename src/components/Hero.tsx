@@ -122,7 +122,7 @@ export default function Hero() {
               <MapPin className="h-5 w-5 text-orange-500" />
               <div>
                 <div className="font-semibold text-gray-900">Quy Nhơn, Gia Lai</div>
-                <div className="text-sm text-gray-500">13.78°B, 109.22°Đ · Ven biển miền Trung</div>
+                <div className="text-sm text-gray-500">13.78°B, 109.22°Đ · Điểm đến của chuyến đi </div>
               </div>
             </div>
           </div>
