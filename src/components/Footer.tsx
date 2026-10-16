@@ -15,7 +15,7 @@ export default function Footer() {
               </span>
             </div>
             <p className="mt-3 text-sm leading-relaxed text-gray-500">
-              Blog cộng đồng về Quy Nhơn — thành phố biển miền Trung. Viết bởi 15 thành viên đam mê kể chuyện vùng đất võ.
+              Blog cộng đồng về Quy Nhơn — thành phố biển miền Trung.
             </p>
           </div>
 
@@ -24,7 +24,7 @@ export default function Footer() {
             <ul className="mt-3 space-y-2 text-sm text-gray-500">
               <li className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-orange-500" />
-                Quy Nhơn, Bình Định, Việt Nam
+                Quy Nhơn, Gia Lai, Việt Nam
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-teal-500" />
