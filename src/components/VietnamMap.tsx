@@ -25,6 +25,50 @@ export default function VietnamMap() {
           strokeLinejoin="round"
         />
 
+        {/* Quần đảo Hoàng Sa: cụm đảo và rạn san hô phía đông bắc biển Đông */}
+        <g aria-label="Quần đảo Hoàng Sa">
+          <g fill="#d9c88d" stroke="#fff7c2" strokeWidth="1">
+            <path d="M357 202 l5 -3 7 1 3 4 -4 4 -8 1 -5 -3z" />
+            <path d="M373 190 l4 -3 6 2 2 4 -4 3 -7 -1z" />
+            <path d="M388 204 l6 -4 8 2 2 5 -6 4 -8 -2z" />
+            <path d="M405 193 l5 -2 6 3 -1 4 -7 2 -4 -3z" />
+            <path d="M416 214 l5 -4 7 2 2 4 -5 4 -8 -1z" />
+            <path d="M397 222 l4 -3 6 1 2 4 -4 3 -7 -1z" />
+          </g>
+          <g fill="none" stroke="#fef3c7" strokeWidth="1" opacity="0.9">
+            <ellipse cx="383" cy="204" rx="29" ry="17" />
+            <ellipse cx="405" cy="209" rx="18" ry="25" />
+          </g>
+          <circle cx="366" cy="216" r="1.5" fill="#fef3c7" />
+          <circle cx="432" cy="199" r="1.5" fill="#fef3c7" />
+          <text x="375" y="176" fill="#0c4a6e" stroke="white" strokeWidth="3" paintOrder="stroke" fontSize="11" fontWeight="bold" className="font-sans">
+            Hoàng Sa
+          </text>
+        </g>
+
+        {/* Quần đảo Trường Sa: chuỗi đảo và rạn san hô trải dài về phía nam */}
+        <g aria-label="Quần đảo Trường Sa">
+          <g fill="#d9c88d" stroke="#fff7c2" strokeWidth="1">
+            <path d="M382 352 l5 -2 5 3 -1 4 -6 2 -4 -3z" />
+            <path d="M410 365 l4 -3 7 1 2 4 -4 4 -7 -1z" />
+            <path d="M397 389 l5 -3 6 2 1 4 -5 3 -7 -2z" />
+            <path d="M427 405 l4 -3 6 2 2 4 -4 3 -7 -1z" />
+            <path d="M401 430 l5 -3 7 2 1 4 -5 3 -7 -2z" />
+            <path d="M374 447 l4 -3 6 1 2 4 -4 3 -7 -1z" />
+            <path d="M424 459 l5 -2 6 2 1 4 -5 3 -7 -2z" />
+            <path d="M397 478 l4 -3 7 1 2 4 -5 3 -7 -1z" />
+          </g>
+          <g fill="none" stroke="#fef3c7" strokeWidth="1" opacity="0.9">
+            <ellipse cx="402" cy="383" rx="27" ry="17" transform="rotate(35 402 383)" />
+            <ellipse cx="407" cy="439" rx="34" ry="15" transform="rotate(35 407 439)" />
+          </g>
+          <circle cx="365" cy="405" r="1.5" fill="#fef3c7" />
+          <circle cx="439" cy="484" r="1.5" fill="#fef3c7" />
+          <text x="382" y="334" fill="#0c4a6e" stroke="white" strokeWidth="3" paintOrder="stroke" fontSize="11" fontWeight="bold" className="font-sans">
+            Trường Sa
+          </text>
+        </g>
+
         {/* Các thành phố lớn */}
         <g className="font-sans" fontSize="11" fontWeight="bold">
           <circle cx="249" cy="121" r="4.5" fill="#ffffff" stroke="#0c4a6e" strokeWidth="1.5" />
