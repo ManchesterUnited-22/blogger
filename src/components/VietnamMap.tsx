@@ -2,8 +2,8 @@ export default function VietnamMap() {
   return (
     <div className="relative flex items-center justify-center">
       <svg
-        viewBox="100 20 360 580"
-        className="h-auto w-full max-w-[300px] drop-shadow-lg"
+        viewBox="104 20 536 640"
+        className="h-auto w-full max-w-[380px] drop-shadow-lg"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -25,52 +25,130 @@ export default function VietnamMap() {
           strokeLinejoin="round"
         />
 
-        {/* Quần đảo Hoàng Sa: cụm đảo và rạn san hô phía đông bắc biển Đông */}
-        <g aria-label="Quần đảo Hoàng Sa">
-          <g fill="#d9c88d" stroke="#fff7c2" strokeWidth="1">
-            <path d="M357 202 l5 -3 7 1 3 4 -4 4 -8 1 -5 -3z" />
-            <path d="M373 190 l4 -3 6 2 2 4 -4 3 -7 -1z" />
-            <path d="M388 204 l6 -4 8 2 2 5 -6 4 -8 -2z" />
-            <path d="M405 193 l5 -2 6 3 -1 4 -7 2 -4 -3z" />
-            <path d="M416 214 l5 -4 7 2 2 4 -5 4 -8 -1z" />
-            <path d="M397 222 l4 -3 6 1 2 4 -4 3 -7 -1z" />
-          </g>
-          <g fill="none" stroke="#fef3c7" strokeWidth="1" opacity="0.9">
-            <ellipse cx="383" cy="204" rx="29" ry="17" />
-            <ellipse cx="405" cy="209" rx="18" ry="25" />
-          </g>
-          <circle cx="366" cy="216" r="1.5" fill="#fef3c7" />
-          <circle cx="432" cy="199" r="1.5" fill="#fef3c7" />
-          <text x="375" y="176" fill="#0c4a6e" stroke="white" strokeWidth="3" paintOrder="stroke" fontSize="11" fontWeight="bold" className="font-sans">
-            Hoàng Sa
-          </text>
-        </g>
+        {/* Biển Đông */}
+        <text
+          x="535"
+          y="400"
+          fontSize="13"
+          fontStyle="italic"
+          letterSpacing="3"
+          fill="#0284c7"
+          fillOpacity="0.55"
+          textAnchor="middle"
+          className="font-sans"
+        >
+          BIỂN ĐÔNG
+        </text>
 
-        {/* Quần đảo Trường Sa: chuỗi đảo và rạn san hô trải dài về phía nam */}
-        <g aria-label="Quần đảo Trường Sa">
-          <g fill="#d9c88d" stroke="#fff7c2" strokeWidth="1">
-            <path d="M382 352 l5 -2 5 3 -1 4 -6 2 -4 -3z" />
-            <path d="M410 365 l4 -3 7 1 2 4 -4 4 -7 -1z" />
-            <path d="M397 389 l5 -3 6 2 1 4 -5 3 -7 -2z" />
-            <path d="M427 405 l4 -3 6 2 2 4 -4 3 -7 -1z" />
-            <path d="M401 430 l5 -3 7 2 1 4 -5 3 -7 -2z" />
-            <path d="M374 447 l4 -3 6 1 2 4 -4 3 -7 -1z" />
-            <path d="M424 459 l5 -2 6 2 1 4 -5 3 -7 -2z" />
-            <path d="M397 478 l4 -3 7 1 2 4 -5 3 -7 -1z" />
-          </g>
-          <g fill="none" stroke="#fef3c7" strokeWidth="1" opacity="0.9">
-            <ellipse cx="402" cy="383" rx="27" ry="17" transform="rotate(35 402 383)" />
-            <ellipse cx="407" cy="439" rx="34" ry="15" transform="rotate(35 407 439)" />
-          </g>
-          <circle cx="365" cy="405" r="1.5" fill="#fef3c7" />
-          <circle cx="439" cy="484" r="1.5" fill="#fef3c7" />
-          <text x="382" y="334" fill="#0c4a6e" stroke="white" strokeWidth="3" paintOrder="stroke" fontSize="11" fontWeight="bold" className="font-sans">
-            Trường Sa
-          </text>
+        {/* Quần đảo Hoàng Sa (TP. Đà Nẵng) */}
+        <g>
+          {/* vùng rạn san hô quanh các nhóm đảo */}
+          <ellipse cx="458" cy="290" rx="13" ry="7" fill="#7dd3fc" fillOpacity="0.25" stroke="#38bdf8" strokeWidth="0.7" strokeDasharray="2 1.5" />
+          <ellipse cx="486" cy="273" rx="8" ry="12" fill="#7dd3fc" fillOpacity="0.25" stroke="#38bdf8" strokeWidth="0.7" strokeDasharray="2 1.5" />
+          <circle cx="458.7" cy="288.9" r="2.6" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="456.9" cy="287.4" r="2.0" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="455.8" cy="291.9" r="2.0" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="463.0" cy="290.0" r="2.0" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="462.3" cy="291.9" r="2.0" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="444.2" cy="316.9" r="2.2" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="492.4" cy="307.5" r="2.6" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="485.2" cy="277.7" r="2.8" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="499.7" cy="283.7" r="2.0" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="483.4" cy="271.7" r="2.0" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="484.1" cy="268.4" r="2.0" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="485.6" cy="272.8" r="1.8" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="485.2" cy="274.7" r="1.8" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
         </g>
+        <text
+          x="472"
+          y="337"
+          fontSize="12"
+          fontWeight="bold"
+          fill="#0c4a6e"
+          stroke="white"
+          strokeWidth="3"
+          paintOrder="stroke"
+          textAnchor="middle"
+          className="font-sans"
+        >
+          Quần đảo Hoàng Sa
+        </text>
+        <text
+          x="472"
+          y="349"
+          fontSize="9"
+          fill="#0369a1"
+          stroke="white"
+          strokeWidth="2.5"
+          paintOrder="stroke"
+          textAnchor="middle"
+          className="font-sans"
+        >
+          (TP. Đà Nẵng)
+        </text>
+
+        {/* Quần đảo Trường Sa (Khánh Hòa) */}
+        <g>
+          <circle cx="557.8" cy="479.1" r="2.4" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="558.5" cy="477.6" r="1.8" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="556.0" cy="493.3" r="2.4" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="548.7" cy="498.1" r="2.6" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="558.5" cy="505.6" r="1.8" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="561.1" cy="507.1" r="1.8" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="558.9" cy="518.3" r="2.4" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="563.2" cy="518.6" r="2.0" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="559.2" cy="525.7" r="2.2" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="553.8" cy="525.0" r="2.4" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="564.0" cy="535.1" r="2.4" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="557.8" cy="536.9" r="2.4" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="560.3" cy="535.4" r="1.8" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="554.9" cy="541.8" r="2.2" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="556.7" cy="543.3" r="2.2" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="561.4" cy="540.7" r="2.2" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="540.4" cy="531.3" r="2.6" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="505.5" cy="549.2" r="3.0" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="503.7" cy="574.6" r="2.6" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="480.5" cy="574.6" r="2.2" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="495.0" cy="575.3" r="2.4" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="470.3" cy="583.2" r="2.8" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="461.6" cy="582.8" r="2.4" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="519.7" cy="600.7" r="2.6" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="506.6" cy="611.5" r="2.4" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="591.9" cy="594.0" r="2.4" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="601.3" cy="536.2" r="3.0" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="544.7" cy="621.2" r="2.4" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="539.6" cy="630.2" r="2.4" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+        </g>
+        <text
+          x="535"
+          y="450"
+          fontSize="12"
+          fontWeight="bold"
+          fill="#0c4a6e"
+          stroke="white"
+          strokeWidth="3"
+          paintOrder="stroke"
+          textAnchor="middle"
+          className="font-sans"
+        >
+          Quần đảo Trường Sa
+        </text>
+        <text
+          x="535"
+          y="462"
+          fontSize="9"
+          fill="#0369a1"
+          stroke="white"
+          strokeWidth="2.5"
+          paintOrder="stroke"
+          textAnchor="middle"
+          className="font-sans"
+        >
+          (Khánh Hòa)
+        </text>
 
         {/* Các thành phố lớn */}
-        <g className="font-sans" fontSize="11" fontWeight="bold">
+        <g className="font-sans" fontSize="13" fontWeight="bold">
           <circle cx="249" cy="121" r="4.5" fill="#ffffff" stroke="#0c4a6e" strokeWidth="1.5" />
           <text x="259" y="117" fill="#0c4a6e" stroke="white" strokeWidth="3" paintOrder="stroke">
             Hà Nội
@@ -87,8 +165,7 @@ export default function VietnamMap() {
           </text>
         </g>
 
-        {/* Quy Nhơn: to hơn, giữ hiệu ứng nảy + toả sóng */}
-                {/* Quy Nhơn: chấm đứng yên đúng tọa độ, chỉ có vòng sóng toả ra */}
+        {/* Quy Nhơn: chấm đứng yên đúng tọa độ, chỉ có vòng sóng toả ra */}
         <g>
           <circle
             cx="367"
@@ -104,7 +181,7 @@ export default function VietnamMap() {
         <text
           x="384"
           y="395"
-          fontSize="14"
+          fontSize="16"
           fontWeight="bold"
           fill="#ea580c"
           stroke="white"
