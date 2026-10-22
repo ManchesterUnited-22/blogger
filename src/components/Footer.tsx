@@ -1,4 +1,25 @@
-import { Newspaper, Mail, Heart } from 'lucide-react';
+import { Newspaper, Mail, Phone, Heart } from 'lucide-react';
+
+const CONTACTS = [
+  {
+    name: 'Phan Thùy Mơ',
+    role: 'Trưởng nhóm',
+    phone: '0368396050',
+    email: 'phanthuymo136ltri@gmail.com',
+    card: 'border-teal-100 shadow-teal-100/70',
+    badge: 'from-teal-500 to-cyan-500',
+    link: 'text-teal-700 hover:text-teal-900',
+  },
+  {
+    name: 'Lê Văn Dương',
+    role: 'Nhóm phó',
+    phone: '0384678558',
+    email: 'Leekunngo2306@gmail.com',
+    card: 'border-orange-100 shadow-orange-100/70',
+    badge: 'from-orange-500 to-rose-500',
+    link: 'text-orange-700 hover:text-orange-900',
+  },
+];
 
 export default function Footer() {
   return (
@@ -17,29 +38,45 @@ export default function Footer() {
             <p className="mt-4 bg-gradient-to-r from-teal-500 via-cyan-500 to-orange-500 bg-clip-text py-1 text-xl font-black uppercase leading-snug tracking-wide text-transparent md:text-2xl">
               DÃ NGOẠI THỰC TẾ ĐÀ NẴNG - QUY NHƠN
             </p>
+            <p className="mt-1 text-lg font-extrabold text-black md:text-xl">
+              Môn học Nhận thức
+            </p>
           </div>
 
           <div>
             <h4 className="text-sm font-bold text-gray-900">Liên hệ</h4>
-            <ul className="mt-3 space-y-3">
-              <li>
-                <a
-                  href="mailto:Leekunngo2306@gmail.com"
-                  className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 px-4 py-2 text-sm font-bold text-white shadow-md shadow-teal-200 transition-all hover:-translate-y-0.5 hover:shadow-lg"
+            <ul className="mt-3 space-y-4">
+              {CONTACTS.map((c) => (
+                <li
+                  key={c.email}
+                  className={`rounded-2xl border bg-white p-4 shadow-md ${c.card}`}
                 >
-                  <Mail className="h-4 w-4" />
-                  Leekunngo2306@gmail.com
-                </a>
-              </li>
-              <li>
-                <a
-                  href="mailto:phanthuymo136ltri@gmail.com"
-                  className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-rose-500 px-4 py-2 text-sm font-bold text-white shadow-md shadow-orange-200 transition-all hover:-translate-y-0.5 hover:shadow-lg"
-                >
-                  <Mail className="h-4 w-4" />
-                  phanthuymo136ltri@gmail.com
-                </a>
-              </li>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-base font-extrabold text-gray-900">{c.name}</span>
+                    <span
+                      className={`rounded-full bg-gradient-to-r px-2.5 py-0.5 text-xs font-bold text-white ${c.badge}`}
+                    >
+                      {c.role}
+                    </span>
+                  </div>
+                  <div className="mt-3 flex flex-col gap-2">
+                    <a
+                      href={`tel:${c.phone}`}
+                      className={`inline-flex items-center gap-2 text-sm font-bold transition-colors ${c.link}`}
+                    >
+                      <Phone className="h-4 w-4" />
+                      {c.phone}
+                    </a>
+                    <a
+                      href={`mailto:${c.email}`}
+                      className={`inline-flex items-center gap-2 break-all text-sm font-bold transition-colors ${c.link}`}
+                    >
+                      <Mail className="h-4 w-4 shrink-0" />
+                      {c.email}
+                    </a>
+                  </div>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
