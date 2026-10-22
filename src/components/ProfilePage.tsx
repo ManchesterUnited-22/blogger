@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { User } from '@supabase/supabase-js';
-import { ArrowLeft, Eye, EyeOff, ImagePlus, Loader2, Pencil, Save, Send, Trash2, X, Camera } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, ImagePlus, Loader2, Pencil, Save, Send, Trash2, X, Camera, Video } from 'lucide-react';
 import { supabase, formatDate, getUserProfile } from '@/lib/supabase';
 import {
   POST_BUCKET,
   extractCover,
   imagePathsInContent,
   uploadPostImage,
+  uploadPostVideo,
   type Post,
 } from '@/lib/posts';
 import BodyEditor, { type BodyEditorHandle } from '@/components/BodyEditor';
@@ -21,7 +22,7 @@ type Props = {
 
 export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }: Props) {
   const profile = getUserProfile(user);
-    // Ảnh gốc của Google (nếu có) để người dùng quay lại dùng
+  // Ảnh gốc của Google (nếu có) để người dùng quay lại dùng
   const rawMeta = (user.user_metadata ?? {}) as Record<string, unknown>;
   let googleAvatar = ((rawMeta.avatar_url as string) || (rawMeta.picture as string) || null);
   if (googleAvatar && googleAvatar.includes('googleusercontent.com')) {
@@ -32,6 +33,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
   const [content, setContent] = useState('');
   const [preview, setPreview] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -39,8 +41,9 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
   const [myPosts, setMyPosts] = useState<Post[]>([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
 
-    const editorRef = useRef<BodyEditorHandle>(null);
+  const editorRef = useRef<BodyEditorHandle>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const videoFileRef = useRef<HTMLInputElement>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const formRef = useRef<HTMLElement>(null);
   const [editingProfile, setEditingProfile] = useState(false);
@@ -66,8 +69,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
     loadMyPosts();
   }, [loadMyPosts]);
 
-  // Chèn ảnh tại vị trí con trỏ trong ô viết bài
-    // Chèn ảnh tại vị trí con trỏ trong khung viết bài
+  // Chèn ảnh tại vị trí con trỏ trong khung viết bài
   const handlePickImage = async (file: File | undefined) => {
     if (!file) return;
     setError(null);
@@ -81,6 +83,23 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
     } finally {
       setUploading(false);
       if (fileRef.current) fileRef.current.value = '';
+    }
+  };
+
+  // Chèn video tại vị trí con trỏ trong khung viết bài
+  const handlePickVideo = async (file: File | undefined) => {
+    if (!file) return;
+    setError(null);
+    setSuccess(null);
+    setUploadingVideo(true);
+    try {
+      const url = await uploadPostVideo(user.id, file);
+      editorRef.current?.insertVideo(url);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Không tải được video.');
+    } finally {
+      setUploadingVideo(false);
+      if (videoFileRef.current) videoFileRef.current.value = '';
     }
   };
 
@@ -176,7 +195,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
       return;
     }
 
-    // Xóa khỏi Storage những ảnh đã bị gỡ khỏi bài
+    // Xóa khỏi Storage những ảnh/video đã bị gỡ khỏi bài
     const stillUsed = new Set(imagePathsInContent(newContent));
     const removed = imagePathsInContent(old.content).filter((p) => !stillUsed.has(p));
     if (removed.length) await supabase.storage.from(POST_BUCKET).remove(removed);
@@ -186,7 +205,8 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
     loadMyPosts();
     onPostsChanged();
   };
-    const startEditProfile = () => {
+
+  const startEditProfile = () => {
     setNameInput(profile.name);
     setAvatarInput(profile.avatarUrl);
     setProfileError(null);
@@ -246,7 +266,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
         Quay lại trang chủ
       </button>
 
-           {/* Thông tin cá nhân */}
+      {/* Thông tin cá nhân */}
       <div className="rounded-2xl bg-gradient-to-br from-teal-50 to-cyan-50 p-6 ring-1 ring-gray-100">
         <div className="flex items-center gap-4">
           <div className="relative shrink-0">
@@ -314,7 +334,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
 
         {editingProfile && (
           <div className="mt-4 space-y-3">
-                        {googleAvatar && avatarInput !== googleAvatar && (
+            {googleAvatar && avatarInput !== googleAvatar && (
               <button
                 type="button"
                 onClick={() => setAvatarInput(googleAvatar)}
@@ -375,7 +395,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
               ref={editorRef}
               value={content}
               onChange={setContent}
-              placeholder="Hôm nay bạn muốn chia sẻ điều gì? Bấm 'Chèn ảnh' để thêm ảnh vào đúng vị trí con trỏ."
+              placeholder="Hôm nay bạn muốn chia sẻ điều gì? Bấm 'Chèn ảnh' hoặc 'Chèn video' để thêm vào đúng vị trí con trỏ."
             />
           )}
 
@@ -390,14 +410,30 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
               className="hidden"
               onChange={(e) => handlePickImage(e.target.files?.[0])}
             />
+            <input
+              ref={videoFileRef}
+              type="file"
+              accept="video/mp4,video/webm,video/quicktime"
+              className="hidden"
+              onChange={(e) => handlePickVideo(e.target.files?.[0])}
+            />
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
-              disabled={uploading || preview}
+              disabled={uploading || uploadingVideo || preview}
               className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 disabled:opacity-50"
             >
               {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
               Chèn ảnh
+            </button>
+            <button
+              type="button"
+              onClick={() => videoFileRef.current?.click()}
+              disabled={uploading || uploadingVideo || preview}
+              className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+            >
+              {uploadingVideo ? <Loader2 className="h-4 w-4 animate-spin" /> : <Video className="h-4 w-4" />}
+              {uploadingVideo ? 'Đang tải video...' : 'Chèn video'}
             </button>
             <button
               type="button"
@@ -422,7 +458,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
               <button
                 type="button"
                 onClick={editingId ? handleSave : handlePublish}
-                disabled={publishing || uploading}
+                disabled={publishing || uploading || uploadingVideo}
                 className="inline-flex items-center gap-2 rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white hover:bg-teal-600 disabled:opacity-60"
               >
                 {publishing ? (
@@ -436,7 +472,9 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
               </button>
             </div>
           </div>
-          <p className="text-xs text-gray-400">Ảnh tối đa 3MB (JPG, PNG, WEBP, GIF). Ảnh đầu tiên sẽ làm nền mờ cho bài trên trang chủ.</p>
+          <p className="text-xs text-gray-400">
+            Ảnh tối đa 3MB (JPG, PNG, WEBP, GIF). Video tối đa 50MB (MP4, WEBM, MOV). Ảnh đầu tiên sẽ làm nền mờ cho bài trên trang chủ.
+          </p>
         </div>
       </section>
 
