@@ -39,7 +39,7 @@ export default function Footer() {
               DÃ NGOẠI THỰC TẾ ĐÀ NẴNG - QUY NHƠN
             </p>
             <p className="mt-1 text-lg font-extrabold text-black md:text-xl">
-              Môn học Nhận thức
+              Môn học thực tập nhận thức
             </p>
           </div>
 
