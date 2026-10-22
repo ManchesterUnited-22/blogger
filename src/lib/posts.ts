@@ -12,8 +12,8 @@ export type Post = {
 };
 
 export const POST_BUCKET = 'post-images';
-export const MAX_IMAGE_MB = 3;
-export const MAX_VIDEO_MB = 50;
+export const MAX_IMAGE_MB = 50;
+export const MAX_VIDEO_MB = 100;
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime'];
 
@@ -61,21 +61,60 @@ export async function uploadPostImage(userId: string, file: File): Promise<strin
 }
 
 /** Tải video lên Storage (cùng bucket với ảnh), trả về link công khai. */
-export async function uploadPostVideo(userId: string, file: File): Promise<string> {
+const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME as string | undefined;
+const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET as string | undefined;
+
+/**
+ * Tải video lên Cloudinary (unsigned upload), trả về link công khai (https).
+ * onProgress: tùy chọn, nhận số phần trăm 0-100 để hiện tiến độ.
+ */
+export function uploadPostVideo(
+  userId: string,
+  file: File,
+  onProgress?: (percent: number) => void,
+): Promise<string> {
   if (!ALLOWED_VIDEO_TYPES.includes(file.type)) {
-    throw new Error('Chỉ hỗ trợ video MP4, WEBM hoặc MOV.');
+    return Promise.reject(new Error('Chỉ hỗ trợ video MP4, WEBM hoặc MOV.'));
   }
   if (file.size > MAX_VIDEO_MB * 1024 * 1024) {
-    throw new Error(`Video quá lớn, tối đa ${MAX_VIDEO_MB}MB.`);
+    return Promise.reject(new Error(`Video quá lớn, tối đa ${MAX_VIDEO_MB}MB.`));
   }
-  const ext = file.type.split('/')[1].replace('quicktime', 'mov');
-  const path = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-  const { error } = await supabase.storage.from(POST_BUCKET).upload(path, file, {
-    cacheControl: '31536000',
-    contentType: file.type,
+  if (!CLOUD_NAME || !UPLOAD_PRESET) {
+    return Promise.reject(new Error('Chưa cấu hình Cloudinary (thiếu biến môi trường).'));
+  }
+
+  return new Promise((resolve, reject) => {
+    const form = new FormData();
+    form.append('file', file);
+    form.append('upload_preset', UPLOAD_PRESET);
+    form.append('tags', userId); // gắn id người đăng để dễ tìm trong Media Library
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`);
+
+    xhr.upload.onprogress = (e) => {
+      if (onProgress && e.lengthComputable) {
+        onProgress(Math.round((e.loaded / e.total) * 100));
+      }
+    };
+
+    xhr.onload = () => {
+      let data: { secure_url?: string; error?: { message?: string } } = {};
+      try {
+        data = JSON.parse(xhr.responseText);
+      } catch {
+        /* bỏ qua */
+      }
+      if (xhr.status >= 200 && xhr.status < 300 && data.secure_url) {
+        resolve(data.secure_url);
+      } else {
+        reject(new Error('Không tải được video: ' + (data.error?.message ?? `lỗi ${xhr.status}`)));
+      }
+    };
+
+    xhr.onerror = () => reject(new Error('Không tải được video: lỗi mạng.'));
+    xhr.send(form);
   });
-  if (error) throw new Error('Không tải được video: ' + error.message);
-  return supabase.storage.from(POST_BUCKET).getPublicUrl(path).data.publicUrl;
 }
 
 /** Lấy đường dẫn file trong bucket từ các link ảnh + video có trong bài (để xóa khi xóa bài / gỡ khỏi bài). */
