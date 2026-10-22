@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-
+import { lineToText } from '@/lib/richText';
 export type Post = {
   id: string;
   user_id: string;
@@ -33,6 +33,7 @@ export function makeExcerpt(content: string, max = 240): string {
     .split('\n')
     .map((l) => l.trim())
     .filter((l) => l && !IMAGE_LINE.test(l))
+    .map(lineToText)
     .join(' ');
   return text.length > max ? text.slice(0, max).trimEnd() + '…' : text;
 }

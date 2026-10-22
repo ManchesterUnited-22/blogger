@@ -1,4 +1,5 @@
 import { IMAGE_LINE } from '@/lib/posts';
+import RichLine from '@/components/RichLine';
 
 /** Hiển thị nội dung blog: dòng chữ -> đoạn văn, dòng ![](url) -> ảnh. */
 export default function PostContent({ content }: { content: string }) {
@@ -21,7 +22,7 @@ export default function PostContent({ content }: { content: string }) {
         }
         return (
           <p key={i} className="whitespace-pre-wrap">
-            {t}
+            <RichLine html={t} />
           </p>
         );
       })}
