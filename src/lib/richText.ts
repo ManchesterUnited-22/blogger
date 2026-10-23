@@ -11,6 +11,7 @@ export const DEFAULT_TEXT_COLOR = '#374151';
 export type FontOption = { name: string; stack: string };
 
 export const FONTS: FontOption[] = [
+  // Phông có sẵn trong máy
   { name: 'Arial', stack: 'Arial, Helvetica, sans-serif' },
   { name: 'Times New Roman', stack: '"Times New Roman", Times, serif' },
   { name: 'Georgia', stack: 'Georgia, serif' },
@@ -19,7 +20,24 @@ export const FONTS: FontOption[] = [
   { name: 'Trebuchet MS', stack: '"Trebuchet MS", Helvetica, sans-serif' },
   { name: 'Courier New', stack: '"Courier New", Courier, monospace' },
   { name: 'Comic Sans MS', stack: '"Comic Sans MS", "Comic Sans", cursive' },
+  // Phông Google Fonts (có hỗ trợ tiếng Việt, được tải trong index.html)
+  { name: 'Roboto', stack: 'Roboto, Arial, sans-serif' },
+  { name: 'Open Sans', stack: '"Open Sans", Arial, sans-serif' },
+  { name: 'Montserrat', stack: 'Montserrat, Arial, sans-serif' },
+  { name: 'Nunito', stack: 'Nunito, Arial, sans-serif' },
+  { name: 'Quicksand', stack: 'Quicksand, Arial, sans-serif' },
+  { name: 'Be Vietnam Pro', stack: '"Be Vietnam Pro", Arial, sans-serif' },
+  { name: 'Lexend', stack: 'Lexend, Arial, sans-serif' },
+  { name: 'Oswald', stack: 'Oswald, Impact, sans-serif' },
+  { name: 'Anton', stack: 'Anton, Impact, sans-serif' },
+  { name: 'Lora', stack: 'Lora, Georgia, serif' },
+  { name: 'Merriweather', stack: 'Merriweather, Georgia, serif' },
+  { name: 'Noto Serif', stack: '"Noto Serif", Georgia, serif' },
   { name: 'Playfair Display', stack: '"Playfair Display", "Times New Roman", serif' },
+  { name: 'Dancing Script', stack: '"Dancing Script", cursive' },
+  { name: 'Pacifico', stack: 'Pacifico, cursive' },
+  { name: 'Lobster', stack: 'Lobster, cursive' },
+  { name: 'Patrick Hand', stack: '"Patrick Hand", "Comic Sans MS", cursive' },
 ];
 
 export const FONT_SIZES = [8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 32, 36, 40, 48, 60, 72];
@@ -121,40 +139,69 @@ function serializeInline(node: Node): string {
 
 const BLOCK_TAGS = new Set(['DIV', 'P', 'LI', 'UL', 'OL', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'BLOCKQUOTE']);
 
-/** DOM của ô soạn thảo -> các dòng HTML sạch (mỗi đoạn văn một dòng) nối bằng \n. */
+export type Align = 'left' | 'center' | 'right' | 'justify';
+
+function readAlign(el: HTMLElement): Align | null {
+  const a = (el.style.textAlign || el.getAttribute('align') || '').toLowerCase();
+  if (a === 'center' || a === 'right' || a === 'justify') return a;
+  if (a === 'left' || a === 'start') return 'left';
+  return null;
+}
+
+/** Căn lề được lưu bằng cách bọc cả dòng: <div style="text-align:center">...</div> (căn trái = không bọc). */
+export function wrapAlign(inner: string, align: Align): string {
+  return inner && align !== 'left' ? `<div style="text-align:${align}">${inner}</div>` : inner;
+}
+
+const ALIGN_LINE = /^<div style="text-align:(center|right|justify)">([\s\S]*)<\/div>$/;
+
+/** Tách căn lề ra khỏi một dòng đã lưu. */
+export function splitAlign(line: string): { align: Align; html: string } {
+  const m = line.trim().match(ALIGN_LINE);
+  return m ? { align: m[1] as Align, html: m[2] } : { align: 'left', html: line };
+}
+
+/** DOM của ô soạn thảo -> các dòng HTML sạch (mỗi đoạn văn một dòng, kèm căn lề) nối bằng \n. */
 export function nodeToLines(root: Node): string {
   const lines: string[] = [];
   let cur = '';
-  const flush = () => {
-    lines.push(cur);
-    cur = '';
-  };
-  const walk = (parent: Node) => {
+  const push = (html: string, a: Align) => lines.push(wrapAlign(html, a));
+  const rootAlign: Align =
+    root.nodeType === Node.ELEMENT_NODE ? readAlign(root as HTMLElement) ?? 'left' : 'left';
+
+  const walk = (parent: Node, inherited: Align) => {
     parent.childNodes.forEach((child) => {
       if (child.nodeType === Node.ELEMENT_NODE) {
         const el = child as HTMLElement;
         if (BLOCK_TAGS.has(el.tagName)) {
-          if (cur) flush();
+          if (cur) {
+            push(cur, inherited);
+            cur = '';
+          }
+          const a = readAlign(el) ?? inherited;
           // khối con chứa khối khác -> đi sâu hơn; ngược lại là một dòng
           if (Array.from(el.children).some((c) => BLOCK_TAGS.has(c.tagName))) {
-            walk(el);
-            if (cur) flush();
+            walk(el, a);
+            if (cur) {
+              push(cur, a);
+              cur = '';
+            }
           } else {
-            cur = serializeInline(el);
-            flush();
+            push(serializeInline(el), a);
           }
           return;
         }
         if (el.tagName === 'BR') {
-          flush();
+          push(cur, inherited);
+          cur = '';
           return;
         }
       }
       cur += serializeInline(child);
     });
   };
-  walk(root);
-  if (cur) flush();
+  walk(root, rootAlign);
+  if (cur) push(cur, rootAlign);
   // BR cuối cùng chỉ là ký hiệu giữ chỗ của trình duyệt
   while (lines.length > 1 && lines[lines.length - 1] === '') lines.pop();
   return lines.join('\n');
@@ -164,7 +211,11 @@ export function nodeToLines(root: Node): string {
 export function linesToEditorHtml(text: string): string {
   return text
     .split('\n')
-    .map((line) => `<div>${line === '' ? '<br>' : sanitizeLine(line)}</div>`)
+    .map((line) => {
+      const { align, html } = splitAlign(line);
+      const style = align === 'left' ? '' : ` style="text-align:${align}"`;
+      return `<div${style}>${html === '' ? '<br>' : sanitizeLine(html)}</div>`;
+    })
     .join('');
 }
 

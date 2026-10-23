@@ -7,15 +7,17 @@ import {
   useState,
   type MouseEvent as ReactMouseEvent,
 } from 'react';
-import { Bold, Italic, Underline, X } from 'lucide-react';
+import { AlignCenter, AlignJustify, AlignLeft, AlignRight, Bold, Italic, Underline, X } from 'lucide-react';
 import { IMAGE_LINE, VIDEO_LINE } from '@/lib/posts';
 import {
   COLOR_PALETTE,
   DEFAULT_TEXT_COLOR,
   FONTS,
   FONT_SIZES,
+  findFont,
   linesToEditorHtml,
   nodeToLines,
+  type Align,
 } from '@/lib/richText';
 
 type TextBlock = { id: string; type: 'text'; text: string };
@@ -82,6 +84,30 @@ function normalizeSize(root: HTMLElement, px: number) {
     el.style.fontSize = `${px}px`;
   });
 }
+
+/** Trạng thái định dạng tại vị trí con trỏ (để tô sáng nút trên thanh công cụ). */
+function readFmt(): { b: boolean; i: boolean; u: boolean; al: Align } {
+  const q = (c: string) => {
+    try {
+      return document.queryCommandState(c);
+    } catch {
+      return false;
+    }
+  };
+  return {
+    b: q('bold'),
+    i: q('italic'),
+    u: q('underline'),
+    al: q('justifyCenter') ? 'center' : q('justifyRight') ? 'right' : q('justifyFull') ? 'justify' : 'left',
+  };
+}
+
+const ALIGN_BUTTONS = [
+  { cmd: 'justifyLeft', al: 'left', label: 'Căn trái', Icon: AlignLeft },
+  { cmd: 'justifyCenter', al: 'center', label: 'Căn giữa', Icon: AlignCenter },
+  { cmd: 'justifyRight', al: 'right', label: 'Căn phải', Icon: AlignRight },
+  { cmd: 'justifyFull', al: 'justify', label: 'Căn đều hai bên', Icon: AlignJustify },
+] as const;
 
 function RichTextBlock({
   initial,
@@ -153,9 +179,17 @@ const BodyEditor = forwardRef<BodyEditorHandle, Props>(function BodyEditor(
   const caret = useRef<{ id: string; range: Range } | null>(null);
   const pendingSize = useRef(16);
 
-  const [fmt, setFmt] = useState({ b: false, i: false, u: false });
+  const [fmt, setFmt] = useState<{ b: boolean; i: boolean; u: boolean; al: Align }>({
+    b: false,
+    i: false,
+    u: false,
+    al: 'left',
+  });
   const [colorOpen, setColorOpen] = useState(false);
   const [color, setColor] = useState(DEFAULT_TEXT_COLOR);
+  // Phông và cỡ chữ tại vị trí con trỏ (hiện trên ô chọn như Word)
+  const [curFont, setCurFont] = useState('');
+  const [curSize, setCurSize] = useState(0);
 
   // Nội dung bị đổi từ bên ngoài (bấm sửa bài, hủy, đăng xong...) -> nạp lại
   useEffect(() => {
@@ -177,14 +211,26 @@ const BodyEditor = forwardRef<BodyEditorHandle, Props>(function BodyEditor(
       for (const [id, el] of blockEls.current) {
         if (el.contains(node)) {
           caret.current = { id, range: sel.getRangeAt(0).cloneRange() };
-          setFmt({
-            b: document.queryCommandState('bold'),
-            i: document.queryCommandState('italic'),
-            u: document.queryCommandState('underline'),
-          });
+          setFmt(readFmt());
+          readCurrent(sel.getRangeAt(0));
           return;
         }
       }
+    };
+    // Đọc phông + cỡ chữ đang áp dụng tại vị trí con trỏ
+    const readCurrent = (range: Range) => {
+      const n = range.startContainer;
+      const el = n.nodeType === Node.ELEMENT_NODE ? (n as Element) : n.parentElement;
+      if (!el) return;
+      const cs = getComputedStyle(el);
+      let name = '';
+      try {
+        name = findFont(document.queryCommandValue('fontName'))?.name ?? '';
+      } catch {
+        /* bỏ qua */
+      }
+      setCurFont(name || findFont(cs.fontFamily)?.name || '');
+      setCurSize(Math.round(parseFloat(cs.fontSize)) || 0);
     };
     document.addEventListener('selectionchange', onSel);
     return () => document.removeEventListener('selectionchange', onSel);
@@ -231,11 +277,7 @@ const BodyEditor = forwardRef<BodyEditorHandle, Props>(function BodyEditor(
     sync(id);
     const sel = window.getSelection();
     if (sel && sel.rangeCount) caret.current = { id, range: sel.getRangeAt(0).cloneRange() };
-    setFmt({
-      b: document.queryCommandState('bold'),
-      i: document.queryCommandState('italic'),
-      u: document.queryCommandState('underline'),
-    });
+    setFmt(readFmt());
   };
 
   const toggle = (cmd: 'bold' | 'italic' | 'underline') =>
@@ -244,14 +286,23 @@ const BodyEditor = forwardRef<BodyEditorHandle, Props>(function BodyEditor(
       document.execCommand(cmd);
     });
 
-  const applyFont = (stack: string) =>
+  const applyAlign = (cmd: string) =>
+    run(() => {
+      document.execCommand('styleWithCSS', false, 'true');
+      document.execCommand(cmd);
+    });
+
+  const applyFont = (name: string, stack: string) => {
+    setCurFont(name);
     run(() => {
       document.execCommand('styleWithCSS', false, 'true');
       document.execCommand('fontName', false, stack);
     });
+  };
 
   const applySize = (px: number) => {
     pendingSize.current = px;
+    setCurSize(px);
     run((el) => {
       document.execCommand('styleWithCSS', false, 'false');
       document.execCommand('fontSize', false, '7');
@@ -322,16 +373,17 @@ const BodyEditor = forwardRef<BodyEditorHandle, Props>(function BodyEditor(
       {/* Thanh công cụ định dạng chữ */}
       <div className="mb-2 flex flex-wrap items-center gap-1.5 border-b border-gray-100 pb-2">
         <select
-          value=""
+          value={curFont}
           onChange={(e) => {
             const f = FONTS.find((x) => x.name === e.target.value);
-            if (f) applyFont(f.stack);
+            if (f) applyFont(f.name, f.stack);
           }}
-          className={toolSelect}
+          className={`${toolSelect} w-40`}
+          style={curFont ? { fontFamily: FONTS.find((x) => x.name === curFont)?.stack } : undefined}
           aria-label="Phông chữ"
         >
           <option value="" disabled>
-            Phông chữ
+            Phông mặc định
           </option>
           {FONTS.map((f) => (
             <option key={f.name} value={f.name} style={{ fontFamily: f.stack }}>
@@ -341,7 +393,7 @@ const BodyEditor = forwardRef<BodyEditorHandle, Props>(function BodyEditor(
         </select>
 
         <select
-          value=""
+          value={FONT_SIZES.includes(curSize) ? curSize : ''}
           onChange={(e) => {
             const n = Number(e.target.value);
             if (n) applySize(n);
@@ -389,6 +441,23 @@ const BodyEditor = forwardRef<BodyEditorHandle, Props>(function BodyEditor(
         >
           <Underline className="h-4 w-4" />
         </button>
+
+        <span className="mx-0.5 h-5 w-px bg-gray-200" />
+
+        {/* Căn lề */}
+        {ALIGN_BUTTONS.map(({ cmd, al, label, Icon }) => (
+          <button
+            key={cmd}
+            type="button"
+            onMouseDown={keepFocus}
+            onClick={() => applyAlign(cmd)}
+            aria-label={label}
+            title={label}
+            className={`${toolBtn} ${fmt.al === al ? 'bg-teal-100 text-teal-700' : ''}`}
+          >
+            <Icon className="h-4 w-4" />
+          </button>
+        ))}
 
         {/* Màu chữ */}
         <div className="relative">
