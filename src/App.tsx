@@ -15,7 +15,7 @@ import PostDetail from '@/components/PostDetail';
 import MembersSection, { type Member } from '@/components/MembersSection';
 import { makeExcerpt, type Post } from '@/lib/posts';
 import ScrollReveal from '@/components/ScrollReveal';
-
+import GroupPhoto from '@/components/GroupPhoto';
 export default function App() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [authors, setAuthors] = useState<Author[]>([]);
@@ -190,6 +190,7 @@ export default function App() {
         onAccountDeleted={handleAccountDeleted}
       />
       <Hero />
+      <GroupPhoto />
 
       {/* Search bar */}
       <section id="feed" className="mx-auto max-w-6xl px-6 pt-10">
