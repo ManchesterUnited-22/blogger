@@ -8,7 +8,7 @@ import {
   imagePathsInContent,
   makeExcerpt,
   uploadPostImage,
-  uploadPostVideo,
+  youtubeId,
   type Post,
 } from '@/lib/posts';
 import BodyEditor, { type BodyEditorHandle } from '@/components/BodyEditor';
@@ -34,7 +34,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
   const [content, setContent] = useState('');
   const [preview, setPreview] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [ytUrl, setYtUrl] = useState('');
   const [publishing, setPublishing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -44,7 +44,6 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
 
   const editorRef = useRef<BodyEditorHandle>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const videoFileRef = useRef<HTMLInputElement>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const formRef = useRef<HTMLElement>(null);
   const [editingProfile, setEditingProfile] = useState(false);
@@ -87,27 +86,24 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
     }
   };
 
-  // Chèn video tại vị trí con trỏ trong khung viết bài
-  const handlePickVideo = async (file: File | undefined) => {
-    if (!file) return;
+  // Chèn video YouTube tại vị trí con trỏ: đọc ID từ link rồi nhúng
+  const handleAddYoutube = () => {
+    const id = youtubeId(ytUrl);
+    if (!id) {
+      setSuccess(null);
+      setError('Link YouTube không hợp lệ. Hãy dán link dạng youtube.com/watch?v=... hoặc youtu.be/...');
+      return;
+    }
     setError(null);
     setSuccess(null);
-    setUploadingVideo(true);
-    try {
-      const url = await uploadPostVideo(user.id, file);
-      editorRef.current?.insertVideo(url);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Không tải được video.');
-    } finally {
-      setUploadingVideo(false);
-      if (videoFileRef.current) videoFileRef.current.value = '';
-    }
+    editorRef.current?.insertVideo(`https://www.youtube.com/watch?v=${id}`);
+    setYtUrl('');
   };
 
   const handlePublish = async () => {
     setError(null);
     setSuccess(null);
-   
+
     if (!content.trim()) return setError('Bạn chưa viết nội dung.');
 
     setPublishing(true);
@@ -171,7 +167,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
     if (!editingId) return;
     setError(null);
     setSuccess(null);
-   
+
     if (!content.trim()) return setError('Bạn chưa viết nội dung.');
     const old = myPosts.find((p) => p.id === editingId);
     if (!old) return;
@@ -196,7 +192,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
       return;
     }
 
-    // Xóa khỏi Storage những ảnh/video đã bị gỡ khỏi bài
+    // Xóa khỏi Storage những ảnh đã bị gỡ khỏi bài
     const stillUsed = new Set(imagePathsInContent(newContent));
     const removed = imagePathsInContent(old.content).filter((p) => !stillUsed.has(p));
     if (removed.length) await supabase.storage.from(POST_BUCKET).remove(removed);
@@ -396,7 +392,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
               ref={editorRef}
               value={content}
               onChange={setContent}
-              placeholder="Hôm nay bạn muốn chia sẻ điều gì? Bấm 'Chèn ảnh' hoặc 'Chèn video' để thêm vào đúng vị trí con trỏ."
+              placeholder="Hôm nay bạn muốn chia sẻ điều gì? Bấm 'Chèn ảnh' hoặc dán link YouTube rồi bấm 'Chèn video' để thêm vào đúng vị trí con trỏ."
             />
           )}
 
@@ -411,31 +407,42 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
               className="hidden"
               onChange={(e) => handlePickImage(e.target.files?.[0])}
             />
-            <input
-              ref={videoFileRef}
-              type="file"
-              accept="video/mp4,video/webm,video/quicktime"
-              className="hidden"
-              onChange={(e) => handlePickVideo(e.target.files?.[0])}
-            />
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
-              disabled={uploading || uploadingVideo || preview}
+              disabled={uploading || preview}
               className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 disabled:opacity-50"
             >
               {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
               Chèn ảnh
             </button>
-            <button
-              type="button"
-              onClick={() => videoFileRef.current?.click()}
-              disabled={uploading || uploadingVideo || preview}
-              className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 disabled:opacity-50"
-            >
-              {uploadingVideo ? <Loader2 className="h-4 w-4 animate-spin" /> : <Video className="h-4 w-4" />}
-              {uploadingVideo ? 'Đang tải video...' : 'Chèn video'}
-            </button>
+
+            {/* Dán link YouTube -> nhúng video */}
+            <div className="inline-flex items-center gap-2">
+              <input
+                value={ytUrl}
+                onChange={(e) => setYtUrl(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleAddYoutube();
+                  }
+                }}
+                placeholder="Dán link YouTube..."
+                disabled={uploading || preview}
+                className="w-56 rounded-full bg-gray-100 px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-200 disabled:opacity-50"
+              />
+              <button
+                type="button"
+                onClick={handleAddYoutube}
+                disabled={!ytUrl.trim() || uploading || preview}
+                className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+              >
+                <Video className="h-4 w-4" />
+                Chèn video
+              </button>
+            </div>
+
             <button
               type="button"
               onClick={() => setPreview((p) => !p)}
@@ -459,7 +466,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
               <button
                 type="button"
                 onClick={editingId ? handleSave : handlePublish}
-                disabled={publishing || uploading || uploadingVideo}
+                disabled={publishing || uploading}
                 className="inline-flex items-center gap-2 rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white hover:bg-teal-600 disabled:opacity-60"
               >
                 {publishing ? (
@@ -474,7 +481,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
             </div>
           </div>
           <p className="text-xs text-gray-400">
-            Ảnh tối đa 3MB (JPG, PNG, WEBP, GIF). Video tối đa 50MB (MP4, WEBM, MOV). Ảnh đầu tiên sẽ làm nền mờ cho bài trên trang chủ.
+            Ảnh tối đa 3MB (JPG, PNG, WEBP, GIF). Video: dán link YouTube (nên để chế độ Không công khai hoặc Công khai). Ảnh đầu tiên sẽ làm nền mờ cho bài trên trang chủ.
           </p>
         </div>
       </section>
@@ -497,8 +504,8 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
                 </div>
                 <button onClick={() => onOpenPost(p)} className="min-w-0 flex-1 text-left">
                   <div className="truncate font-bold text-gray-900 hover:text-teal-600">
-  {p.title || makeExcerpt(p.content, 60) || 'Bài viết không có tiêu đề'}
-</div>
+                    {p.title || makeExcerpt(p.content, 60) || 'Bài viết không có tiêu đề'}
+                  </div>
                   <div className="text-xs text-gray-400">{formatDate(p.created_at)}</div>
                 </button>
                 <button
