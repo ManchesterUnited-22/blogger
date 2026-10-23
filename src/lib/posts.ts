@@ -145,3 +145,20 @@ export function videoPosterUrl(url: string): string | undefined {
   if (!url.includes('res.cloudinary.com') || !url.includes(marker)) return undefined;
   return url.replace(marker, `${marker}so_0,f_jpg/`).replace(/\.\w+$/, '.jpg');
 }
+/** Lấy ID video từ link YouTube (watch, youtu.be, shorts, embed, live). Không phải YouTube -> null. */
+export function youtubeId(url: string): string | null {
+  try {
+    const u = new URL(url.trim());
+    const host = u.hostname.replace(/^(www\.|m\.)/, '');
+    let id: string | null = null;
+    if (host === 'youtu.be') {
+      id = u.pathname.slice(1).split('/')[0];
+    } else if (host === 'youtube.com' || host === 'youtube-nocookie.com') {
+      if (u.pathname === '/watch') id = u.searchParams.get('v');
+      else id = u.pathname.match(/^\/(?:embed|shorts|live)\/([^/?]+)/)?.[1] ?? null;
+    }
+    return id && /^[\w-]{11}$/.test(id) ? id : null;
+  } catch {
+    return null;
+  }
+}

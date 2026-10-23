@@ -8,7 +8,8 @@ import {
   type MouseEvent as ReactMouseEvent,
 } from 'react';
 import { AlignCenter, AlignJustify, AlignLeft, AlignRight, Bold, Italic, Underline, X } from 'lucide-react';
-import { IMAGE_LINE, VIDEO_LINE, playableVideoUrl, videoPosterUrl } from '@/lib/posts';
+import { IMAGE_LINE, VIDEO_LINE } from '@/lib/posts';
+import VideoEmbed from '@/components/VideoEmbed';
 import {
   COLOR_PALETTE,
   DEFAULT_TEXT_COLOR,
@@ -514,15 +515,7 @@ const BodyEditor = forwardRef<BodyEditorHandle, Props>(function BodyEditor(
               {b.type === 'image' ? (
                 <img src={b.url} alt="" className="mx-auto max-h-96 w-full object-contain" />
               ) : (
-              <video
-              key={i}
-              src={playableVideoUrl(b.url)}
-              poster={videoPosterUrl(b.url)}
-              controls
-              playsInline
-              preload="metadata"
-              className="max-h-[32rem] w-full rounded-2xl bg-black"
-            />
+                <VideoEmbed url={b.url} />
               )}
               <button
                 type="button"

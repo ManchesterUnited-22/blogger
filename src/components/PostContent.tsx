@@ -1,8 +1,9 @@
-import { IMAGE_LINE, VIDEO_LINE,playableVideoUrl, videoPosterUrl  } from '@/lib/posts';
+import { IMAGE_LINE, VIDEO_LINE } from '@/lib/posts';
 import RichLine from '@/components/RichLine';
+import VideoEmbed from '@/components/VideoEmbed';
 import { splitAlign } from '@/lib/richText';
 
-/** Hiển thị nội dung blog: dòng chữ -> đoạn văn (giữ phông, cỡ, màu, đậm...), ![](url) -> ảnh, @[video](url) -> video. */
+/** Hiển thị nội dung blog: dòng chữ -> đoạn văn (giữ phông, cỡ, màu, đậm...), ![](url) -> ảnh, @[video](url) -> video (YouTube nhúng hoặc video thường). */
 export default function PostContent({ content }: { content: string }) {
   return (
     <div className="space-y-5">
@@ -11,19 +12,7 @@ export default function PostContent({ content }: { content: string }) {
         if (!t) return null;
 
         const v = t.match(VIDEO_LINE);
-        if (v) {
-          return (
-              <video
-              key={i}
-              src={playableVideoUrl(v[1])}
-              poster={videoPosterUrl(v[1])}
-              controls
-              playsInline
-              preload="metadata"
-              className="max-h-[32rem] w-full rounded-2xl bg-black"
-            />
-          );
-        }
+        if (v) return <VideoEmbed key={i} url={v[1]} />;
 
         const m = t.match(IMAGE_LINE);
         if (m) {
@@ -37,7 +26,8 @@ export default function PostContent({ content }: { content: string }) {
             />
           );
         }
-                const { align, html } = splitAlign(t);
+
+        const { align, html } = splitAlign(t);
         return (
           <p key={i} className="whitespace-pre-wrap" style={{ textAlign: align }}>
             <RichLine html={html} />
