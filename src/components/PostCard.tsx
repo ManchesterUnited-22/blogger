@@ -45,12 +45,13 @@ export default function PostCard({ post, onClick }: Props) {
             </div>
           </div>
         </div>
-
-        <h3 className="mt-5 line-clamp-2 text-2xl font-extrabold leading-snug text-gray-900 transition-colors group-hover:text-teal-600">
-          {post.title}
-        </h3>
-        <p className="mt-3 line-clamp-4 text-[15px] leading-relaxed text-gray-700">
-          {makeExcerpt(post.content)}
+        {post.title && (
+          <h3 className="mt-5 line-clamp-2 text-2xl font-extrabold leading-snug text-gray-900 transition-colors group-hover:text-teal-600">
+            {post.title}
+          </h3>
+        )}
+        <p className={`line-clamp-4 text-[15px] leading-relaxed text-gray-700 ${post.title ? 'mt-3' : 'mt-5'}`}>
+          {makeExcerpt(post.content) || 'Bài viết có ảnh/video, bấm để xem.'}
         </p>
 
         <div className="mt-auto pt-5">

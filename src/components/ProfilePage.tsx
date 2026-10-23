@@ -6,6 +6,7 @@ import {
   POST_BUCKET,
   extractCover,
   imagePathsInContent,
+  makeExcerpt,
   uploadPostImage,
   uploadPostVideo,
   type Post,
@@ -106,7 +107,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
   const handlePublish = async () => {
     setError(null);
     setSuccess(null);
-    if (!title.trim()) return setError('Bạn chưa nhập tiêu đề.');
+   
     if (!content.trim()) return setError('Bạn chưa viết nội dung.');
 
     setPublishing(true);
@@ -133,7 +134,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
   };
 
   const handleDelete = async (post: Post) => {
-    if (!window.confirm(`Xóa bài "${post.title}"? Không thể hoàn tác.`)) return;
+    if (!window.confirm(`Xóa bài ${post.title ? `"${post.title}"` : 'này'}? Không thể hoàn tác.`)) return;
     const { error } = await supabase.from('posts').delete().eq('id', post.id);
     if (error) {
       setError('Xóa bài thất bại: ' + error.message);
@@ -170,7 +171,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
     if (!editingId) return;
     setError(null);
     setSuccess(null);
-    if (!title.trim()) return setError('Bạn chưa nhập tiêu đề.');
+   
     if (!content.trim()) return setError('Bạn chưa viết nội dung.');
     const old = myPosts.find((p) => p.id === editingId);
     if (!old) return;
@@ -495,7 +496,9 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
                   {p.cover_url && <img src={p.cover_url} alt="" className="h-full w-full object-cover" />}
                 </div>
                 <button onClick={() => onOpenPost(p)} className="min-w-0 flex-1 text-left">
-                  <div className="truncate font-bold text-gray-900 hover:text-teal-600">{p.title}</div>
+                  <div className="truncate font-bold text-gray-900 hover:text-teal-600">
+  {p.title || makeExcerpt(p.content, 60) || 'Bài viết không có tiêu đề'}
+</div>
                   <div className="text-xs text-gray-400">{formatDate(p.created_at)}</div>
                 </button>
                 <button

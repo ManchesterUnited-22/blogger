@@ -16,7 +16,9 @@ export default function PostDetail({ post, onBack }: Props) {
         Quay lại
       </button>
 
-      <h1 className="text-3xl font-extrabold leading-tight text-gray-900 lg:text-4xl">{post.title}</h1>
+            {post.title && (
+        <h1 className="text-3xl font-extrabold leading-tight text-gray-900 lg:text-4xl">{post.title}</h1>
+      )}
 
       <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-gray-500">
         <div className="flex items-center gap-2">
