@@ -130,3 +130,18 @@ export function imagePathsInContent(content: string): string[] {
   }
   return paths;
 }
+/** Link Cloudinary -> bản MP4/H.264 chạy được trên mọi trình duyệt và điện thoại. */
+export function playableVideoUrl(url: string): string {
+  const marker = '/video/upload/';
+  if (!url.includes('res.cloudinary.com') || !url.includes(marker) || url.includes(`${marker}f_mp4`)) {
+    return url;
+  }
+  return url.replace(marker, `${marker}f_mp4,vc_h264,ac_aac/`).replace(/\.(mov|webm|mp4)$/i, '.mp4');
+}
+
+/** Ảnh bìa (khung hình đầu tiên) của video Cloudinary, để khung video không đen khi chưa phát. */
+export function videoPosterUrl(url: string): string | undefined {
+  const marker = '/video/upload/';
+  if (!url.includes('res.cloudinary.com') || !url.includes(marker)) return undefined;
+  return url.replace(marker, `${marker}so_0,f_jpg/`).replace(/\.\w+$/, '.jpg');
+}

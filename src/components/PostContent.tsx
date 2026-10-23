@@ -1,4 +1,4 @@
-import { IMAGE_LINE, VIDEO_LINE } from '@/lib/posts';
+import { IMAGE_LINE, VIDEO_LINE,playableVideoUrl, videoPosterUrl  } from '@/lib/posts';
 import RichLine from '@/components/RichLine';
 import { splitAlign } from '@/lib/richText';
 
@@ -13,9 +13,10 @@ export default function PostContent({ content }: { content: string }) {
         const v = t.match(VIDEO_LINE);
         if (v) {
           return (
-            <video
+              <video
               key={i}
-              src={v[1]}
+              src={playableVideoUrl(v[1])}
+              poster={videoPosterUrl(v[1])}
               controls
               playsInline
               preload="metadata"
