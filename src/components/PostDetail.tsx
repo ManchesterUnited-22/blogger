@@ -2,10 +2,11 @@ import { ArrowLeft, Calendar } from 'lucide-react';
 import { formatDate } from '@/lib/supabase';
 import type { Post } from '@/lib/posts';
 import PostContent from '@/components/PostContent';
+import type { User } from '@supabase/supabase-js';
+import CommentSection from '@/components/CommentSection';
+type Props = { post: Post; user: User | null; onLoginClick: () => void; onBack: () => void };
 
-type Props = { post: Post; onBack: () => void };
-
-export default function PostDetail({ post, onBack }: Props) {
+export default function PostDetail({ post, user, onLoginClick, onBack }: Props) {
   return (
     <article className="mx-auto max-w-3xl px-6 py-10">
       <button
@@ -45,6 +46,7 @@ export default function PostDetail({ post, onBack }: Props) {
       <div className="mt-8 text-lg leading-relaxed text-gray-700">
         <PostContent content={post.content} />
       </div>
+      <CommentSection postId={post.id} postOwnerId={post.user_id} user={user} onLoginClick={onLoginClick} />
     </article>
   );
 }

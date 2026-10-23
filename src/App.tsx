@@ -154,7 +154,12 @@ export default function App() {
           onAccountDeleted={handleAccountDeleted}
         />
         {selectedPost ? (
-          <PostDetail post={selectedPost} onBack={() => setSelectedPost(null)} />
+         <PostDetail
+  post={selectedPost}
+  user={user}
+  onLoginClick={() => setAuthOpen(true)}
+  onBack={() => setSelectedPost(null)}
+/>
         ) : selectedArticle ? (
           <ArticleDetail article={selectedArticle} onBack={() => setSelectedArticle(null)} />
         ) : (
