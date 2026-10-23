@@ -60,7 +60,7 @@ export default function Hero() {
               Nhật ký Quy Nhơn · Biển Nam Trung Bộ
             </div>
             <h1 className="text-5xl font-extrabold leading-tight tracking-tight text-gray-900 lg:text-6xl">
-              DuyTan<span className="text-orange-500">.</span>News
+                VTD<span className="text-orange-500">.</span>News
             </h1>
 
             {/* Dòng chữ đổi từ khóa liên tục */}
@@ -76,7 +76,7 @@ export default function Hero() {
             </p>
 
             <p className="mt-4 max-w-xl text-lg leading-relaxed text-gray-600">
-              Một chuyến đi, một nhóm sinh viên và rất nhiều kỷ niệm. DuyTan.News là nơi bọn mình kể lại Quy Nhơn: những nơi đã đi, những người đã gặp và những khoảnh khắc không có trong sách hướng dẫn
+              Một chuyến đi, một nhóm sinh viên và rất nhiều kỷ niệm. VTD.News là nơi bọn mình kể lại Quy Nhơn: những nơi đã đi, những người đã gặp và những khoảnh khắc không có trong sách hướng dẫn
             </p>
 
             {/* Card đam mê + các chủ đề nổi bật */}

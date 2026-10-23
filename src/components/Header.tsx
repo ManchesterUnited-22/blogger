@@ -160,7 +160,7 @@ export default function Header({ user, onLoginClick, onProfileClick, onAccountDe
             <Newspaper className="h-5 w-5 text-white" />
           </div>
           <span className="text-xl font-extrabold tracking-tight text-gray-900">
-            DuyTan<span className="text-orange-500">.</span>News
+            VTD<span className="text-orange-500">.</span>News
           </span>
         </div>
 

@@ -1,8 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { User } from '@supabase/supabase-js';
-import { Loader2, MessageCircle, Send, Smile, Trash2 } from 'lucide-react';
+import { CornerDownRight, Loader2, MessageCircle, Send, Smile, Trash2 } from 'lucide-react';
 import { getUserProfile } from '@/lib/supabase';
-import { MAX_COMMENT, addComment, deleteComment, fetchComments, type Comment } from '@/lib/comments';
+import {
+  MAX_COMMENT,
+  addComment,
+  deleteComment,
+  fetchComments,
+  subscribeComments,
+  type Comment,
+} from '@/lib/comments';
 
 const EMOJIS = [
   '😀', '😂', '🤣', '😊', '😍', '🥰', '😘', '😎', '🤩', '🥳',
@@ -13,6 +20,9 @@ const EMOJIS = [
   '☕', '🍀',
 ];
 
+// Thụt lề tối đa bao nhiêu cấp (sâu hơn thì giữ nguyên cấp cuối để không bị hẹp trên mobile)
+const MAX_INDENT_DEPTH = 3;
+
 function timeAgo(iso: string): string {
   const s = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000);
   if (s < 60) return 'Vừa xong';
@@ -20,6 +30,118 @@ function timeAgo(iso: string): string {
   if (s < 86400) return `${Math.floor(s / 3600)} giờ trước`;
   if (s < 86400 * 30) return `${Math.floor(s / 86400)} ngày trước`;
   return new Date(iso).toLocaleDateString('vi-VN');
+}
+
+/** Xóa 1 bình luận cùng toàn bộ các trả lời con cháu của nó. */
+function removeWithDescendants(list: Comment[], id: string): Comment[] {
+  const removed = new Set<string>([id]);
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const c of list) {
+      if (c.parent_id && removed.has(c.parent_id) && !removed.has(c.id)) {
+        removed.add(c.id);
+        changed = true;
+      }
+    }
+  }
+  return list.filter((c) => !removed.has(c.id));
+}
+
+/** Thêm bình luận, bỏ qua nếu đã có (tránh trùng giữa state cục bộ và realtime). */
+function addUnique(list: Comment[], c: Comment): Comment[] {
+  return list.some((x) => x.id === c.id) ? list : [...list, c];
+}
+
+function Avatar({ name, url, size = 'h-9 w-9' }: { name: string; url: string | null; size?: string }) {
+  return (
+    <div
+      className={`flex ${size} shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 text-sm font-bold text-white`}
+    >
+      {url ? (
+        <img src={url} alt={name} referrerPolicy="no-referrer" className="h-full w-full object-cover" />
+      ) : (
+        name.charAt(0).toUpperCase()
+      )}
+    </div>
+  );
+}
+
+/** Ô nhập trả lời, hiện ngay dưới bình luận được trả lời. */
+function ReplyBox({
+  user,
+  replyToName,
+  onSubmit,
+  onCancel,
+}: {
+  user: User;
+  replyToName: string;
+  onSubmit: (text: string) => Promise<void>;
+  onCancel: () => void;
+}) {
+  const me = getUserProfile(user);
+  const [text, setText] = useState('');
+  const [sending, setSending] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    ref.current?.focus();
+  }, []);
+
+  const send = async () => {
+    if (sending || !text.trim()) return;
+    setErr(null);
+    setSending(true);
+    try {
+      await onSubmit(text);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Gửi trả lời thất bại.');
+      setSending(false);
+    }
+  };
+
+  return (
+    <div className="mt-3 flex gap-2.5">
+      <Avatar name={me.name} url={me.avatarUrl} size="h-7 w-7" />
+      <div className="min-w-0 flex-1">
+        <textarea
+          ref={ref}
+          value={text}
+          onChange={(e) => setText(e.target.value.slice(0, MAX_COMMENT))}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+              e.preventDefault();
+              send();
+            }
+            if (e.key === 'Escape') onCancel();
+          }}
+          rows={2}
+          placeholder={`Trả lời ${replyToName}...`}
+          className="w-full resize-y rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-100"
+        />
+        {err && <p className="mt-1 text-xs text-rose-600">{err}</p>}
+        <div className="mt-1.5 flex items-center justify-end gap-2">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-full px-3 py-1.5 text-xs font-medium text-gray-500 hover:bg-gray-100"
+          >
+            Hủy
+          </button>
+          <button
+            type="button"
+            onClick={send}
+            disabled={sending || !text.trim()}
+            className="inline-flex items-center gap-1.5 rounded-full bg-gray-900 px-4 py-1.5 text-xs font-semibold text-white hover:bg-teal-600 disabled:opacity-50"
+          >
+            {sending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+            Trả lời
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 type Props = {
@@ -36,11 +158,14 @@ export default function CommentSection({ postId, postOwnerId, user, onLoginClick
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [emojiOpen, setEmojiOpen] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<string | null>(null); // id bình luận đang được trả lời
   const areaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Tải lần đầu
   useEffect(() => {
     let alive = true;
     setLoading(true);
+    setReplyingTo(null);
     fetchComments(postId)
       .then((c) => alive && setComments(c))
       .catch((e) => alive && setError(e instanceof Error ? e.message : 'Lỗi tải bình luận.'))
@@ -49,6 +174,27 @@ export default function CommentSection({ postId, postOwnerId, user, onLoginClick
       alive = false;
     };
   }, [postId]);
+
+  // Realtime: bình luận mới / bị xóa tự cập nhật, không cần tải lại trang
+  useEffect(() => {
+    const unsubscribe = subscribeComments(postId, {
+      onInsert: (c) => setComments((prev) => addUnique(prev, c)),
+      onDelete: (id) => setComments((prev) => removeWithDescendants(prev, id)),
+    });
+    return unsubscribe;
+  }, [postId]);
+
+  // Gom bình luận theo cha để dựng cây
+  const childrenMap = useMemo(() => {
+    const map = new Map<string | null, Comment[]>();
+    for (const c of comments) {
+      const key = c.parent_id ?? null;
+      const arr = map.get(key);
+      if (arr) arr.push(c);
+      else map.set(key, [c]);
+    }
+    return map;
+  }, [comments]);
 
   // Chèn emoji đúng vị trí con trỏ trong ô nhập
   const insertEmoji = (emoji: string) => {
@@ -71,7 +217,7 @@ export default function CommentSection({ postId, postOwnerId, user, onLoginClick
     setSending(true);
     try {
       const c = await addComment(postId, user, text);
-      setComments((prev) => [...prev, c]);
+      setComments((prev) => addUnique(prev, c));
       setText('');
       setEmojiOpen(false);
     } catch (e) {
@@ -81,17 +227,86 @@ export default function CommentSection({ postId, postOwnerId, user, onLoginClick
     }
   };
 
+  const handleReply = async (parent: Comment, content: string) => {
+    if (!user) return;
+    const c = await addComment(postId, user, content, parent.id);
+    setComments((prev) => addUnique(prev, c));
+    setReplyingTo(null);
+  };
+
   const handleDelete = async (c: Comment) => {
-    if (!window.confirm('Xóa bình luận này?')) return;
+    const hasReplies = comments.some((x) => x.parent_id === c.id);
+    const msg = hasReplies ? 'Xóa bình luận này và tất cả trả lời của nó?' : 'Xóa bình luận này?';
+    if (!window.confirm(msg)) return;
     try {
       await deleteComment(c.id);
-      setComments((prev) => prev.filter((x) => x.id !== c.id));
+      setComments((prev) => removeWithDescendants(prev, c.id));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Xóa bình luận thất bại.');
     }
   };
 
   const me = user ? getUserProfile(user) : null;
+
+  // Vẽ 1 bình luận + các trả lời của nó (đệ quy)
+  const renderComment = (c: Comment, depth: number) => {
+    const canDelete = !!user && (user.id === c.user_id || user.id === postOwnerId);
+    const replies = childrenMap.get(c.id) ?? [];
+    const indent = depth < MAX_INDENT_DEPTH;
+
+    return (
+      <li key={c.id} className="flex gap-3">
+        <Avatar name={c.author_name} url={c.author_avatar} size={depth === 0 ? 'h-9 w-9' : 'h-7 w-7'} />
+        <div className="min-w-0 flex-1">
+          <div className="rounded-2xl bg-gray-50 px-4 py-2.5">
+            <div className="flex items-center gap-2">
+              <span className="truncate text-sm font-bold text-gray-900">{c.author_name}</span>
+              {c.user_id === postOwnerId && (
+                <span className="rounded-full bg-teal-100 px-2 py-0.5 text-[10px] font-semibold text-teal-700">
+                  Tác giả
+                </span>
+              )}
+            </div>
+            <p className="mt-0.5 whitespace-pre-wrap break-words text-sm text-gray-700">{c.content}</p>
+          </div>
+
+          <div className="mt-1 flex items-center gap-3 px-2 text-xs text-gray-400">
+            <span>{timeAgo(c.created_at)}</span>
+            <button
+              onClick={() => (user ? setReplyingTo(replyingTo === c.id ? null : c.id) : onLoginClick())}
+              className="inline-flex items-center gap-1 font-medium hover:text-teal-600"
+            >
+              <CornerDownRight className="h-3 w-3" />
+              Trả lời
+            </button>
+            {canDelete && (
+              <button onClick={() => handleDelete(c)} className="inline-flex items-center gap-1 hover:text-rose-600">
+                <Trash2 className="h-3 w-3" />
+                Xóa
+              </button>
+            )}
+          </div>
+
+          {user && replyingTo === c.id && (
+            <ReplyBox
+              user={user}
+              replyToName={c.author_name}
+              onSubmit={(content) => handleReply(c, content)}
+              onCancel={() => setReplyingTo(null)}
+            />
+          )}
+
+          {replies.length > 0 && (
+            <ul className={`mt-3 space-y-4 ${indent ? 'border-l-2 border-gray-100 pl-3 sm:pl-4' : ''}`}>
+              {replies.map((r) => renderComment(r, depth + 1))}
+            </ul>
+          )}
+        </div>
+      </li>
+    );
+  };
+
+  const roots = childrenMap.get(null) ?? [];
 
   return (
     <section className="mt-12 border-t border-gray-100 pt-8">
@@ -103,13 +318,7 @@ export default function CommentSection({ postId, postOwnerId, user, onLoginClick
       {/* Ô nhập */}
       {user && me ? (
         <div className="mt-5 flex gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 text-sm font-bold text-white">
-            {me.avatarUrl ? (
-              <img src={me.avatarUrl} alt={me.name} referrerPolicy="no-referrer" className="h-full w-full object-cover" />
-            ) : (
-              me.name.charAt(0).toUpperCase()
-            )}
-          </div>
+          <Avatar name={me.name} url={me.avatarUrl} />
           <div className="min-w-0 flex-1">
             <textarea
               ref={areaRef}
@@ -187,44 +396,7 @@ export default function CommentSection({ postId, postOwnerId, user, onLoginClick
       ) : comments.length === 0 ? (
         <p className="py-8 text-center text-sm text-gray-400">Chưa có bình luận nào. Hãy là người đầu tiên!</p>
       ) : (
-        <ul className="mt-6 space-y-5">
-          {comments.map((c) => {
-            const canDelete = !!user && (user.id === c.user_id || user.id === postOwnerId);
-            return (
-              <li key={c.id} className="flex gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 text-sm font-bold text-white">
-                  {c.author_avatar ? (
-                    <img src={c.author_avatar} alt={c.author_name} referrerPolicy="no-referrer" className="h-full w-full object-cover" />
-                  ) : (
-                    c.author_name.charAt(0).toUpperCase()
-                  )}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="rounded-2xl bg-gray-50 px-4 py-2.5">
-                    <div className="flex items-center gap-2">
-                      <span className="truncate text-sm font-bold text-gray-900">{c.author_name}</span>
-                      {c.user_id === postOwnerId && (
-                        <span className="rounded-full bg-teal-100 px-2 py-0.5 text-[10px] font-semibold text-teal-700">
-                          Tác giả
-                        </span>
-                      )}
-                    </div>
-                    <p className="mt-0.5 whitespace-pre-wrap break-words text-sm text-gray-700">{c.content}</p>
-                  </div>
-                  <div className="mt-1 flex items-center gap-3 px-2 text-xs text-gray-400">
-                    <span>{timeAgo(c.created_at)}</span>
-                    {canDelete && (
-                      <button onClick={() => handleDelete(c)} className="inline-flex items-center gap-1 hover:text-rose-600">
-                        <Trash2 className="h-3 w-3" />
-                        Xóa
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+        <ul className="mt-6 space-y-5">{roots.map((c) => renderComment(c, 0))}</ul>
       )}
     </section>
   );

@@ -32,7 +32,7 @@ export default function Footer() {
                 <Newspaper className="h-4 w-4 text-white" />
               </div>
               <span className="text-lg font-extrabold text-gray-900">
-                DuyTan<span className="text-orange-500">.</span>News
+                VTD<span className="text-orange-500">.</span>News
               </span>
             </div>
             <p className="mt-4 bg-gradient-to-r from-teal-500 via-cyan-500 to-orange-500 bg-clip-text py-1 text-xl font-black uppercase leading-snug tracking-wide text-transparent md:text-2xl">
@@ -82,7 +82,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 flex items-center justify-center gap-1.5 border-t border-gray-200 pt-6 text-sm text-gray-400">
-          <span>© 2026 DuyTan.News · Made with</span>
+          <span>© 2026 VTD.News · Made with</span>
           <Heart className="h-3.5 w-3.5 text-rose-500" />
           <span>in Quy Nhơn</span>
         </div>
