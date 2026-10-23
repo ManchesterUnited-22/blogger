@@ -18,9 +18,7 @@ export default function GroupPhoto() {
 
           <figcaption className="absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-3 p-4 sm:p-6">
             <div>
-              <div className="text-lg font-extrabold text-white drop-shadow sm:text-2xl">
-                Cả đoàn tại Eo Gió
-              </div>
+              
               <div className="mt-0.5 text-xs text-white/85 sm:text-sm">
                 Dã ngoại thực tế Đà Nẵng – Quy Nhơn · Thực tập Nhận thức
               </div>
