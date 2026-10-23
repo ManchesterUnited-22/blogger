@@ -1,6 +1,7 @@
 import { IMAGE_LINE, VIDEO_LINE } from '@/lib/posts';
+import RichLine from '@/components/RichLine';
 
-/** Hiển thị nội dung blog: dòng chữ -> đoạn văn, ![](url) -> ảnh, @[video](url) -> video. */
+/** Hiển thị nội dung blog: dòng chữ -> đoạn văn (giữ phông, cỡ, màu, đậm...), ![](url) -> ảnh, @[video](url) -> video. */
 export default function PostContent({ content }: { content: string }) {
   return (
     <div className="space-y-5">
@@ -36,7 +37,7 @@ export default function PostContent({ content }: { content: string }) {
         }
         return (
           <p key={i} className="whitespace-pre-wrap">
-            {t}
+            <RichLine html={t} />
           </p>
         );
       })}

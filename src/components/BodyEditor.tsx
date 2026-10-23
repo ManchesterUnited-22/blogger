@@ -1,6 +1,22 @@
-import { forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
-import { X } from 'lucide-react';
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type MouseEvent as ReactMouseEvent,
+} from 'react';
+import { Bold, Italic, Underline, X } from 'lucide-react';
 import { IMAGE_LINE, VIDEO_LINE } from '@/lib/posts';
+import {
+  COLOR_PALETTE,
+  DEFAULT_TEXT_COLOR,
+  FONTS,
+  FONT_SIZES,
+  linesToEditorHtml,
+  nodeToLines,
+} from '@/lib/richText';
 
 type TextBlock = { id: string; type: 'text'; text: string };
 type ImageBlock = { id: string; type: 'image'; url: string };
@@ -47,7 +63,7 @@ function parse(content: string): Block[] {
   return blocks;
 }
 
-/** Các khối -> chuỗi nội dung (ảnh: ![](url), video: @[video](url)) */
+/** Các khối -> chuỗi nội dung (ảnh: ![](url), video: @[video](url), chữ: HTML sạch từng dòng) */
 function serialize(blocks: Block[]): string {
   return blocks
     .filter((b) => b.type !== 'text' || b.text.trim() !== '')
@@ -55,45 +71,72 @@ function serialize(blocks: Block[]): string {
     .join('\n');
 }
 
-function AutoTextarea({
-  value,
-  onChange,
-  onCaret,
+/** execCommand('fontSize') chỉ có cỡ 1-7 -> đổi thẻ <font size=7> thành span cỡ px thật. */
+function normalizeSize(root: HTMLElement, px: number) {
+  root.querySelectorAll('font[size="7"]').forEach((f) => {
+    const el = f as HTMLElement;
+    el.removeAttribute('size');
+    el.style.fontSize = `${px}px`;
+  });
+  root.querySelectorAll<HTMLElement>('[style*="xxx-large"]').forEach((el) => {
+    el.style.fontSize = `${px}px`;
+  });
+}
+
+function RichTextBlock({
+  initial,
   placeholder,
   minHeightClass,
+  register,
+  onInput,
 }: {
-  value: string;
-  onChange: (v: string) => void;
-  onCaret: (el: HTMLTextAreaElement) => void;
+  initial: string;
   placeholder?: string;
   minHeightClass: string;
+  register: (el: HTMLDivElement | null) => void;
+  onInput: (el: HTMLDivElement) => void;
 }) {
-  const ref = useRef<HTMLTextAreaElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
-  // Tự giãn chiều cao theo nội dung
+  // Chỉ nạp nội dung một lần khi khối được tạo. Sau đó trình duyệt tự quản lý nội dung.
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
-    el.style.height = 'auto';
-    el.style.height = el.scrollHeight + 'px';
-  }, [value]);
+    el.innerHTML = linesToEditorHtml(initial);
+    el.dataset.empty = String(!el.textContent);
+    register(el);
+    return () => register(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <textarea
+    <div
       ref={ref}
-      rows={1}
-      value={value}
-      placeholder={placeholder}
-      maxLength={20000}
-      onChange={(e) => onChange(e.target.value)}
-      onSelect={(e) => onCaret(e.currentTarget)}
-      onBlur={(e) => onCaret(e.currentTarget)}
-      onKeyUp={(e) => onCaret(e.currentTarget)}
-      onClick={(e) => onCaret(e.currentTarget)}
-      className={`w-full resize-none bg-transparent px-2 py-1.5 text-sm leading-relaxed text-gray-800 outline-none ${minHeightClass}`}
+      contentEditable
+      suppressContentEditableWarning
+      role="textbox"
+      aria-multiline="true"
+      data-placeholder={placeholder ?? ''}
+      onInput={(e) => {
+        const el = e.currentTarget;
+        el.dataset.empty = String(!el.textContent);
+        onInput(el);
+      }}
+      onPaste={(e) => {
+        // Dán dưới dạng chữ thuần để không mang định dạng lạ từ nơi khác
+        e.preventDefault();
+        const text = e.clipboardData.getData('text/plain');
+        document.execCommand('insertText', false, text);
+      }}
+      className={`relative w-full whitespace-pre-wrap break-words bg-transparent px-2 py-1.5 text-sm leading-relaxed text-gray-800 outline-none data-[empty=true]:before:pointer-events-none data-[empty=true]:before:absolute data-[empty=true]:before:text-gray-400 data-[empty=true]:before:content-[attr(data-placeholder)] ${minHeightClass}`}
     />
   );
 }
+
+const toolBtn =
+  'flex h-8 w-8 items-center justify-center rounded-lg text-gray-700 transition-colors hover:bg-gray-100';
+const toolSelect =
+  'h-8 rounded-lg border border-gray-200 bg-white px-2 text-xs text-gray-700 outline-none hover:border-gray-300 focus:border-teal-400';
 
 const BodyEditor = forwardRef<BodyEditorHandle, Props>(function BodyEditor(
   { value, onChange, placeholder },
@@ -103,7 +146,16 @@ const BodyEditor = forwardRef<BodyEditorHandle, Props>(function BodyEditor(
   const blocksRef = useRef<Block[]>(blocks);
   blocksRef.current = blocks;
   const lastValue = useRef(value);
-  const caret = useRef<{ id: string; start: number; end: number } | null>(null);
+
+  const rootRef = useRef<HTMLDivElement>(null);
+  const blockEls = useRef(new Map<string, HTMLDivElement>());
+  // Vị trí con trỏ / vùng chọn gần nhất trong các khối chữ
+  const caret = useRef<{ id: string; range: Range } | null>(null);
+  const pendingSize = useRef(16);
+
+  const [fmt, setFmt] = useState({ b: false, i: false, u: false });
+  const [colorOpen, setColorOpen] = useState(false);
+  const [color, setColor] = useState(DEFAULT_TEXT_COLOR);
 
   // Nội dung bị đổi từ bên ngoài (bấm sửa bài, hủy, đăng xong...) -> nạp lại
   useEffect(() => {
@@ -114,6 +166,30 @@ const BodyEditor = forwardRef<BodyEditorHandle, Props>(function BodyEditor(
     }
   }, [value]);
 
+  // Ghi nhớ vùng chọn trong khung chữ, để bấm thanh công cụ vẫn áp dụng đúng chỗ
+  useEffect(() => {
+    const onSel = () => {
+      const sel = window.getSelection();
+      const root = rootRef.current;
+      if (!sel || sel.rangeCount === 0 || !root) return;
+      const node = sel.anchorNode;
+      if (!node || !root.contains(node)) return;
+      for (const [id, el] of blockEls.current) {
+        if (el.contains(node)) {
+          caret.current = { id, range: sel.getRangeAt(0).cloneRange() };
+          setFmt({
+            b: document.queryCommandState('bold'),
+            i: document.queryCommandState('italic'),
+            u: document.queryCommandState('underline'),
+          });
+          return;
+        }
+      }
+    };
+    document.addEventListener('selectionchange', onSel);
+    return () => document.removeEventListener('selectionchange', onSel);
+  }, []);
+
   const commit = (next: Block[]) => {
     blocksRef.current = next;
     setBlocks(next);
@@ -122,8 +198,74 @@ const BodyEditor = forwardRef<BodyEditorHandle, Props>(function BodyEditor(
     onChange(s);
   };
 
-  const recordCaret = (id: string, el: HTMLTextAreaElement) => {
-    caret.current = { id, start: el.selectionStart, end: el.selectionEnd };
+  const setText = (id: string, text: string) =>
+    commit(blocksRef.current.map((b) => (b.id === id && b.type === 'text' ? { ...b, text } : b)));
+
+  /** Đọc lại nội dung khối chữ từ màn hình rồi lưu vào state. */
+  const sync = (id: string) => {
+    const el = blockEls.current.get(id);
+    if (!el) return;
+    el.dataset.empty = String(!el.textContent);
+    setText(id, nodeToLines(el));
+  };
+
+  /** Đưa vùng chọn đã nhớ trở lại ô soạn thảo. Trả về id khối, hoặc null nếu chưa có. */
+  const restore = (): string | null => {
+    const c = caret.current;
+    if (!c) return null;
+    const el = blockEls.current.get(c.id);
+    if (!el || !el.isConnected) return null;
+    el.focus();
+    const sel = window.getSelection();
+    sel?.removeAllRanges();
+    sel?.addRange(c.range);
+    return c.id;
+  };
+
+  const run = (fn: (el: HTMLDivElement) => void) => {
+    const id = restore();
+    if (!id) return;
+    const el = blockEls.current.get(id);
+    if (!el) return;
+    fn(el);
+    sync(id);
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount) caret.current = { id, range: sel.getRangeAt(0).cloneRange() };
+    setFmt({
+      b: document.queryCommandState('bold'),
+      i: document.queryCommandState('italic'),
+      u: document.queryCommandState('underline'),
+    });
+  };
+
+  const toggle = (cmd: 'bold' | 'italic' | 'underline') =>
+    run(() => {
+      document.execCommand('styleWithCSS', false, 'true');
+      document.execCommand(cmd);
+    });
+
+  const applyFont = (stack: string) =>
+    run(() => {
+      document.execCommand('styleWithCSS', false, 'true');
+      document.execCommand('fontName', false, stack);
+    });
+
+  const applySize = (px: number) => {
+    pendingSize.current = px;
+    run((el) => {
+      document.execCommand('styleWithCSS', false, 'false');
+      document.execCommand('fontSize', false, '7');
+      normalizeSize(el, px);
+    });
+  };
+
+  const applyColor = (hex: string) => {
+    setColor(hex);
+    setColorOpen(false);
+    run(() => {
+      document.execCommand('styleWithCSS', false, 'true');
+      document.execCommand('foreColor', false, hex);
+    });
   };
 
   // Chèn một khối (ảnh / video) tại vị trí con trỏ, hoặc xuống cuối bài nếu chưa có con trỏ
@@ -131,17 +273,28 @@ const BodyEditor = forwardRef<BodyEditorHandle, Props>(function BodyEditor(
     const cur = blocksRef.current;
     const c = caret.current;
     const idx = c ? cur.findIndex((b) => b.id === c.id && b.type === 'text') : -1;
+    const el = c ? blockEls.current.get(c.id) : undefined;
 
-    if (!c || idx === -1) {
+    if (!c || idx === -1 || !el || !el.contains(c.range.startContainer) || !el.contains(c.range.endContainer)) {
       commit([...cur, media, { id: nid(), type: 'text', text: '' }]);
       return;
     }
-    const b = cur[idx] as TextBlock;
+
+    // Cắt nội dung khối chữ làm hai nửa: trước và sau con trỏ
+    const pre = document.createRange();
+    pre.selectNodeContents(el);
+    pre.setEnd(c.range.startContainer, c.range.startOffset);
+    const post = document.createRange();
+    post.selectNodeContents(el);
+    post.setStart(c.range.endContainer, c.range.endOffset);
+    const before = nodeToLines(pre.cloneContents());
+    const after = nodeToLines(post.cloneContents());
+
     commit([
       ...cur.slice(0, idx),
-      { ...b, text: b.text.slice(0, c.start) },
+      { id: nid(), type: 'text', text: before },
       media,
-      { id: nid(), type: 'text', text: b.text.slice(c.end) },
+      { id: nid(), type: 'text', text: after },
       ...cur.slice(idx + 1),
     ]);
     caret.current = null;
@@ -152,9 +305,6 @@ const BodyEditor = forwardRef<BodyEditorHandle, Props>(function BodyEditor(
 
   useImperativeHandle(ref, () => ({ insertImage, insertVideo }), []);
 
-  const setText = (id: string, text: string) =>
-    commit(blocksRef.current.map((b) => (b.id === id && b.type === 'text' ? { ...b, text } : b)));
-
   const removeMedia = (id: string) => {
     let next = blocksRef.current.filter((b) => b.id !== id);
     if (!next.some((b) => b.type === 'text')) next = [{ id: nid(), type: 'text', text: '' }];
@@ -162,43 +312,159 @@ const BodyEditor = forwardRef<BodyEditorHandle, Props>(function BodyEditor(
   };
 
   const onlyOne = blocks.length === 1;
+  const keepFocus = (e: ReactMouseEvent) => e.preventDefault();
 
   return (
-    <div className="min-h-[12rem] space-y-2 rounded-xl border border-gray-200 bg-white p-2 focus-within:border-teal-400 focus-within:ring-2 focus-within:ring-teal-100">
-      {blocks.map((b, i) =>
-        b.type === 'text' ? (
-          <AutoTextarea
-            key={b.id}
-            value={b.text}
-            onChange={(v) => setText(b.id, v)}
-            onCaret={(el) => recordCaret(b.id, el)}
-            placeholder={onlyOne ? placeholder : i === 0 ? placeholder : undefined}
-            minHeightClass={onlyOne ? 'min-h-[10rem]' : i === blocks.length - 1 ? 'min-h-[4rem]' : 'min-h-[2.25rem]'}
-          />
-        ) : (
-          <div key={b.id} className="relative overflow-hidden rounded-xl bg-gray-50">
-            {b.type === 'image' ? (
-              <img src={b.url} alt="" className="mx-auto max-h-96 w-full object-contain" />
-            ) : (
-              <video
-                src={b.url}
-                controls
-                playsInline
-                preload="metadata"
-                className="mx-auto max-h-96 w-full bg-black object-contain"
-              />
-            )}
-            <button
-              type="button"
-              onClick={() => removeMedia(b.id)}
-              aria-label={b.type === 'image' ? 'Xóa ảnh' : 'Xóa video'}
-              className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white hover:bg-rose-600"
+    <div
+      ref={rootRef}
+      className="min-h-[12rem] rounded-xl border border-gray-200 bg-white p-2 focus-within:border-teal-400 focus-within:ring-2 focus-within:ring-teal-100"
+    >
+      {/* Thanh công cụ định dạng chữ */}
+      <div className="mb-2 flex flex-wrap items-center gap-1.5 border-b border-gray-100 pb-2">
+        <select
+          value=""
+          onChange={(e) => {
+            const f = FONTS.find((x) => x.name === e.target.value);
+            if (f) applyFont(f.stack);
+          }}
+          className={toolSelect}
+          aria-label="Phông chữ"
+        >
+          <option value="" disabled>
+            Phông chữ
+          </option>
+          {FONTS.map((f) => (
+            <option key={f.name} value={f.name} style={{ fontFamily: f.stack }}>
+              {f.name}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value=""
+          onChange={(e) => {
+            const n = Number(e.target.value);
+            if (n) applySize(n);
+          }}
+          className={toolSelect}
+          aria-label="Cỡ chữ"
+        >
+          <option value="" disabled>
+            Cỡ chữ
+          </option>
+          {FONT_SIZES.map((s) => (
+            <option key={s} value={s}>
+              {s}
+            </option>
+          ))}
+        </select>
+
+        <button
+          type="button"
+          onMouseDown={keepFocus}
+          onClick={() => toggle('bold')}
+          aria-label="In đậm"
+          title="In đậm"
+          className={`${toolBtn} ${fmt.b ? 'bg-teal-100 text-teal-700' : ''}`}
+        >
+          <Bold className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          onMouseDown={keepFocus}
+          onClick={() => toggle('italic')}
+          aria-label="In nghiêng"
+          title="In nghiêng"
+          className={`${toolBtn} ${fmt.i ? 'bg-teal-100 text-teal-700' : ''}`}
+        >
+          <Italic className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          onMouseDown={keepFocus}
+          onClick={() => toggle('underline')}
+          aria-label="Gạch chân"
+          title="Gạch chân"
+          className={`${toolBtn} ${fmt.u ? 'bg-teal-100 text-teal-700' : ''}`}
+        >
+          <Underline className="h-4 w-4" />
+        </button>
+
+        {/* Màu chữ */}
+        <div className="relative">
+          <button
+            type="button"
+            onMouseDown={keepFocus}
+            onClick={() => setColorOpen((o) => !o)}
+            aria-label="Màu chữ"
+            title="Màu chữ"
+            className={`${toolBtn} flex-col gap-0.5`}
+          >
+            <span className="text-sm font-extrabold leading-none">A</span>
+            <span className="h-1 w-4 rounded-full border border-gray-200" style={{ backgroundColor: color }} />
+          </button>
+          {colorOpen && (
+            <div
+              onMouseDown={keepFocus}
+              className="absolute left-0 top-full z-20 mt-1 grid w-44 grid-cols-6 gap-1.5 rounded-xl border border-gray-200 bg-white p-2 shadow-lg"
             >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        ),
-      )}
+              {COLOR_PALETTE.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => applyColor(c)}
+                  aria-label={`Màu ${c}`}
+                  className="h-6 w-6 rounded-full border border-gray-200 transition-transform hover:scale-110"
+                  style={{ backgroundColor: c }}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        {blocks.map((b, i) =>
+          b.type === 'text' ? (
+            <RichTextBlock
+              key={b.id}
+              initial={b.text}
+              register={(el) => {
+                if (el) blockEls.current.set(b.id, el);
+                else blockEls.current.delete(b.id);
+              }}
+              onInput={(el) => {
+                normalizeSize(el, pendingSize.current);
+                sync(b.id);
+              }}
+              placeholder={onlyOne ? placeholder : i === 0 ? placeholder : undefined}
+              minHeightClass={onlyOne ? 'min-h-[10rem]' : i === blocks.length - 1 ? 'min-h-[4rem]' : 'min-h-[2.25rem]'}
+            />
+          ) : (
+            <div key={b.id} className="relative overflow-hidden rounded-xl bg-gray-50">
+              {b.type === 'image' ? (
+                <img src={b.url} alt="" className="mx-auto max-h-96 w-full object-contain" />
+              ) : (
+                <video
+                  src={b.url}
+                  controls
+                  playsInline
+                  preload="metadata"
+                  className="mx-auto max-h-96 w-full bg-black object-contain"
+                />
+              )}
+              <button
+                type="button"
+                onClick={() => removeMedia(b.id)}
+                aria-label={b.type === 'image' ? 'Xóa ảnh' : 'Xóa video'}
+                className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white hover:bg-rose-600"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          ),
+        )}
+      </div>
     </div>
   );
 });
