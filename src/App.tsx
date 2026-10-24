@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Loader2, PenLine, Search } from 'lucide-react';
 import { supabase, type Article, type Author } from '@/lib/supabase';
 import Header from '@/components/Header';
@@ -29,7 +29,60 @@ export default function App() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
+  // ===== Link riêng cho từng bài: ?post=<id> =====
+  const pendingPostId = useRef<string | null>(
+    new URLSearchParams(window.location.search).get('post'),
+  );
 
+  const loadPostById = useCallback(async (id: string) => {
+    const { data } = await supabase.from('posts').select('*').eq('id', id).maybeSingle();
+    return (data as Post | null) ?? null;
+  }, []);
+
+  // 1) Vào bằng link được chia sẻ thì mở thẳng bài đó
+  useEffect(() => {
+    const id = pendingPostId.current;
+    if (!id) return;
+    loadPostById(id).then((p) => {
+      pendingPostId.current = null;
+      if (p) {
+        setSelectedPost(p);
+      } else {
+        // Bài đã bị xóa / link sai -> về trang chủ
+        const url = new URL(window.location.href);
+        url.searchParams.delete('post');
+        window.history.replaceState(null, '', url);
+      }
+    });
+  }, [loadPostById]);
+
+  // 2) Mở / đóng bài thì địa chỉ trang đổi theo
+  useEffect(() => {
+    if (pendingPostId.current) return;
+    const url = new URL(window.location.href);
+    const current = url.searchParams.get('post');
+    if (selectedPost && current !== selectedPost.id) {
+      url.searchParams.set('post', selectedPost.id);
+      window.history.pushState(null, '', url);
+    } else if (!selectedPost && current) {
+      url.searchParams.delete('post');
+      window.history.replaceState(null, '', url);
+    }
+  }, [selectedPost]);
+
+  // 3) Nút Back / Forward của trình duyệt và điện thoại
+  useEffect(() => {
+    const onPop = () => {
+      const id = new URLSearchParams(window.location.search).get('post');
+      if (!id) {
+        setSelectedPost(null);
+        return;
+      }
+      loadPostById(id).then((p) => p && setSelectedPost(p));
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, [loadPostById]);
   const fetchPosts = useCallback(async () => {
     const { data, error } = await supabase
       .from('posts')
@@ -71,7 +124,6 @@ export default function App() {
     fetchMembers();
     fetchPosts();
   };
-
   // Đổi trang thì cuộn lên đầu
   useEffect(() => {
     window.scrollTo(0, 0);

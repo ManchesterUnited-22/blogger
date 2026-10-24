@@ -4,6 +4,7 @@ import type { Post } from '@/lib/posts';
 import PostContent from '@/components/PostContent';
 import type { User } from '@supabase/supabase-js';
 import CommentSection from '@/components/CommentSection';
+import PostActions from '@/components/PostActions';
 type Props = { post: Post; user: User | null; onLoginClick: () => void; onBack: () => void };
 
 export default function PostDetail({ post, user, onLoginClick, onBack }: Props) {
@@ -46,6 +47,10 @@ export default function PostDetail({ post, user, onLoginClick, onBack }: Props) 
       <div className="mt-8 text-lg leading-relaxed text-gray-700">
         <PostContent content={post.content} />
       </div>
+            <div className="mt-8 text-lg leading-relaxed text-gray-700">
+        <PostContent content={post.content} />
+      </div>
+      <PostActions post={post} user={user} onLoginClick={onLoginClick} />
       <CommentSection postId={post.id} postOwnerId={post.user_id} user={user} onLoginClick={onLoginClick} />
     </article>
   );
