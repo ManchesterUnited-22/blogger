@@ -1,5 +1,5 @@
 import { useState, type KeyboardEvent } from 'react';
-import { Heart, MessageCircle, PenLine } from 'lucide-react';
+import { ArrowRight, Heart, MessageCircle, PenLine } from 'lucide-react';
 import { timeAgo } from '@/lib/supabase';
 import { makeExcerpt, type Post } from '@/lib/posts';
 import { briefStamp, isFresh, readMinutes } from '@/lib/postMeta';
@@ -306,49 +306,52 @@ function Brief({ post, onOpen }: { post: Post; onOpen: (p: Post) => void }) {
 }
 
 /* ---------- Khung "Gửi bài": to khi ít bài, gọn khi nhiều bài ---------- */
+/* ---------- Khung "Gửi bài": bấm vào bất kỳ đâu trong khung là mở trình viết bài ---------- */
 function SubmitStrip({ big, onWrite }: { big: boolean; onWrite: () => void }) {
   if (big) {
     return (
-      <div className="relative overflow-hidden rounded-md border border-gray-900 bg-white px-6 py-10 text-center">
+      <button
+        type="button"
+        onClick={onWrite}
+        className="group relative block w-full overflow-hidden rounded-md border border-gray-900 bg-white px-6 py-12 text-center transition-colors hover:border-teal-500 hover:bg-teal-50/40"
+      >
         <span
           aria-hidden
           className="pointer-events-none absolute -left-2 -top-8 select-none font-serif text-[9rem] leading-none text-orange-500/10"
         >
           “
         </span>
-        <p className="relative text-xs font-bold uppercase tracking-widest text-orange-600">Gửi bài</p>
-        <h3 className="relative mt-3 font-serif text-3xl font-black text-gray-900">
-          Bạn có câu chuyện muốn chia sẻ?
-        </h3>
-        <p className="relative mx-auto mt-2 max-w-xl text-gray-600">
-          Viết vài dòng, thêm ảnh hoặc video. Bài của bạn sẽ xuất hiện ngay ở Góc cộng đồng.
-        </p>
-        <button
-          type="button"
-          onClick={onWrite}
-          className="relative mt-6 inline-flex items-center gap-2 rounded-full bg-gray-900 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-600"
-        >
-          <PenLine className="h-4 w-4" />
-          Viết bài ngay
-        </button>
-      </div>
+        <span className="relative block text-xs font-bold uppercase tracking-widest text-orange-600">Gửi bài</span>
+        <span className="relative mt-3 block font-serif text-3xl font-black text-gray-900 sm:text-4xl">
+          <span className={UNDERLINE}>Bạn có câu chuyện muốn chia sẻ?</span>
+        </span>
+        <span className="relative mx-auto mt-3 block max-w-xl text-lg text-gray-600">
+          Một góc phố, một món ngon, một khoảnh khắc khó quên… kể cho mọi người cùng nghe nhé.
+        </span>
+        <span className="relative mt-6 inline-flex items-center gap-2 text-base font-bold text-teal-700">
+          <PenLine className="h-5 w-5" />
+          Chạm vào đây để viết
+          <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1.5" />
+        </span>
+      </button>
     );
   }
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 border-y border-gray-300 py-4">
-      <p className="font-serif text-lg font-bold text-gray-900">
+    <button
+      type="button"
+      onClick={onWrite}
+      className="group flex w-full flex-wrap items-center justify-between gap-3 border-y border-gray-300 py-5 text-left transition-colors hover:bg-teal-50/40"
+    >
+      <span className="font-serif text-xl font-bold text-gray-900">
         <span className="mr-3 font-sans text-xs font-bold uppercase tracking-widest text-orange-600">Gửi bài</span>
-        Bạn có câu chuyện muốn chia sẻ?
-      </p>
-      <button
-        type="button"
-        onClick={onWrite}
-        className="inline-flex items-center gap-2 rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white transition hover:bg-teal-600"
-      >
-        <PenLine className="h-4 w-4" />
-        Viết bài
-      </button>
-    </div>
+        <span className={UNDERLINE}>Bạn có câu chuyện muốn chia sẻ?</span>
+      </span>
+      <span className="inline-flex items-center gap-2 text-base font-bold text-teal-700">
+        <PenLine className="h-5 w-5" />
+        Kể ngay
+        <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1.5" />
+      </span>
+    </button>
   );
 }
 

@@ -196,25 +196,25 @@ export default function Header({
   const active = useActiveSection();
 
   const linkClass = (id: string | null) =>
-    `relative rounded-full px-3.5 py-1.5 text-sm font-semibold transition-colors ${
+    `relative rounded-full px-5 py-2.5 text-base font-semibold transition-colors ${
       active === id ? 'bg-teal-50 text-teal-700' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
     }`;
 
   return (
     <nav className="sticky top-0 z-50 border-b border-gray-100 bg-white/90 shadow-sm backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
         {/* Logo: bấm để về trang chủ */}
         <button onClick={() => onNavigate(null)} aria-label="Về trang chủ" className="flex shrink-0 items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-400 to-cyan-500">
-            <Newspaper className="h-5 w-5 text-white" />
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-teal-400 to-cyan-500">
+            <Newspaper className="h-6 w-6 text-white" />
           </div>
-          <span className="text-xl font-extrabold tracking-tight text-gray-900">
+          <span className="text-2xl font-extrabold tracking-tight text-gray-900">
             VTD<span className="text-orange-500">.</span>News
           </span>
         </button>
 
         {/* Menu điều hướng (màn hình từ md trở lên) */}
-        <div className="hidden items-center gap-1 md:flex">
+        <div className="hidden items-center gap-2 md:flex">
           {NAV_ITEMS.map((item) => (
             <button key={item.label} onClick={() => onNavigate(item.id)} className={linkClass(item.id)}>
               {item.label}
@@ -230,8 +230,8 @@ export default function Header({
         />
       </div>
 
-      {/* Menu điều hướng trên điện thoại: một hàng nhỏ phía dưới, vuốt ngang nếu thiếu chỗ */}
-      <div className="flex items-center gap-1 overflow-x-auto border-t border-gray-100 px-4 py-1.5 md:hidden">
+      {/* Menu điều hướng trên điện thoại */}
+      <div className="flex items-center gap-1 overflow-x-auto border-t border-gray-100 px-4 py-2 md:hidden">
         {NAV_ITEMS.map((item) => (
           <button key={item.label} onClick={() => onNavigate(item.id)} className={`shrink-0 ${linkClass(item.id)}`}>
             {item.label}
