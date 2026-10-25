@@ -369,7 +369,7 @@ const BodyEditor = forwardRef<BodyEditorHandle, Props>(function BodyEditor(
   return (
     <div
       ref={rootRef}
-      className="min-h-[12rem] rounded-xl border border-gray-200 bg-white p-2 focus-within:border-teal-400 focus-within:ring-2 focus-within:ring-teal-100"
+      className="min-h-[12rem] rounded-md border border-gray-300 bg-white p-2 transition-colors focus-within:border-gray-900"
     >
       {/* Thanh công cụ định dạng chữ */}
       <div className="mb-2 flex flex-wrap items-center gap-1.5 border-b border-gray-100 pb-2">

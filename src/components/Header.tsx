@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { Newspaper, LogOut, LogIn, UserRound, Trash2, Home, BookOpen, Users, type LucideIcon } from 'lucide-react';
+import { LogOut, LogIn, UserRound, Trash2, Home, BookOpen, Users, type LucideIcon } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import { supabase, formatDate, getUserProfile, deleteMyAccount } from '@/lib/supabase';
+import { dateLine } from '@/lib/postMeta';
 
 /** Các mục trên thanh menu. id = id của section trong trang chủ (null = đầu trang). */
 const NAV_ITEMS: { label: string; id: string | null; icon: LucideIcon }[] = [
@@ -16,7 +17,7 @@ function useActiveSection(): string | null {
 
   useEffect(() => {
     const onScroll = () => {
-      // Duyệt từ dưới lên: section nào có đỉnh đã vượt quá vạch 120px thì là section đang xem
+      // Section nào có đỉnh đã vượt quá vạch 120px thì là section đang xem
       let current: string | null = null;
       for (const item of NAV_ITEMS) {
         if (!item.id) continue;
@@ -74,9 +75,9 @@ function UserMenu({
     return (
       <button
         onClick={onLoginClick}
-        className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 px-5 py-2.5 text-base font-semibold text-white shadow-md shadow-teal-500/25 transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-teal-500/30"
+        className="inline-flex items-center gap-2 rounded-sm bg-gray-900 px-4 py-2.5 text-sm font-bold uppercase tracking-widest text-white transition-colors hover:bg-teal-600 sm:px-5"
       >
-        <LogIn className="h-5 w-5" />
+        <LogIn className="h-4 w-4" />
         Đăng nhập
       </button>
     );
@@ -112,20 +113,24 @@ function UserMenu({
 
   return (
     <div ref={ref} className="relative">
-      <button onClick={() => setOpen((o) => !o)} aria-label="Tài khoản" className="rounded-full ring-2 ring-white shadow">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        aria-label="Tài khoản"
+        className="rounded-full ring-2 ring-gray-900 ring-offset-2 ring-offset-[#faf8f3] transition hover:ring-teal-500"
+      >
         {avatar('h-11 w-11 text-base')}
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white p-4 shadow-xl ring-1 ring-gray-100">
+        <div className="absolute right-0 mt-3 w-64 rounded-md border border-gray-900 bg-white p-4 shadow-xl">
           <div className="flex items-center gap-3">
             {avatar('h-12 w-12 text-lg')}
             <div className="min-w-0">
-              <p className="truncate font-bold text-gray-900">{name}</p>
+              <p className="truncate font-serif text-lg font-bold text-gray-900">{name}</p>
               {email && <p className="truncate text-xs text-gray-500">{email}</p>}
             </div>
           </div>
-          <p className="mt-3 text-xs text-gray-400">
+          <p className="mt-3 border-t border-gray-200 pt-3 text-xs text-gray-500">
             Đăng nhập bằng {providerLabel[provider] ?? provider} · Tham gia: {formatDate(user.created_at)}
           </p>
           <button
@@ -133,7 +138,7 @@ function UserMenu({
               onProfileClick();
               setOpen(false);
             }}
-            className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-gray-900 py-2 text-sm font-medium text-white hover:bg-teal-600"
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-sm bg-gray-900 py-2 text-sm font-semibold text-white transition-colors hover:bg-teal-600"
           >
             <UserRound className="h-4 w-4" /> Trang cá nhân
           </button>
@@ -142,7 +147,7 @@ function UserMenu({
               supabase.auth.signOut();
               setOpen(false);
             }}
-            className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-sm border border-gray-300 bg-white py-2 text-sm font-semibold text-gray-700 transition-colors hover:border-gray-900 hover:text-gray-900"
           >
             <LogOut className="h-4 w-4" /> Đăng xuất
           </button>
@@ -150,12 +155,12 @@ function UserMenu({
           {!confirming ? (
             <button
               onClick={() => setConfirming(true)}
-              className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+              className="mt-2 flex w-full items-center justify-center gap-2 rounded-sm py-2 text-sm font-medium text-red-600 hover:bg-red-50"
             >
               <Trash2 className="h-4 w-4" /> Xóa tài khoản
             </button>
           ) : (
-            <div className="mt-2 rounded-xl border border-red-200 bg-red-50 p-3">
+            <div className="mt-2 rounded-md border border-red-200 bg-red-50 p-3">
               <p className="text-xs text-red-700">
                 Tài khoản và các bài viết của bạn sẽ bị xóa vĩnh viễn, không thể khôi phục. Bạn chắc chắn chứ?
               </p>
@@ -167,14 +172,14 @@ function UserMenu({
                     setDeleteError(null);
                   }}
                   disabled={deleting}
-                  className="flex-1 rounded-lg bg-white py-1.5 text-xs font-medium text-gray-700 ring-1 ring-gray-200 hover:bg-gray-50 disabled:opacity-50"
+                  className="flex-1 rounded-sm bg-white py-1.5 text-xs font-semibold text-gray-700 ring-1 ring-gray-200 hover:bg-gray-50 disabled:opacity-50"
                 >
                   Hủy
                 </button>
                 <button
                   onClick={handleDelete}
                   disabled={deleting}
-                  className="flex-1 rounded-lg bg-red-600 py-1.5 text-xs font-semibold text-white hover:bg-red-700 disabled:opacity-60"
+                  className="flex-1 rounded-sm bg-red-600 py-1.5 text-xs font-semibold text-white hover:bg-red-700 disabled:opacity-60"
                 >
                   {deleting ? 'Đang xóa...' : 'Xóa vĩnh viễn'}
                 </button>
@@ -196,50 +201,61 @@ export default function Header({
 }: Props) {
   const active = useActiveSection();
 
-  // Mục đang xem: nền trắng nổi lên + chữ teal; mục còn lại: chữ xám, rê chuột thì đậm lên
+  // Mục đang xem: chữ đậm + gạch chân cam; mục còn lại: chữ xám, rê chuột thì gạch chân trượt ra
   const linkClass = (id: string | null) =>
-    `inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-base font-semibold transition-all ${
-      active === id ? 'bg-white text-teal-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+    `relative inline-flex shrink-0 items-center gap-2 px-4 py-2.5 text-sm font-bold uppercase tracking-widest transition-colors after:absolute after:inset-x-4 after:bottom-0 after:h-0.5 after:origin-left after:bg-orange-500 after:transition-transform after:duration-300 ${
+      active === id
+        ? 'text-gray-900 after:scale-x-100'
+        : 'text-gray-500 hover:text-gray-900 after:scale-x-0 hover:after:scale-x-100'
     }`;
 
   const navButtons = NAV_ITEMS.map(({ label, id, icon: Icon }) => (
     <button key={label} onClick={() => onNavigate(id)} className={linkClass(id)}>
-      <Icon className={`h-5 w-5 ${active === id ? 'text-teal-500' : 'text-gray-400'}`} />
+      <Icon className={`h-4 w-4 ${active === id ? 'text-teal-600' : 'text-gray-400'}`} />
       {label}
     </button>
   ));
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/90 shadow-sm backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3.5">
-        {/* Logo: bấm để về trang chủ */}
-        <button onClick={() => onNavigate(null)} aria-label="Về trang chủ" className="flex shrink-0 items-center gap-2.5">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-teal-400 to-cyan-500 shadow-md shadow-teal-500/20">
-            <Newspaper className="h-6 w-6 text-white" />
-          </div>
-          <span className="text-2xl font-extrabold tracking-tight text-gray-900">
-            VTD<span className="text-orange-500">.</span>News
-          </span>
-        </button>
-
-        {/* Menu dạng "viên thuốc" nằm giữa (từ md trở lên) */}
-        <div className="hidden items-center gap-1 rounded-full bg-gray-100/80 p-1.5 md:flex">{navButtons}</div>
-
-        <UserMenu
-          user={user}
-          onLoginClick={onLoginClick}
-          onProfileClick={onProfileClick}
-          onAccountDeleted={onAccountDeleted}
-        />
+    <>
+      {/* Dải đầu báo: vạch đậm + ngày tháng (cuộn đi theo trang, không dính) */}
+      <div className="hidden border-t-4 border-gray-900 bg-[#faf8f3] sm:block">
+        <div className="mx-auto flex max-w-6xl items-center justify-between border-b border-gray-300 px-6 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-gray-500">
+          <span>{dateLine()}</span>
+          <span>Nhật ký Quy Nhơn · Biển Nam Trung Bộ</span>
+        </div>
       </div>
 
-      {/* Menu trên điện thoại: hàng viên thuốc phía dưới, vuốt ngang nếu thiếu chỗ */}
-      <div className="px-4 pb-3 md:hidden">
-        <div className="flex items-center gap-1 overflow-x-auto rounded-full bg-gray-100/80 p-1.5">{navButtons}</div>
-      </div>
+      <nav className="sticky top-0 z-50 border-b border-gray-900 bg-[#faf8f3]/95 backdrop-blur-md">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3">
+          {/* Tên báo: chữ serif đậm + hình thoi teal, bấm để về trang chủ */}
+          <button
+            onClick={() => onNavigate(null)}
+            aria-label="Về trang chủ"
+            className="flex shrink-0 items-center gap-2.5"
+          >
+            <span aria-hidden className="inline-block h-3.5 w-3.5 rotate-45 rounded-sm bg-teal-500" />
+            <span className="font-serif text-3xl font-black leading-none tracking-tight text-gray-900">
+              VTD<span className="text-orange-500">.</span>News
+            </span>
+          </button>
 
-      {/* Dải màu mảnh ở đáy header, ăn theo màu thương hiệu */}
-      <div className="h-[3px] bg-gradient-to-r from-teal-400 via-cyan-400 to-orange-400" />
-    </nav>
+          {/* Menu giữa (từ md trở lên) */}
+          <div className="hidden items-center md:flex">{navButtons}</div>
+
+          <UserMenu
+            user={user}
+            onLoginClick={onLoginClick}
+            onProfileClick={onProfileClick}
+            onAccountDeleted={onAccountDeleted}
+          />
+        </div>
+
+        {/* Menu trên điện thoại: một hàng dưới tên báo, vuốt ngang nếu thiếu chỗ */}
+        <div className="flex items-center justify-around overflow-x-auto border-t border-gray-300 md:hidden">
+          {navButtons}
+        </div>
+      </nav>
+    </>
   );
 }

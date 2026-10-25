@@ -18,6 +18,8 @@ import {
   Trash2,
   Video,
   X,
+  ArrowRight,
+  PenLine
 } from 'lucide-react';
 import { supabase, formatDate, getUserProfile } from '@/lib/supabase';
 import {
@@ -438,10 +440,10 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
     onPostsChanged();
   };
 
-  const inputCls =
-    'w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-100';
+    const inputCls =
+    'w-full border-0 border-b-2 border-gray-200 bg-transparent px-0 py-3 font-serif text-2xl font-bold text-gray-900 outline-none transition-colors placeholder:font-sans placeholder:text-base placeholder:font-normal placeholder:text-gray-400 focus:border-gray-900';
   const chipBtn =
-    'inline-flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 disabled:opacity-50';
+    'inline-flex items-center gap-2 rounded-sm border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:border-gray-900 hover:text-gray-900 disabled:opacity-50';
 
   const shownAvatar = editingProfile ? avatarInput : profile.avatarUrl;
   const shownName = editingProfile ? nameInput || profile.name : profile.name;
@@ -595,44 +597,56 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
         </div>
       )}
 
-      {/* ===== 3. Ô mời viết: thu gọn 1 dòng, bấm thì mở rộng tại chỗ ===== */}
+           {/* ===== 3. Ô mời viết: thu gọn 1 khung, bấm thì mở rộng tại chỗ ===== */}
       <section ref={formRef} className="mt-6 scroll-mt-24">
-        {success && <p className="mb-3 rounded-lg bg-teal-50 px-3 py-2 text-sm text-teal-700">{success}</p>}
+        {success && <p className="mb-3 rounded-sm bg-teal-50 px-3 py-2 text-sm text-teal-700">{success}</p>}
         {error && !composerOpen && (
-          <p className="mb-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p>
+          <p className="mb-3 rounded-sm bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p>
         )}
 
         {!composerOpen ? (
           <button
             type="button"
             onClick={openComposer}
-            className="flex w-full items-center gap-3 rounded-2xl bg-white p-3 text-left shadow-sm ring-1 ring-gray-100 transition hover:shadow-md hover:ring-teal-200"
+            className="group flex w-full items-center gap-4 rounded-md border border-gray-900 bg-white p-4 text-left transition-colors hover:border-teal-500 hover:bg-teal-50/40"
           >
-            <Avatar url={profile.avatarUrl} name={profile.name} className="h-10 w-10 text-base" />
-            <span className="flex-1 rounded-full bg-gray-100 px-4 py-2.5 text-sm text-gray-500">
-              Hôm nay bạn muốn chia sẻ điều gì?
+            <Avatar url={profile.avatarUrl} name={profile.name} className="h-12 w-12 text-base" />
+            <span className="min-w-0 flex-1">
+              <span className="block text-[11px] font-bold uppercase tracking-widest text-orange-600">Gửi bài</span>
+              <span className="mt-0.5 block font-serif text-xl font-bold leading-snug text-gray-900">
+                Hôm nay bạn muốn chia sẻ điều gì?{' '}
+                <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-teal-700 underline decoration-teal-300 decoration-2 underline-offset-4 transition-colors group-hover:decoration-teal-600">
+                  <PenLine className="h-5 w-5" />
+                  Kể ngay
+                  <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1.5" />
+                </span>
+              </span>
             </span>
-            <ImagePlus className="hidden h-5 w-5 text-teal-500 sm:block" />
-            <Video className="hidden h-5 w-5 text-cyan-500 sm:block" />
+            <ImagePlus className="hidden h-5 w-5 text-gray-400 sm:block" />
+            <Video className="hidden h-5 w-5 text-gray-400 sm:block" />
           </button>
         ) : (
-          <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="text-xl font-extrabold text-gray-900">
-                {editingId ? 'Chỉnh sửa bài viết' : 'Viết bài mới'}
-              </h2>
+          <div className="rounded-md border border-gray-300 border-t-4 border-t-gray-900 bg-white p-6">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-widest text-orange-600">Gửi bài</p>
+                <h2 className="mt-1 flex items-center gap-3 font-serif text-3xl font-black tracking-tight text-gray-900">
+                  <span aria-hidden className="inline-block h-3 w-3 rotate-45 rounded-sm bg-teal-500" />
+                  {editingId ? 'Chỉnh sửa bài viết' : 'Viết bài mới'}
+                </h2>
+              </div>
               <button
                 type="button"
                 onClick={handleCancelComposer}
                 disabled={publishing}
                 aria-label="Đóng khung soạn bài"
-                className="rounded-full p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-50"
+                className="rounded-sm p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-50"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="mt-4 space-y-3">
+            <div className="mt-4 space-y-4">
               <input
                 className={inputCls}
                 placeholder="Tiêu đề bài viết"
@@ -642,7 +656,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
               />
 
               {preview ? (
-                <div className="min-h-[12rem] rounded-xl border border-gray-200 bg-gray-50 p-4 text-gray-700">
+                <div className="min-h-[12rem] rounded-md border border-gray-300 bg-[#faf8f3] p-4 text-gray-700">
                   {content.trim() ? <PostContent content={content} /> : <p className="text-gray-400">Chưa có nội dung.</p>}
                 </div>
               ) : (
@@ -654,9 +668,9 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
                 />
               )}
 
-              {error && <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p>}
+              {error && <p className="rounded-sm bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p>}
 
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2 border-t border-gray-300 pt-4">
                 <input
                   ref={fileRef}
                   type="file"
@@ -686,7 +700,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
                     }}
                     placeholder="Dán link YouTube..."
                     disabled={uploading || preview}
-                    className="w-56 rounded-full bg-gray-100 px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-200 disabled:opacity-50"
+                    className="w-56 rounded-sm border border-gray-300 bg-white px-4 py-2 text-sm outline-none transition-colors focus:border-gray-900 disabled:opacity-50"
                   />
                   <button
                     type="button"
@@ -713,7 +727,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
                     type="button"
                     onClick={editingId ? handleSave : handlePublish}
                     disabled={publishing || uploading}
-                    className="inline-flex items-center gap-2 rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white hover:bg-teal-600 disabled:opacity-60"
+                    className="inline-flex items-center gap-2 rounded-sm bg-gray-900 px-6 py-2 text-sm font-bold uppercase tracking-widest text-white transition-colors hover:bg-teal-600 disabled:opacity-60"
                   >
                     {publishing ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -726,7 +740,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
                   </button>
                 </div>
               </div>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-gray-500">
                 Ảnh tối đa {MAX_IMAGE_MB}MB (JPG, PNG, WEBP, GIF). Video: dán link YouTube (nên để chế độ Không công
                 khai hoặc Công khai). Ảnh đầu tiên sẽ làm nền mờ cho bài trên trang chủ.
               </p>

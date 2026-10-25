@@ -1,4 +1,4 @@
-import { Newspaper, Mail, Phone, Heart } from 'lucide-react';
+import { Mail, Phone, Heart } from 'lucide-react';
 
 const CONTACTS = [
   {
@@ -6,72 +6,61 @@ const CONTACTS = [
     role: 'Trưởng nhóm',
     phone: '0368396050',
     email: 'phanthuymo136ltri@gmail.com',
-    card: 'border-teal-100 shadow-teal-100/70',
-    badge: 'from-teal-500 to-cyan-500',
-    link: 'text-teal-700 hover:text-teal-900',
+    roleColor: 'text-teal-700',
+    link: 'hover:text-teal-700',
   },
   {
     name: 'Lê Văn Dương',
     role: 'Nhóm phó',
     phone: '0384678558',
     email: 'Leekunngo2306@gmail.com',
-    card: 'border-orange-100 shadow-orange-100/70',
-    badge: 'from-orange-500 to-rose-500',
-    link: 'text-orange-700 hover:text-orange-900',
+    roleColor: 'text-orange-600',
+    link: 'hover:text-orange-600',
   },
 ];
 
 export default function Footer() {
   return (
-    <footer className="mt-10 border-t border-gray-100 bg-gray-50">
+    <footer className="mt-10 border-t-4 border-gray-900 bg-[#faf8f3]">
       <div className="mx-auto max-w-6xl px-6 py-12">
-        <div className="grid gap-8 md:grid-cols-2">
-          <div>
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-teal-400 to-cyan-500">
-                <Newspaper className="h-4 w-4 text-white" />
-              </div>
-              <span className="text-lg font-extrabold text-gray-900">
+        <div className="grid gap-10 md:grid-cols-2 md:gap-0">
+          {/* Cột trái: tên báo + khẩu hiệu */}
+          <div className="md:pr-10">
+            <div className="flex items-center gap-2.5">
+              <span aria-hidden className="inline-block h-3.5 w-3.5 rotate-45 rounded-sm bg-teal-500" />
+              <span className="font-serif text-3xl font-black leading-none tracking-tight text-gray-900">
                 VTD<span className="text-orange-500">.</span>News
               </span>
             </div>
-            <p className="mt-4 bg-gradient-to-r from-teal-500 via-cyan-500 to-orange-500 bg-clip-text py-1 text-xl font-black uppercase leading-snug tracking-wide text-transparent md:text-2xl">
-              DÃ NGOẠI THỰC TẾ ĐÀ NẴNG - QUY NHƠN
+            <p className="mt-6 font-serif text-2xl font-black uppercase leading-snug text-gray-900 md:text-3xl">
+              Dã ngoại thực tế Đà Nẵng - Quy Nhơn
             </p>
-            <p className="mt-1 text-lg font-extrabold text-black md:text-xl">
+            <span className="mt-4 block h-1 w-14 rounded-full bg-orange-400" />
+            <p className="mt-4 text-xs font-bold uppercase tracking-widest text-gray-500">
               Môn học thực tập nhận thức
             </p>
           </div>
 
-          <div>
-            <h4 className="text-sm font-bold text-gray-900">Liên hệ</h4>
-            <ul className="mt-3 space-y-4">
+          {/* Cột phải: liên hệ, kẻ ngăn bằng đường mảnh như mục lục báo */}
+          <div className="md:border-l md:border-gray-300 md:pl-10">
+            <p className="text-xs font-bold uppercase tracking-widest text-orange-600">Liên hệ</p>
+            <ul className="mt-3 divide-y divide-gray-300 border-y border-gray-300">
               {CONTACTS.map((c) => (
-                <li
-                  key={c.email}
-                  className={`rounded-2xl border bg-white p-4 shadow-md ${c.card}`}
-                >
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-base font-extrabold text-gray-900">{c.name}</span>
-                    <span
-                      className={`rounded-full bg-gradient-to-r px-2.5 py-0.5 text-xs font-bold text-white ${c.badge}`}
-                    >
-                      {c.role}
-                    </span>
+                <li key={c.email} className="py-4">
+                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <span className="font-serif text-xl font-bold text-gray-900">{c.name}</span>
+                    <span className={`text-[11px] font-bold uppercase tracking-widest ${c.roleColor}`}>{c.role}</span>
                   </div>
-                  <div className="mt-3 flex flex-col gap-2">
-                    <a
-                      href={`tel:${c.phone}`}
-                      className={`inline-flex items-center gap-2 text-sm font-bold transition-colors ${c.link}`}
-                    >
-                      <Phone className="h-4 w-4" />
+                  <div className="mt-2 flex flex-col gap-1.5 text-sm font-semibold text-gray-700">
+                    <a href={`tel:${c.phone}`} className={`inline-flex items-center gap-2 transition-colors ${c.link}`}>
+                      <Phone className="h-4 w-4 text-gray-400" />
                       {c.phone}
                     </a>
                     <a
                       href={`mailto:${c.email}`}
-                      className={`inline-flex items-center gap-2 break-all text-sm font-bold transition-colors ${c.link}`}
+                      className={`inline-flex items-center gap-2 break-all transition-colors ${c.link}`}
                     >
-                      <Mail className="h-4 w-4 shrink-0" />
+                      <Mail className="h-4 w-4 shrink-0 text-gray-400" />
                       {c.email}
                     </a>
                   </div>
@@ -81,10 +70,12 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 flex items-center justify-center gap-1.5 border-t border-gray-200 pt-6 text-sm text-gray-400">
-          <span>© 2026 VTD.News · Made with</span>
-          <Heart className="h-3.5 w-3.5 text-rose-500" />
-          <span>in Quy Nhơn</span>
+        {/* Dòng cuối trang */}
+        <div className="mt-10 flex flex-wrap items-center justify-between gap-2 border-t border-gray-300 pt-5 text-xs font-semibold uppercase tracking-widest text-gray-500">
+          <span>© 2026 VTD.News</span>
+          <span className="inline-flex items-center gap-1.5">
+            Made with <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500" /> in Quy Nhơn
+          </span>
         </div>
       </div>
     </footer>
