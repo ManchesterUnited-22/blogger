@@ -72,7 +72,7 @@ function UserMenu({
 
   if (!user) {
     return (
-            <button
+      <button
         onClick={onLoginClick}
         className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 px-5 py-2.5 text-base font-semibold text-white shadow-md shadow-teal-500/25 transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-teal-500/30"
       >
@@ -196,17 +196,25 @@ export default function Header({
 }: Props) {
   const active = useActiveSection();
 
+  // Mục đang xem: nền trắng nổi lên + chữ teal; mục còn lại: chữ xám, rê chuột thì đậm lên
   const linkClass = (id: string | null) =>
-    `relative rounded-full px-5 py-2.5 text-base font-semibold transition-colors ${
-      active === id ? 'bg-teal-50 text-teal-700' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+    `inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-base font-semibold transition-all ${
+      active === id ? 'bg-white text-teal-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
     }`;
 
+  const navButtons = NAV_ITEMS.map(({ label, id, icon: Icon }) => (
+    <button key={label} onClick={() => onNavigate(id)} className={linkClass(id)}>
+      <Icon className={`h-5 w-5 ${active === id ? 'text-teal-500' : 'text-gray-400'}`} />
+      {label}
+    </button>
+  ));
+
   return (
-    <nav className="sticky top-0 z-50 border-b border-gray-100 bg-white/90 shadow-sm backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
+    <nav className="sticky top-0 z-50 bg-white/90 shadow-sm backdrop-blur-md">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3.5">
         {/* Logo: bấm để về trang chủ */}
-        <button onClick={() => onNavigate(null)} aria-label="Về trang chủ" className="flex shrink-0 items-center gap-2">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-teal-400 to-cyan-500">
+        <button onClick={() => onNavigate(null)} aria-label="Về trang chủ" className="flex shrink-0 items-center gap-2.5">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-teal-400 to-cyan-500 shadow-md shadow-teal-500/20">
             <Newspaper className="h-6 w-6 text-white" />
           </div>
           <span className="text-2xl font-extrabold tracking-tight text-gray-900">
@@ -214,14 +222,8 @@ export default function Header({
           </span>
         </button>
 
-        {/* Menu điều hướng (màn hình từ md trở lên) */}
-        <div className="hidden items-center gap-2 md:flex">
-          {NAV_ITEMS.map((item) => (
-            <button key={item.label} onClick={() => onNavigate(item.id)} className={linkClass(item.id)}>
-              {item.label}
-            </button>
-          ))}
-        </div>
+        {/* Menu dạng "viên thuốc" nằm giữa (từ md trở lên) */}
+        <div className="hidden items-center gap-1 rounded-full bg-gray-100/80 p-1.5 md:flex">{navButtons}</div>
 
         <UserMenu
           user={user}
@@ -231,14 +233,13 @@ export default function Header({
         />
       </div>
 
-      {/* Menu điều hướng trên điện thoại */}
-      <div className="flex items-center gap-1 overflow-x-auto border-t border-gray-100 px-4 py-2 md:hidden">
-        {NAV_ITEMS.map((item) => (
-          <button key={item.label} onClick={() => onNavigate(item.id)} className={`shrink-0 ${linkClass(item.id)}`}>
-            {item.label}
-          </button>
-        ))}
+      {/* Menu trên điện thoại: hàng viên thuốc phía dưới, vuốt ngang nếu thiếu chỗ */}
+      <div className="px-4 pb-3 md:hidden">
+        <div className="flex items-center gap-1 overflow-x-auto rounded-full bg-gray-100/80 p-1.5">{navButtons}</div>
       </div>
+
+      {/* Dải màu mảnh ở đáy header, ăn theo màu thương hiệu */}
+      <div className="h-[3px] bg-gradient-to-r from-teal-400 via-cyan-400 to-orange-400" />
     </nav>
   );
 }
