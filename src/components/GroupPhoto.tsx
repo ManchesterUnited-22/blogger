@@ -9,14 +9,14 @@ const PLAY_ONLY_ON_HOVER = false; // true: rê chuột mới chạy | false: lu�
 
 // Chú thích mặc định cho mọi ảnh
 const DEFAULT_CAPTION = {
-  title: 'Cả đoàn tại Quy Nhơn',
+  
   sub: 'Dã ngoại thực tế Đà Nẵng – Quy Nhơn · Thực tập Nhận thức',
 };
 
 // (Tùy chọn) chú thích riêng cho từng ảnh, khóa là TÊN FILE
 const CAPTIONS: Record<string, { title: string; sub?: string }> = {
-  '01.jpg': { title: 'Cả đoàn tại Eo Gió', sub: 'Dã ngoại thực tế Đà Nẵng – Quy Nhơn · Thực tập Nhận thức' },
-  // '02.jpg': { title: 'Tháp Đôi Quy Nhơn', sub: 'Di tích Chăm Pa' },
+  '01.jpg': { title: 'Eo Gió', sub: 'Dã ngoại thực tế Đà Nẵng – Quy Nhơn · Thực tập Nhận thức' },
+  
 };
 /* ==================================================== */
 
