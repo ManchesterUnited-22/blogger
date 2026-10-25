@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import { MapPin, ArrowDown, Sparkles, Waves, UtensilsCrossed, Landmark, ScrollText } from 'lucide-react';
 import VietnamMap from './VietnamMap';
+import YouTubeBackground from './YouTubeBackground';
+
+// Mã video YouTube làm nền (phần sau v= trong link)
+const YT_ID = 'CKIUpDn39no';
 
 // Mỗi từ xoay vòng có màu riêng, trùng màu với chip chủ đề bên dưới
 const WORDS = [
@@ -41,6 +45,13 @@ export default function Hero() {
 
   return (
     <header className="bg-aurora relative overflow-hidden">
+      {/* Video nền YouTube: tự phát, tắt tiếng, lặp lại */}
+      <YouTubeBackground videoId={YT_ID} />
+
+      {/* Lớp phủ làm video mờ nhẹ. Muốn rõ video hơn: giảm /70 xuống /60 hoặc /50.
+          Muốn mờ hơn: tăng lên /80. */}
+      <div aria-hidden className="absolute inset-0 bg-paper/70" />
+
       {/* Các mảng màu phẳng trôi nhẹ phía sau */}
       <div
         aria-hidden
