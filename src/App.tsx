@@ -1,5 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react';
-import { Loader2, PenLine, Search } from 'lucide-react';
+import { Heart, Loader2, MessageCircle, PenLine, Search } from 'lucide-react';
 import { supabase, type Author } from '@/lib/supabase';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
@@ -307,11 +307,32 @@ export default function App() {
         <div className="mx-auto max-w-6xl px-6 pb-16 pt-10">
           {/* Đầu báo: vạch đậm + một dòng ngày và số liệu */}
           <div className="border-t-4 border-gray-900">
-            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-gray-300 py-2 text-xs font-semibold uppercase tracking-widest text-gray-500">
-              <span>{dateLine()}</span>
-              <span>
-                {filteredPosts.length} bài · {totalLikes} lượt tim · {totalComments} bình luận
-              </span>
+            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-gray-300 py-2.5">
+              <span className="text-xs font-bold uppercase tracking-widest text-gray-700">{dateLine()}</span>
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-xs font-bold uppercase tracking-widest text-gray-700">
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="font-serif text-xl font-black leading-none tabular-nums text-gray-900">
+                    {filteredPosts.length}
+                  </span>
+                  bài
+                </span>
+                <span aria-hidden className="h-4 w-px bg-gray-300" />
+                <span className="inline-flex items-center gap-1.5">
+                  <Heart className="h-4 w-4 fill-rose-500 text-rose-500" />
+                  <span className="font-serif text-xl font-black leading-none tabular-nums text-gray-900">
+                    {totalLikes}
+                  </span>
+                  lượt tim
+                </span>
+                <span aria-hidden className="h-4 w-px bg-gray-300" />
+                <span className="inline-flex items-center gap-1.5">
+                  <MessageCircle className="h-4 w-4 text-teal-600" />
+                  <span className="font-serif text-xl font-black leading-none tabular-nums text-gray-900">
+                    {totalComments}
+                  </span>
+                  bình luận
+                </span>
+              </div>
             </div>
             <div className="flex flex-wrap items-end justify-between gap-4 py-6">
               <div>
@@ -319,16 +340,18 @@ export default function App() {
                   <span aria-hidden className="inline-block h-3.5 w-3.5 rotate-45 rounded-sm bg-teal-500" />
                   Góc cộng đồng
                 </h2>
-                <p className="mt-1 text-sm text-gray-500">Bài viết do các cây bút trong cộng đồng chia sẻ</p>
+                <p className="mt-1 text-sm font-semibold text-gray-700">
+                  Bài viết do các cây bút trong cộng đồng chia sẻ
+                </p>
               </div>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
                 <input
                   type="text"
                   placeholder="Tìm bài viết..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="rounded-full border border-gray-300 bg-white py-2 pl-9 pr-4 text-sm text-gray-700 outline-none transition-all focus:border-teal-400 focus:ring-2 focus:ring-teal-100"
+                  className="rounded-sm border border-gray-300 bg-white py-2 pl-9 pr-4 text-sm text-gray-700 outline-none transition-colors focus:border-gray-900"
                 />
               </div>
             </div>
@@ -339,16 +362,16 @@ export default function App() {
               <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
             </div>
           ) : filteredPosts.length === 0 ? (
-            <div className="py-20 text-center text-gray-400">
+            <div className="py-20 text-center text-gray-500">
               {searchQuery ? (
-                <p className="text-lg">Không tìm thấy bài viết phù hợp.</p>
+                <p className="font-serif text-lg italic">Không tìm thấy bài viết phù hợp.</p>
               ) : (
                 <>
-                  <p className="text-lg">Chưa có bài viết nào. Hãy là người đầu tiên chia sẻ!</p>
+                  <p className="font-serif text-lg italic">Chưa có bài viết nào. Hãy là người đầu tiên chia sẻ!</p>
                   <button
                     type="button"
                     onClick={handleWrite}
-                    className="mt-5 inline-flex items-center gap-2 rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white hover:bg-teal-600"
+                    className="mt-5 inline-flex items-center gap-2 rounded-sm bg-gray-900 px-5 py-2 text-sm font-bold uppercase tracking-widest text-white hover:bg-teal-600"
                   >
                     <PenLine className="h-4 w-4" />
                     Viết bài đầu tiên
