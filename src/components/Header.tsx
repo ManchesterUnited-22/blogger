@@ -75,7 +75,7 @@ function UserMenu({
     return (
       <button
         onClick={onLoginClick}
-        className="inline-flex items-center gap-2 rounded-sm bg-gray-900 px-4 py-2.5 text-sm font-bold uppercase tracking-widest text-white transition-colors hover:bg-teal-600 sm:px-5"
+        className="inline-flex items-center gap-2 rounded-sm bg-gray-900 px-4 py-2.5 text-sm font-bold uppercase tracking-widest text-white shadow-[3px_3px_0_0_#f97316] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0_0_#f97316] sm:px-5"
       >
         <LogIn className="h-4 w-4" />
         Đăng nhập
@@ -201,12 +201,12 @@ export default function Header({
 }: Props) {
   const active = useActiveSection();
 
-  // Mục đang xem: chữ đậm + gạch chân cam; mục còn lại: chữ xám, rê chuột thì gạch chân trượt ra
+  // Mục đang xem: có vệt "bút dạ quang" cam nhạt chạy ngang chân chữ; rê chuột vào mục khác thì vệt cũng trượt ra
   const linkClass = (id: string | null) =>
-    `relative inline-flex shrink-0 items-center gap-2 px-4 py-2.5 text-sm font-bold uppercase tracking-widest transition-colors after:absolute after:inset-x-4 after:bottom-0 after:h-0.5 after:origin-left after:bg-orange-500 after:transition-transform after:duration-300 ${
+    `relative isolate inline-flex shrink-0 items-center gap-2 px-4 py-2.5 text-sm font-bold uppercase tracking-widest transition-colors before:absolute before:inset-x-2 before:bottom-2 before:-z-10 before:h-3 before:origin-left before:-rotate-1 before:bg-orange-300/70 before:transition-transform before:duration-300 ${
       active === id
-        ? 'text-gray-900 after:scale-x-100'
-        : 'text-gray-500 hover:text-gray-900 after:scale-x-0 hover:after:scale-x-100'
+        ? 'text-gray-900 before:scale-x-100'
+        : 'text-gray-500 hover:text-gray-900 before:scale-x-0 hover:before:scale-x-100'
     }`;
 
   const navButtons = NAV_ITEMS.map(({ label, id, icon: Icon }) => (
@@ -218,11 +218,18 @@ export default function Header({
 
   return (
     <>
-      {/* Dải đầu báo: vạch đậm + ngày tháng (cuộn đi theo trang, không dính) */}
-      <div className="hidden border-t-4 border-gray-900 bg-[#faf8f3] sm:block">
-        <div className="mx-auto flex max-w-6xl items-center justify-between border-b border-gray-300 px-6 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-gray-500">
-          <span>{dateLine()}</span>
-          <span>Nhật ký Quy Nhơn · Biển Nam Trung Bộ</span>
+      {/* Dải ngày tháng: nền mực đen cho nổi bật, có tem "Hôm nay" nghiêng nhẹ (cuộn đi theo trang) */}
+      <div className="bg-gray-900 text-[#faf8f3]">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-2">
+          <div className="flex items-center gap-3">
+            <span className="-rotate-2 rounded-sm bg-orange-500 px-2 py-0.5 text-[11px] font-black uppercase tracking-widest text-white shadow-sm">
+              Hôm nay
+            </span>
+            <span className="font-serif text-lg font-bold leading-none sm:text-xl">{dateLine()}</span>
+          </div>
+          <span className="hidden text-xs font-semibold uppercase tracking-widest text-gray-400 md:block">
+            Nhật ký Quy Nhơn · Biển Nam Trung Bộ
+          </span>
         </div>
       </div>
 
@@ -232,9 +239,12 @@ export default function Header({
           <button
             onClick={() => onNavigate(null)}
             aria-label="Về trang chủ"
-            className="flex shrink-0 items-center gap-2.5"
+            className="group flex shrink-0 items-center gap-2.5"
           >
-            <span aria-hidden className="inline-block h-3.5 w-3.5 rotate-45 rounded-sm bg-teal-500" />
+            <span
+              aria-hidden
+              className="inline-block h-3.5 w-3.5 rotate-45 rounded-sm bg-teal-500 transition-transform duration-500 group-hover:rotate-[225deg] group-hover:bg-orange-500"
+            />
             <span className="font-serif text-3xl font-black leading-none tracking-tight text-gray-900">
               VTD<span className="text-orange-500">.</span>News
             </span>

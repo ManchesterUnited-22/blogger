@@ -1,5 +1,4 @@
-import { ArrowLeft, Calendar } from 'lucide-react';
-import { formatDate } from '@/lib/supabase';
+import { ArrowLeft } from 'lucide-react';
 import type { Post } from '@/lib/posts';
 import PostContent from '@/components/PostContent';
 import type { User } from '@supabase/supabase-js';
@@ -38,10 +37,6 @@ export default function PostDetail({ post, user, onLoginClick, onBack }: Props) 
             )}
           </div>
           <span className="font-medium text-gray-700">{post.author_name}</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <Calendar className="h-4 w-4" />
-          {formatDate(post.created_at)}
         </div>
       </div>
 

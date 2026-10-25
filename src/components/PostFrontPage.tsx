@@ -1,8 +1,8 @@
 import { useState, type KeyboardEvent } from 'react';
 import { ArrowRight, Heart, MessageCircle, PenLine } from 'lucide-react';
-import { timeAgo } from '@/lib/supabase';
+
 import { makeExcerpt, type Post } from '@/lib/posts';
-import { briefStamp, isFresh, readMinutes } from '@/lib/postMeta';
+import { isFresh, readMinutes } from '@/lib/postMeta';
 import ScrollReveal from '@/components/ScrollReveal';
 
 type Stat = { likes: number; comments: number } | undefined;
@@ -72,8 +72,6 @@ function Byline({ post, small }: { post: Post; small?: boolean }) {
     <div className={`flex flex-wrap items-center gap-x-2 gap-y-1 text-gray-500 ${small ? 'text-xs' : 'text-sm'}`}>
       <Avatar post={post} className={small ? 'h-5 w-5 text-[10px]' : 'h-7 w-7 text-xs'} />
       <span className="font-semibold text-gray-800">{post.author_name}</span>
-      <span aria-hidden>·</span>
-      <time dateTime={post.created_at}>{timeAgo(post.created_at)}</time>
       <span aria-hidden>·</span>
       <span>{readMinutes(post.content)} phút đọc</span>
     </div>
@@ -230,11 +228,7 @@ function OpinionCard({ post, stat, onOpen }: { post: Post; stat: Stat; onOpen: (
         <div className="min-w-0">
           <div className="text-[11px] font-bold uppercase tracking-widest text-orange-600">Góc nhìn</div>
           <div className="truncate font-semibold text-gray-900">{post.author_name}</div>
-          <div className="text-xs text-gray-500">
-            <time dateTime={post.created_at}>{timeAgo(post.created_at)}</time>
-            {' · '}
-            {readMinutes(post.content)} phút đọc
-          </div>
+                    <div className="text-xs text-gray-500">{readMinutes(post.content)} phút đọc</div>
         </div>
       </div>
       <blockquote className="relative mt-4 line-clamp-5 font-serif text-xl font-bold leading-snug text-gray-900">
@@ -281,26 +275,19 @@ function GridStory({ post, stat, onOpen }: { post: Post; stat: Stat; onOpen: (p:
 }
 
 /* ---------- Tin vắn (bài chỉ có chữ) ---------- */
+/* ---------- Tin vắn (bài chỉ có chữ): chỉ hiện tiêu đề + vài dòng đầu ---------- */
 function Brief({ post, onOpen }: { post: Post; onOpen: (p: Post) => void }) {
   const sub = post.title ? makeExcerpt(post.content, 140) : '';
   return (
     <article
       {...linkProps(() => onOpen(post))}
       onClick={() => onOpen(post)}
-      className="group grid cursor-pointer grid-cols-[3.25rem_1fr] gap-3 border-b border-dotted border-gray-300 py-4"
+      className="group cursor-pointer border-b border-dotted border-gray-300 py-4"
     >
-      <time dateTime={post.created_at} className="pt-0.5 text-sm font-extrabold tabular-nums text-orange-600">
-        {briefStamp(post.created_at)}
-      </time>
-      <div className="min-w-0">
-        <h4 className="line-clamp-2 font-serif text-lg font-bold leading-snug text-gray-900">
-          <span className={UNDERLINE}>{headlineOf(post)}</span>
-        </h4>
-        {sub && <p className="mt-1 line-clamp-2 text-sm text-gray-600">{sub}</p>}
-        <p className="mt-1 text-xs text-gray-500">
-          {post.author_name} · {timeAgo(post.created_at)}
-        </p>
-      </div>
+      <h4 className="line-clamp-2 font-serif text-lg font-bold leading-snug text-gray-900">
+        <span className={UNDERLINE}>{headlineOf(post)}</span>
+      </h4>
+      {sub && <p className="mt-1 line-clamp-2 text-sm text-gray-600">{sub}</p>}
     </article>
   );
 }

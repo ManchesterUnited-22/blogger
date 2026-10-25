@@ -52,7 +52,7 @@ export default function Hero() {
             <h1 className="mt-4 font-serif text-5xl font-black leading-[1.05] tracking-tight text-gray-900 sm:text-6xl lg:text-7xl">
               Những câu chuyện về{' '}
               <span
-                className={`inline-block text-orange-500 transition-opacity duration-300 ${
+                className={`inline-block -rotate-1 rounded-sm bg-orange-200 px-3 text-gray-900 transition-opacity duration-300 ${
                   visible ? 'opacity-100' : 'opacity-0'
                 }`}
               >
@@ -67,9 +67,9 @@ export default function Hero() {
               nơi đã đi, những người đã gặp và những khoảnh khắc không có trong sách hướng dẫn.
             </p>
 
-            {/* Dải thông tin kẻ đường mảnh trên dưới, như hàng chỉ mục trong báo */}
-            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 border-y border-gray-300 py-4">
-              <div className="flex items-center gap-2.5 pr-6 sm:border-r sm:border-gray-300">
+            {/* Dải thông tin kẻ đường đứt trên dưới, như hàng chỉ mục trong báo */}
+            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 border-y border-dashed border-gray-400 py-4">
+              <div className="flex items-center gap-2.5 pr-6 sm:border-r sm:border-dashed sm:border-gray-400">
                 <Heart className="h-5 w-5 fill-rose-500 text-rose-500" />
                 <span className="font-serif text-3xl font-black leading-none text-gray-900">100%</span>
                 <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Đam mê</span>
@@ -87,16 +87,21 @@ export default function Hero() {
 
             <a
               href="#feed"
-              className="mt-8 inline-flex items-center gap-2 rounded-sm bg-gray-900 px-6 py-3 text-sm font-bold uppercase tracking-widest text-white transition-colors hover:bg-teal-600"
+              className="mt-8 inline-flex items-center gap-2 rounded-sm bg-gray-900 px-6 py-3 text-sm font-bold uppercase tracking-widest text-white shadow-[4px_4px_0_0_#f97316] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_#f97316]"
             >
               Khám phá bài viết
               <ArrowDown className="h-4 w-4 animate-bounce" />
             </a>
           </div>
 
-          {/* ===== Cột phải: bản đồ như một hình minh họa có chú thích ===== */}
-          <figure className="mx-auto w-full max-w-sm">
-            <div className="border border-gray-900 bg-white p-6">
+          {/* ===== Cột phải: bản đồ như tấm hình cắt từ báo, dán bằng băng keo ===== */}
+          <figure className="group relative mx-auto w-full max-w-sm rotate-2 transition-transform duration-500 hover:rotate-0">
+            {/* Miếng băng keo */}
+            <span
+              aria-hidden
+              className="absolute -top-3 left-1/2 z-10 h-6 w-24 -translate-x-1/2 -rotate-3 bg-orange-200/90 shadow-sm"
+            />
+            <div className="border border-gray-900 bg-white p-6 shadow-[6px_6px_0_0_#111827]">
               <VietnamMap />
             </div>
             <figcaption className="mt-3 flex items-start gap-3 border-t-4 border-gray-900 pt-3">
