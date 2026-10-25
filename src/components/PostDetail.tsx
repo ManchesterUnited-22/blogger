@@ -5,6 +5,7 @@ import PostContent from '@/components/PostContent';
 import type { User } from '@supabase/supabase-js';
 import CommentSection from '@/components/CommentSection';
 import PostActions from '@/components/PostActions';
+
 type Props = { post: Post; user: User | null; onLoginClick: () => void; onBack: () => void };
 
 export default function PostDetail({ post, user, onLoginClick, onBack }: Props) {
@@ -18,7 +19,7 @@ export default function PostDetail({ post, user, onLoginClick, onBack }: Props) 
         Quay lại
       </button>
 
-            {post.title && (
+      {post.title && (
         <h1 className="text-3xl font-extrabold leading-tight text-gray-900 lg:text-4xl">{post.title}</h1>
       )}
 
@@ -47,9 +48,7 @@ export default function PostDetail({ post, user, onLoginClick, onBack }: Props) 
       <div className="mt-8 text-lg leading-relaxed text-gray-700">
         <PostContent content={post.content} />
       </div>
-            <div className="mt-8 text-lg leading-relaxed text-gray-700">
-        <PostContent content={post.id} />
-      </div>
+
       <PostActions post={post} user={user} onLoginClick={onLoginClick} />
       <CommentSection postId={post.id} postOwnerId={post.user_id} user={user} onLoginClick={onLoginClick} />
     </article>
