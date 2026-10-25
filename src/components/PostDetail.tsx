@@ -39,7 +39,7 @@ export default function PostDetail({ post, user, onLoginClick, onBack }: Props) 
           </div>
           <div className="leading-tight">
             <div className="font-medium text-gray-700">{post.author_name}</div>
-            <time dateTime={post.created_at} className="text-xs font-semibold uppercase tracking-wider text-gray-600">
+            <time dateTime={post.created_at} className="text-xs font-semibold tracking-wide text-gray-600">
               {shortDate(post.created_at)}
             </time>
           </div>

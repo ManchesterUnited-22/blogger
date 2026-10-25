@@ -25,7 +25,7 @@ export default function PostCard({ post, onClick, likes = 0, comments = 0 }: Pro
           />
         </div>
       ) : (
-        <div className="h-1.5 rounded-full bg-gradient-to-r from-teal-400 via-cyan-400 to-orange-300" />
+        <div className="h-1.5 rounded-full bg-gradient-to-r from-teal-400 via-violet-400 to-cyan-300" />
       )}
 
       <div className="flex flex-1 flex-col pt-5">

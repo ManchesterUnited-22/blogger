@@ -118,14 +118,14 @@ function ReplyBox({
           }}
           rows={2}
           placeholder={`Trả lời ${replyToName}...`}
-          className="w-full resize-y rounded-sm border border-gray-300 bg-white px-3 py-2 text-sm outline-none transition-colors focus:border-gray-900"
+          className="w-full resize-y rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm outline-none transition-colors focus:border-teal-400 focus:ring-4 focus:ring-teal-100"
         />
         {err && <p className="mt-1 text-xs text-rose-600">{err}</p>}
         <div className="mt-1.5 flex items-center justify-end gap-2">
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-sm px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-gray-600 hover:bg-gray-100"
+            className="rounded-lg px-3 py-1.5 text-xs font-bold tracking-wide text-gray-600 hover:bg-gray-100"
           >
             Hủy
           </button>
@@ -133,7 +133,7 @@ function ReplyBox({
             type="button"
             onClick={send}
             disabled={sending || !text.trim()}
-            className="inline-flex items-center gap-1.5 rounded-sm bg-gray-900 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-white hover:bg-teal-600 disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-pop px-4 py-1.5 text-xs font-bold tracking-wide text-white shadow-md shadow-teal-500/25 hover:brightness-110 disabled:opacity-50"
           >
             {sending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
             Trả lời
@@ -258,11 +258,11 @@ export default function CommentSection({ postId, postOwnerId, user, onLoginClick
       <li key={c.id} className="flex gap-3">
         <Avatar name={c.author_name} url={c.author_avatar} size={depth === 0 ? 'h-9 w-9' : 'h-7 w-7'} />
         <div className="min-w-0 flex-1">
-          <div className="rounded-sm border border-gray-300 bg-white px-4 py-2.5">
+          <div className="rounded-lg border border-gray-200 bg-white px-4 py-2.5">
             <div className="flex items-center gap-2">
               <span className="truncate font-serif text-base font-bold text-gray-900">{c.author_name}</span>
               {c.user_id === postOwnerId && (
-                <span className="rounded-sm bg-orange-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
+                <span className="rounded-full bg-teal-50 px-2 py-0.5 text-[10px] font-bold tracking-wide text-teal-700">
                   Tác giả
                 </span>
               )}
@@ -297,7 +297,7 @@ export default function CommentSection({ postId, postOwnerId, user, onLoginClick
           )}
 
           {replies.length > 0 && (
-            <ul className={`mt-3 space-y-4 ${indent ? 'border-l-2 border-gray-300 pl-3 sm:pl-4' : ''}`}>
+            <ul className={`mt-3 space-y-4 ${indent ? 'border-l-2 border-gray-200 pl-3 sm:pl-4' : ''}`}>
               {replies.map((r) => renderComment(r, depth + 1))}
             </ul>
           )}
@@ -309,8 +309,8 @@ export default function CommentSection({ postId, postOwnerId, user, onLoginClick
   const roots = childrenMap.get(null) ?? [];
 
   return (
-    <section className="mt-12 border-t border-gray-300 pt-8">
-      <h2 className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-gray-900">
+    <section className="mt-12 border-t border-gray-200 pt-8">
+      <h2 className="flex items-center gap-3 text-xs font-bold tracking-wide text-gray-900">
         <span aria-hidden className="h-2.5 w-2.5 bg-teal-500" />
         Bình luận ({comments.length})
         <span className="h-px flex-1 bg-gray-300" />
@@ -333,7 +333,7 @@ export default function CommentSection({ postId, postOwnerId, user, onLoginClick
               }}
               rows={3}
               placeholder="Để lại vài dòng..."
-              className="w-full resize-y rounded-sm border border-gray-300 bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-gray-900"
+              className="w-full resize-y rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-teal-400 focus:ring-4 focus:ring-teal-100"
             />
             <div className="relative mt-2 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -341,7 +341,7 @@ export default function CommentSection({ postId, postOwnerId, user, onLoginClick
                   type="button"
                   onClick={() => setEmojiOpen((o) => !o)}
                   aria-label="Chọn biểu tượng cảm xúc"
-                  className="inline-flex items-center gap-1.5 rounded-sm border border-gray-300 bg-white px-3 py-1.5 text-sm font-semibold text-gray-700 hover:border-gray-900"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-semibold text-gray-700 hover:border-teal-300"
                 >
                   <Smile className="h-4 w-4" />
                   Emoji
@@ -354,20 +354,20 @@ export default function CommentSection({ postId, postOwnerId, user, onLoginClick
                 type="button"
                 onClick={handleSend}
                 disabled={sending || !text.trim()}
-                className="inline-flex items-center gap-2 rounded-sm bg-gray-900 px-5 py-2 text-sm font-bold uppercase tracking-widest text-white hover:bg-teal-600 disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-lg bg-pop px-5 py-2 text-sm font-bold tracking-wide text-white shadow-md shadow-teal-500/25 hover:brightness-110 disabled:opacity-50"
               >
                 {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                 Gửi
               </button>
 
               {emojiOpen && (
-                <div className="absolute bottom-full left-0 z-20 mb-2 grid w-72 grid-cols-9 gap-1 rounded-md border border-gray-900 bg-white p-2 shadow-[4px_4px_0_0_#111827]">
+                <div className="absolute bottom-full left-0 z-20 mb-2 grid w-72 grid-cols-9 gap-1 rounded-xl border border-gray-200 bg-white p-2 shadow-soft">
                   {EMOJIS.map((e) => (
                     <button
                       key={e}
                       type="button"
                       onClick={() => insertEmoji(e)}
-                      className="flex h-7 w-7 items-center justify-center rounded-md text-lg transition-transform hover:scale-125 hover:bg-gray-100"
+                      className="flex h-7 w-7 items-center justify-center rounded-xl text-lg transition-transform hover:scale-125 hover:bg-gray-100"
                     >
                       {e}
                     </button>
@@ -378,7 +378,7 @@ export default function CommentSection({ postId, postOwnerId, user, onLoginClick
           </div>
         </div>
       ) : (
-        <div className="mt-5 rounded-sm border border-dashed border-gray-400 bg-[#faf8f3] p-4 text-sm text-gray-700">
+        <div className="mt-5 rounded-lg border border-dashed border-gray-400 bg-gray-50 p-4 text-sm text-gray-700">
           Bạn cần{' '}
           <button onClick={onLoginClick} className="font-semibold text-teal-700 underline decoration-teal-300 decoration-2 underline-offset-4 hover:decoration-teal-600">
             đăng nhập
@@ -387,7 +387,7 @@ export default function CommentSection({ postId, postOwnerId, user, onLoginClick
         </div>
       )}
 
-      {error && <p className="mt-3 rounded-sm bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p>}
+      {error && <p className="mt-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p>}
 
       {/* Danh sách */}
       {loading ? (

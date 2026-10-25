@@ -102,7 +102,7 @@ export default function GroupPhoto() {
     <section className="px-6 pb-10 pt-6">
       <div className="mx-auto max-w-6xl">
       <ScrollReveal>
-        <div className="bg-pop-anim rounded-[2rem] p-1.5 shadow-2xl shadow-fuchsia-500/25">
+        <div className="bg-pop-anim rounded-[2rem] p-1.5 shadow-2xl shadow-teal-500/25">
         <figure
           className="group relative aspect-[3/2] w-full select-none overflow-hidden rounded-[1.6rem] bg-gray-100"
           onMouseEnter={() => setHovering(true)}

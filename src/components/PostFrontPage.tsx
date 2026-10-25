@@ -16,7 +16,7 @@ type Props = {
 
 /** Gạch chân cam trượt ra khi rê chuột lên tiêu đề (hoạt động cả khi tiêu đề xuống dòng). */
 const UNDERLINE =
-  'box-decoration-clone bg-gradient-to-r from-orange-400 to-orange-400 bg-[length:0%_2px] bg-left-bottom bg-no-repeat transition-[background-size] duration-300 group-hover:bg-[length:100%_2px]';
+  'box-decoration-clone bg-gradient-to-r from-teal-400 to-teal-400 bg-[length:0%_2px] bg-left-bottom bg-no-repeat transition-[background-size] duration-300 group-hover:bg-[length:100%_2px]';
 
 /** Cho phép mở bài bằng bàn phím */
 const linkProps = (activate: () => void) => ({
@@ -34,13 +34,13 @@ function Kicker({ post, likes }: { post: Post; likes: number }) {
   return (
     <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
       {isFresh(post.created_at) && (
-        <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-teal-600">
+        <span className="inline-flex items-center gap-1 text-[10px] font-bold tracking-wide text-teal-600">
           <span className="h-1.5 w-1.5 rounded-full bg-teal-500" />
           Mới
         </span>
       )}
       {likes >= 3 && (
-        <span className="rounded-sm bg-rose-50 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-rose-600">
+        <span className="rounded-lg bg-rose-50 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-rose-600">
           Được yêu thích
         </span>
       )}
@@ -73,7 +73,7 @@ function Byline({ post, small }: { post: Post; small?: boolean }) {
       <Avatar post={post} className={small ? 'h-5 w-5 text-[10px]' : 'h-7 w-7 text-xs'} />
       <span className="font-semibold text-gray-800">{post.author_name}</span>
       <span aria-hidden>·</span>
-      <time dateTime={post.created_at} className="text-xs font-semibold uppercase tracking-wider text-gray-600">
+      <time dateTime={post.created_at} className="text-xs font-semibold tracking-wide text-gray-600">
         {shortDate(post.created_at)}
       </time>
       <span aria-hidden>·</span>
@@ -121,7 +121,7 @@ function LeadStory({
         onClick={() => onOpen(post)}
         className={`group cursor-pointer ${wide ? 'grid gap-8 lg:grid-cols-5 lg:items-center' : ''}`}
       >
-        <div className={`aspect-[16/10] overflow-hidden rounded-md bg-gray-200 ${wide ? 'lg:col-span-3' : ''}`}>
+        <div className={`aspect-[16/10] overflow-hidden rounded-xl bg-gray-200 ${wide ? 'lg:col-span-3' : ''}`}>
           <img
             src={post.cover_url}
             alt={post.title || 'Ảnh bài viết'}
@@ -148,7 +148,7 @@ function LeadStory({
     <article
       {...linkProps(() => onOpen(post))}
       onClick={() => onOpen(post)}
-      className="group relative cursor-pointer overflow-hidden border-l-4 border-orange-500 py-2 pl-6"
+      className="group relative cursor-pointer overflow-hidden border-l-4 border-teal-500 py-2 pl-6"
     >
       <span
         aria-hidden
@@ -185,9 +185,9 @@ function SideStory({
     <article
       {...linkProps(() => onOpen(post))}
       onClick={() => onOpen(post)}
-      className={`group cursor-pointer ${divider ? 'border-b border-gray-300 pb-6' : ''}`}
+      className={`group cursor-pointer ${divider ? 'border-b border-gray-200 pb-6' : ''}`}
     >
-      <div className="aspect-[16/10] overflow-hidden rounded-md bg-gray-200">
+      <div className="aspect-[16/10] overflow-hidden rounded-xl bg-gray-200">
         <img
           src={post.cover_url as string}
           alt={post.title || 'Ảnh bài viết'}
@@ -216,23 +216,23 @@ function OpinionCard({ post, stat, onOpen }: { post: Post; stat: Stat; onOpen: (
     <article
       {...linkProps(() => onOpen(post))}
       onClick={() => onOpen(post)}
-      className="group relative cursor-pointer overflow-hidden rounded-md border-t-4 border-orange-500 bg-white p-5 shadow-sm ring-1 ring-gray-200/70 transition-shadow hover:shadow-md"
+      className="group relative cursor-pointer overflow-hidden rounded-xl border-t-4 border-teal-500 bg-white p-5 shadow-sm ring-1 ring-gray-200/70 transition-shadow hover:shadow-md"
     >
       <span
         aria-hidden
-        className="pointer-events-none absolute -right-1 -top-5 select-none font-serif text-8xl leading-none text-orange-500/15"
+        className="pointer-events-none absolute -right-1 -top-5 select-none font-serif text-8xl leading-none text-teal-500/15"
       >
         “
       </span>
       <div className="relative flex items-center gap-3.5">
         <Avatar
           post={post}
-          className="h-16 w-16 text-2xl ring-2 ring-orange-400 ring-offset-2 transition-transform duration-300 group-hover:scale-105"
+          className="h-16 w-16 text-2xl ring-2 ring-teal-400 ring-offset-2 transition-transform duration-300 group-hover:scale-105"
         />
         <div className="min-w-0">
-          <div className="text-[11px] font-bold uppercase tracking-widest text-orange-600">Góc nhìn</div>
+          <div className="text-[11px] font-bold tracking-wide text-teal-600">Góc nhìn</div>
           <div className="truncate font-semibold text-gray-900">{post.author_name}</div>
-            <div className="text-xs font-semibold uppercase tracking-wider text-gray-600">
+            <div className="text-xs font-semibold tracking-wide text-gray-600">
             <time dateTime={post.created_at}>{shortDate(post.created_at)}</time>
             {' · '}
             {readMinutes(post.content)} phút đọc
@@ -256,9 +256,9 @@ function Brief({ post, onOpen }: { post: Post; onOpen: (p: Post) => void }) {
     <article
       {...linkProps(() => onOpen(post))}
       onClick={() => onOpen(post)}
-      className="group grid cursor-pointer grid-cols-[3.25rem_1fr] gap-3 border-b border-dotted border-gray-300 py-4"
+      className="group grid cursor-pointer grid-cols-[3.25rem_1fr] gap-3 border-b border-dotted border-gray-200 py-4"
     >
-      <time dateTime={post.created_at} className="pt-0.5 text-sm font-extrabold tabular-nums text-orange-600">
+      <time dateTime={post.created_at} className="pt-0.5 text-sm font-extrabold tabular-nums text-teal-600">
         {briefStamp(post.created_at)}
       </time>
       <div className="min-w-0">
@@ -266,7 +266,7 @@ function Brief({ post, onOpen }: { post: Post; onOpen: (p: Post) => void }) {
           <span className={UNDERLINE}>{headlineOf(post)}</span>
         </h4>
         {sub && <p className="mt-1 line-clamp-2 text-sm text-gray-600">{sub}</p>}
-        <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-gray-600">
+        <p className="mt-1 text-xs font-semibold tracking-wide text-gray-600">
           {post.author_name} · {shortDate(post.created_at)}
         </p>
       </div>
@@ -281,9 +281,9 @@ function GridStory({ post, stat, onOpen }: { post: Post; stat: Stat; onOpen: (p:
     <article
       {...linkProps(() => onOpen(post))}
       onClick={() => onOpen(post)}
-      className="group flex h-full cursor-pointer flex-col border-t border-gray-300 pt-5"
+      className="group flex h-full cursor-pointer flex-col border-t border-gray-200 pt-5"
     >
-      <div className="aspect-[16/10] overflow-hidden rounded-md bg-gray-200">
+      <div className="aspect-[16/10] overflow-hidden rounded-xl bg-gray-200">
         <img
           src={post.cover_url as string}
           alt={post.title || 'Ảnh bài viết'}
@@ -313,11 +313,11 @@ function SubmitStrip({ big, onWrite }: { big: boolean; onWrite: () => void }) {
       <button
         type="button"
         onClick={onWrite}
-        className="group relative block w-full overflow-hidden rounded-md border border-gray-900 bg-white px-6 py-12 text-center shadow-[6px_6px_0_0_#111827] transition-all hover:translate-x-[3px] hover:translate-y-[3px] hover:bg-teal-50/40 hover:shadow-[3px_3px_0_0_#111827]"
+        className="group relative block w-full overflow-hidden rounded-xl border border-gray-200 bg-white px-6 py-12 text-center shadow-soft-lg transition-all hover:translate-x-[3px] hover:translate-y-[3px] hover:bg-teal-50/40 hover:shadow-[3px_3px_0_0_#111827]"
       >
         <span
           aria-hidden
-          className="pointer-events-none absolute -left-2 -top-8 select-none font-serif text-[9rem] leading-none text-orange-500/10"
+          className="pointer-events-none absolute -left-2 -top-8 select-none font-serif text-[9rem] leading-none text-teal-500/10"
         >
           “
         </span>
@@ -339,7 +339,7 @@ function SubmitStrip({ big, onWrite }: { big: boolean; onWrite: () => void }) {
     <button
       type="button"
       onClick={onWrite}
-      className="group block w-full border-y border-gray-300 py-5 text-left transition-colors hover:bg-teal-50/40"
+      className="group block w-full border-y border-gray-200 py-5 text-left transition-colors hover:bg-teal-50/40"
     >
       <span className="font-serif text-xl font-bold text-gray-900">
         Bạn có câu chuyện muốn chia sẻ?{' '}
@@ -387,7 +387,7 @@ export default function PostFrontPage({ posts, stats, onOpen, onWrite }: Props) 
         </div>
 
         {hasAside && (
-          <aside className="space-y-6 lg:border-l lg:border-gray-300 lg:pl-8">
+          <aside className="space-y-6 lg:border-l lg:border-gray-200 lg:pl-8">
             {sideStories.map((p, i) => (
               <ScrollReveal key={p.id} delay={(i + 1) * 80}>
                 <SideStory
@@ -410,8 +410,8 @@ export default function PostFrontPage({ posts, stats, onOpen, onWrite }: Props) 
       {/* Tin vắn */}
       {briefsAll.length > 0 && (
         <section>
-          <h3 className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-gray-900">
-            <span aria-hidden className="h-2.5 w-2.5 bg-orange-500" />
+          <h3 className="flex items-center gap-3 text-xs font-bold tracking-wide text-gray-900">
+            <span aria-hidden className="h-2.5 w-2.5 rounded-full bg-teal-500" />
             Tin vắn
             <span className="h-px flex-1 bg-gray-300" />
           </h3>
@@ -427,7 +427,7 @@ export default function PostFrontPage({ posts, stats, onOpen, onWrite }: Props) 
               <button
                 type="button"
                 onClick={() => setShowAllBriefs((s) => !s)}
-                className="rounded-full border border-gray-300 bg-white px-5 py-2 text-sm font-semibold text-gray-700 transition hover:border-orange-400 hover:text-orange-600"
+                className="rounded-full border border-gray-200 bg-white px-5 py-2 text-sm font-semibold text-gray-700 transition hover:border-teal-400 hover:text-teal-600"
               >
                 {showAllBriefs ? 'Thu gọn' : `Xem thêm ${briefsAll.length - BRIEFS_SHOWN} tin vắn`}
               </button>
@@ -439,7 +439,7 @@ export default function PostFrontPage({ posts, stats, onOpen, onWrite }: Props) 
       {/* Các bài khác */}
       {gridStories.length > 0 && (
         <section>
-          <h3 className="mb-6 flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-gray-900">
+          <h3 className="mb-6 flex items-center gap-3 text-xs font-bold tracking-wide text-gray-900">
             <span aria-hidden className="h-2.5 w-2.5 bg-teal-500" />
             Các bài khác
             <span className="h-px flex-1 bg-gray-300" />

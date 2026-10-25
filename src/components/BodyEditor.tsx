@@ -163,7 +163,7 @@ function RichTextBlock({
 const toolBtn =
   'flex h-8 w-8 items-center justify-center rounded-lg text-gray-700 transition-colors hover:bg-gray-100';
 const toolSelect =
-  'h-8 rounded-lg border border-gray-200 bg-white px-2 text-xs text-gray-700 outline-none hover:border-gray-300 focus:border-teal-400';
+  'h-8 rounded-lg border border-gray-200 bg-white px-2 text-xs text-gray-700 outline-none hover:border-gray-200 focus:border-teal-400';
 
 const BodyEditor = forwardRef<BodyEditorHandle, Props>(function BodyEditor(
   { value, onChange, placeholder },
@@ -369,7 +369,7 @@ const BodyEditor = forwardRef<BodyEditorHandle, Props>(function BodyEditor(
   return (
     <div
       ref={rootRef}
-      className="min-h-[12rem] rounded-md border border-gray-300 bg-white p-2 transition-colors focus-within:border-gray-900"
+      className="min-h-[12rem] rounded-xl border border-gray-200 bg-white p-2 transition-colors focus-within:border-teal-400 focus-within:ring-4 focus-within:ring-teal-100"
     >
       {/* Thanh công cụ định dạng chữ */}
       <div className="mb-2 flex flex-wrap items-center gap-1.5 border-b border-gray-100 pb-2">

@@ -75,7 +75,7 @@ function UserMenu({
     return (
       <button
         onClick={onLoginClick}
-        className="bg-pop-anim inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-fuchsia-500/30 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-fuchsia-500/40"
+        className="bg-pop-anim inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-teal-500/30 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-teal-500/40"
       >
         <LogIn className="h-4 w-4" />
         Đăng nhập
@@ -87,7 +87,7 @@ function UserMenu({
   const providerLabel: Record<string, string> = { google: 'Google', email: 'Email' };
   const avatar = (size: string) => (
     <div
-      className={`${size} flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-fuchsia-500 to-orange-400 font-bold text-white`}
+      className={`${size} flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-teal-500 to-cyan-400 font-bold text-white`}
     >
       {avatarUrl ? (
         <img src={avatarUrl} alt={name} referrerPolicy="no-referrer" className="h-full w-full object-cover" />
@@ -116,7 +116,7 @@ function UserMenu({
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label="Tài khoản"
-        className="rounded-full ring-2 ring-fuchsia-400 ring-offset-2 ring-offset-white transition hover:ring-orange-400"
+        className="rounded-full ring-2 ring-teal-300 ring-offset-2 ring-offset-white transition hover:ring-cyan-300"
       >
         {avatar('h-11 w-11 text-base')}
       </button>
@@ -138,7 +138,7 @@ function UserMenu({
               onProfileClick();
               setOpen(false);
             }}
-            className="bg-pop mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold text-white shadow-md shadow-fuchsia-500/25 transition-all hover:-translate-y-0.5"
+            className="bg-pop mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold text-white shadow-md shadow-teal-500/25 transition-all hover:-translate-y-0.5"
           >
             <UserRound className="h-4 w-4" /> Trang cá nhân
           </button>
@@ -205,7 +205,7 @@ export default function Header({
   const linkClass = (id: string | null) =>
     `inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all ${
       active === id
-        ? 'bg-pop text-white shadow-md shadow-fuchsia-500/30'
+        ? 'bg-pop text-white shadow-md shadow-teal-500/30'
         : 'text-gray-600 hover:bg-violet-100 hover:text-violet-700'
     }`;
 
@@ -219,24 +219,24 @@ export default function Header({
   return (
     <>
       {/* Dải trên cùng: gradient đổi màu liên tục, ngày + chữ chạy ngang */}
-      <div className="bg-pop-anim overflow-hidden text-white">
+      <div className="overflow-hidden border-b border-teal-100/70 bg-soft-gradient text-gray-700">
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-6 py-2">
-          <span className="shrink-0 rounded-full bg-white/25 px-3 py-0.5 text-[11px] font-bold uppercase tracking-wider backdrop-blur">
+          <span className="shrink-0 rounded-full bg-white px-3 py-0.5 text-[11px] font-bold tracking-wide text-teal-700 shadow-sm">
             Hôm nay
           </span>
           <span className="shrink-0 text-sm font-semibold">{dateLine()}</span>
           <div className="relative hidden min-w-0 flex-1 overflow-hidden md:block">
-            <div className="flex w-max animate-marquee gap-8 whitespace-nowrap text-xs font-semibold text-white/90">
+            <div className="flex w-max animate-marquee gap-8 whitespace-nowrap text-xs font-medium text-gray-500">
               {[0, 1].map((k) => (
                 <span key={k} className="flex gap-8">
                   <span>Nhật ký Quy Nhơn</span>
-                  <span>✦</span>
+                  <span className="text-teal-300">✦</span>
                   <span>Biển Nam Trung Bộ</span>
-                  <span>✦</span>
+                  <span className="text-teal-300">✦</span>
                   <span>Thực tập nhận thức</span>
-                  <span>✦</span>
+                  <span className="text-teal-300">✦</span>
                   <span>15–18/10/2026</span>
-                  <span>✦</span>
+                  <span className="text-teal-300">✦</span>
                 </span>
               ))}
             </div>
@@ -244,7 +244,7 @@ export default function Header({
         </div>
       </div>
 
-      <nav className="glass sticky top-0 z-50 border-b border-violet-100">
+      <nav className="glass sticky top-0 z-50 border-b border-gray-200/70">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3">
           {/* Logo: ô gradient + chữ chuyển sắc */}
           <button
@@ -252,7 +252,7 @@ export default function Header({
             aria-label="Về trang chủ"
             className="group flex shrink-0 items-center gap-2.5"
           >
-            <span className="bg-pop-anim flex h-10 w-10 items-center justify-center rounded-xl text-white shadow-lg shadow-fuchsia-500/30 transition-transform duration-300 group-hover:rotate-12">
+            <span className="bg-pop-anim flex h-10 w-10 items-center justify-center rounded-xl text-white shadow-lg shadow-teal-500/30 transition-transform duration-300 group-hover:rotate-12">
               <Sparkles className="h-5 w-5" />
             </span>
             <span className="font-display text-2xl font-extrabold tracking-tight text-gray-900">

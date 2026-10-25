@@ -343,7 +343,7 @@ export default function App() {
                   placeholder="Tìm bài viết..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="rounded-full border-2 border-violet-200 bg-white py-2.5 pl-10 pr-5 text-sm text-gray-700 outline-none transition-all placeholder:text-gray-400 focus:border-fuchsia-400 focus:shadow-lg focus:shadow-fuchsia-500/20"
+                  className="rounded-full border-2 border-violet-200 bg-white py-2.5 pl-10 pr-5 text-sm text-gray-700 outline-none transition-all placeholder:text-gray-400 focus:border-fuchsia-400 focus:shadow-lg focus:shadow-teal-500/20"
                 />
               </div>
             </div>
@@ -363,7 +363,7 @@ export default function App() {
                   <button
                     type="button"
                     onClick={handleWrite}
-                    className="bg-pop-anim mt-5 inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold text-white shadow-lg shadow-fuchsia-500/30 transition-all hover:-translate-y-0.5"
+                    className="bg-pop-anim mt-5 inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold text-white shadow-lg shadow-teal-500/30 transition-all hover:-translate-y-0.5"
                   >
                     <PenLine className="h-4 w-4" />
                     Viết bài đầu tiên

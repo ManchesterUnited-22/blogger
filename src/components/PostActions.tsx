@@ -136,16 +136,16 @@ export default function PostActions({ post, user, onLoginClick }: Props) {
   };
 
   return (
-    <div className="mt-10 border-t border-gray-300 pt-5">
+    <div className="mt-10 border-t border-gray-200 pt-5">
       <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
           onClick={toggleLike}
           aria-pressed={liked}
-          className={`inline-flex items-center gap-2 rounded-sm border px-5 py-2 text-sm font-bold uppercase tracking-widest transition-all active:scale-95 ${
+          className={`inline-flex items-center gap-2 rounded-lg border px-5 py-2 text-sm font-bold tracking-wide transition-all active:scale-95 ${
             liked
               ? 'border-rose-600 bg-rose-50 text-rose-600'
-              : 'border-gray-900 bg-white text-gray-900 hover:bg-rose-50 hover:text-rose-600'
+              : 'border-gray-200 bg-white text-gray-900 hover:bg-rose-50 hover:text-rose-600'
           }`}
         >
           <Heart className={`h-5 w-5 transition-transform ${liked ? 'scale-110 fill-rose-500 text-rose-500' : ''}`} />
@@ -158,14 +158,14 @@ export default function PostActions({ post, user, onLoginClick }: Props) {
             type="button"
             onClick={() => setMenuOpen((o) => !o)}
             aria-expanded={menuOpen}
-            className="inline-flex items-center gap-2 rounded-sm border border-gray-900 bg-white px-5 py-2 text-sm font-bold uppercase tracking-widest text-gray-900 transition-all hover:bg-teal-50 hover:text-teal-700"
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-2 text-sm font-bold tracking-wide text-gray-900 transition-all hover:bg-teal-50 hover:text-teal-700"
           >
             <Share2 className="h-5 w-5" />
             Chia sẻ
           </button>
 
           {menuOpen && (
-            <div className="absolute bottom-full left-0 z-20 mb-2 w-56 overflow-hidden rounded-md border border-gray-900 bg-white py-1 shadow-[4px_4px_0_0_#111827]">
+            <div className="absolute bottom-full left-0 z-20 mb-2 w-56 overflow-hidden rounded-xl border border-gray-200 bg-white py-1 shadow-soft">
               <button
                 type="button"
                 onClick={shareFacebook}

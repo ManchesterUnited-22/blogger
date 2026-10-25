@@ -35,19 +35,19 @@ export default function Hero() {
       {/* Các quả cầu màu trôi nhẹ phía sau */}
       <div
         aria-hidden
-        className="absolute -left-24 top-10 h-72 w-72 animate-float rounded-full bg-gradient-to-br from-pink-400 to-orange-300 opacity-50 blur-3xl"
+        className="absolute -left-24 top-10 h-72 w-72 animate-float rounded-full bg-gradient-to-br from-teal-300 to-violet-300 opacity-40 blur-3xl"
       />
       <div
         aria-hidden
-        className="absolute -right-20 top-0 h-80 w-80 animate-float-slow rounded-full bg-gradient-to-br from-cyan-300 to-blue-400 opacity-50 blur-3xl"
+        className="absolute -right-20 top-0 h-80 w-80 animate-float-slow rounded-full bg-gradient-to-br from-cyan-200 to-blue-300 opacity-50 blur-3xl"
       />
       <div
         aria-hidden
-        className="absolute bottom-0 left-1/3 h-72 w-72 animate-float rounded-full bg-gradient-to-br from-yellow-200 to-lime-300 opacity-50 blur-3xl"
+        className="absolute bottom-0 left-1/3 h-72 w-72 animate-float rounded-full bg-gradient-to-br from-orange-100 to-yellow-100 opacity-70 blur-3xl"
       />
       <div
         aria-hidden
-        className="absolute bottom-10 right-1/4 h-64 w-64 animate-float-slow rounded-full bg-gradient-to-br from-violet-400 to-fuchsia-400 opacity-40 blur-3xl"
+        className="absolute bottom-10 right-1/4 h-64 w-64 animate-float-slow rounded-full bg-gradient-to-br from-violet-200 to-teal-200 opacity-40 blur-3xl"
       />
 
       <div className="relative mx-auto max-w-6xl px-6 pb-28 pt-14 lg:pb-32 lg:pt-20">
@@ -55,7 +55,7 @@ export default function Hero() {
           {/* ===== Cột trái ===== */}
           <div>
             <p className="glass inline-flex items-center gap-2 rounded-full border border-white px-4 py-1.5 text-sm font-semibold text-violet-700 shadow-sm">
-              <Sparkles className="h-4 w-4 text-fuchsia-500" />
+              <Sparkles className="h-4 w-4 text-teal-500" />
               Bản tin chuyến đi
             </p>
 
@@ -78,7 +78,7 @@ export default function Hero() {
 
             {/* Chip chủ đề nhiều màu */}
             <div className="mt-7 flex flex-wrap items-center gap-2.5">
-              <span className="bg-pop inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold text-white shadow-md shadow-fuchsia-500/25">
+              <span className="bg-pop inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold text-white shadow-md shadow-teal-500/25">
                 <span className="font-display text-lg leading-none">100%</span> Đam mê
               </span>
               {TOPICS.map(({ icon: Icon, label, cls }) => (
@@ -94,7 +94,7 @@ export default function Hero() {
 
             <a
               href="#feed"
-              className="bg-pop-anim mt-8 inline-flex items-center gap-2 rounded-full px-8 py-4 text-base font-bold text-white shadow-xl shadow-fuchsia-500/30 transition-all hover:-translate-y-1 hover:shadow-2xl hover:shadow-fuchsia-500/40"
+              className="bg-pop-anim mt-8 inline-flex items-center gap-2 rounded-full px-8 py-4 text-base font-bold text-white shadow-xl shadow-teal-500/30 transition-all hover:-translate-y-1 hover:shadow-2xl hover:shadow-teal-500/40"
             >
               Khám phá bài viết
               <ArrowDown className="h-5 w-5 animate-bounce" />
@@ -105,11 +105,11 @@ export default function Hero() {
           <figure className="group relative mx-auto w-full max-w-sm rotate-2 transition-transform duration-500 hover:rotate-0">
             <span
               aria-hidden
-              className="absolute -top-4 left-6 z-10 rounded-full bg-gradient-to-r from-yellow-300 to-orange-400 px-4 py-1 text-xs font-extrabold uppercase tracking-wider text-gray-900 shadow-lg"
+              className="absolute -top-4 left-6 z-10 rounded-full bg-white px-4 py-1 text-xs font-bold tracking-wide text-teal-700 shadow-md ring-1 ring-teal-100"
             >
               Điểm đến
             </span>
-            <div className="bg-pop-anim rounded-[2rem] p-1.5 shadow-2xl shadow-fuchsia-500/30">
+            <div className="bg-pop-anim rounded-[2rem] p-1.5 shadow-soft-lg">
               <div className="rounded-[1.6rem] bg-white p-6">
                 <VietnamMap />
               </div>

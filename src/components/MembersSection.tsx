@@ -12,12 +12,12 @@ type Props = {
 
 // Mỗi thẻ một gradient riêng: vạch trên, vòng ảnh và chữ cái đầu
 const GRADIENTS = [
-  { grad: 'from-violet-500 to-fuchsia-500', shadow: 'shadow-violet-300/50', num: 'text-violet-600' },
-  { grad: 'from-pink-500 to-orange-400', shadow: 'shadow-pink-300/50', num: 'text-pink-600' },
-  { grad: 'from-cyan-400 to-blue-500', shadow: 'shadow-cyan-300/50', num: 'text-cyan-600' },
-  { grad: 'from-amber-400 to-orange-500', shadow: 'shadow-amber-300/50', num: 'text-orange-600' },
-  { grad: 'from-emerald-400 to-cyan-500', shadow: 'shadow-emerald-300/50', num: 'text-emerald-600' },
-  { grad: 'from-fuchsia-500 to-rose-500', shadow: 'shadow-fuchsia-300/50', num: 'text-fuchsia-600' },
+  { grad: 'from-teal-500 to-violet-500', shadow: 'shadow-teal-300/50', num: 'text-teal-600' },
+  { grad: 'from-violet-400 to-pink-400', shadow: 'shadow-violet-300/50', num: 'text-violet-600' },
+  { grad: 'from-cyan-400 to-teal-500', shadow: 'shadow-cyan-300/50', num: 'text-cyan-600' },
+  { grad: 'from-orange-300 to-pink-400', shadow: 'shadow-pink-300/50', num: 'text-pink-600' },
+  { grad: 'from-cyan-300 to-violet-400', shadow: 'shadow-cyan-300/50', num: 'text-violet-600' },
+  { grad: 'from-teal-400 to-cyan-400', shadow: 'shadow-teal-300/50', num: 'text-teal-600' },
 ];
 
 export default function MembersSection({ members, postCounts, currentUserId }: Props) {
@@ -29,17 +29,17 @@ export default function MembersSection({ members, postCounts, currentUserId }: P
       {/* Nền: các mảng màu mờ */}
       <div
         aria-hidden
-        className="absolute -left-32 top-20 h-96 w-96 animate-float-slow rounded-full bg-gradient-to-br from-cyan-200 to-blue-300 opacity-50 blur-3xl"
+        className="absolute -left-32 top-20 h-96 w-96 animate-float-slow rounded-full bg-gradient-to-br from-cyan-200 to-teal-200 opacity-50 blur-3xl"
       />
       <div
         aria-hidden
-        className="absolute -right-32 bottom-10 h-96 w-96 animate-float rounded-full bg-gradient-to-br from-pink-200 to-orange-200 opacity-60 blur-3xl"
+        className="absolute -right-32 bottom-10 h-96 w-96 animate-float rounded-full bg-gradient-to-br from-violet-200 to-teal-200 opacity-50 blur-3xl"
       />
 
       <div className="relative mx-auto max-w-6xl px-6">
         {/* Đầu mục */}
         <div className="text-center">
-          <span className="bg-pop inline-block rounded-full px-4 py-1 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-fuchsia-500/25">
+          <span className="bg-pop inline-block rounded-full px-4 py-1 text-xs font-bold tracking-wide text-white shadow-md shadow-teal-500/25">
             Danh bạ cây bút
           </span>
           <h2 className="mt-4 font-display text-4xl font-extrabold tracking-tight text-ink sm:text-5xl">
@@ -71,7 +71,7 @@ export default function MembersSection({ members, postCounts, currentUserId }: P
               <li key={m.id} className="group">
                 <article
                   className={`relative flex h-full flex-col items-center overflow-hidden rounded-3xl border border-white bg-white/80 p-4 pt-8 text-center shadow-xl backdrop-blur transition-all duration-300 group-hover:-translate-y-2 group-hover:shadow-2xl ${g.shadow} ${
-                    isMe ? 'ring-2 ring-fuchsia-400 ring-offset-2 ring-offset-white' : ''
+                    isMe ? 'ring-2 ring-teal-300 ring-offset-2 ring-offset-white' : ''
                   }`}
                 >
                   {/* Dải gradient phía trên thẻ */}
@@ -80,8 +80,8 @@ export default function MembersSection({ members, postCounts, currentUserId }: P
                   {/* Nhãn góc */}
                   {(isMe || isTop) && (
                     <span
-                      className={`absolute right-3 top-3 z-10 rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide ${
-                        isMe ? 'bg-yellow-300 text-gray-900' : 'bg-white/90 text-fuchsia-600'
+                      className={`absolute right-3 top-3 z-10 rounded-full px-2.5 py-0.5 text-[10px] font-extrabold tracking-wide ${
+                        isMe ? 'bg-yellow-300 text-gray-900' : 'bg-white/90 text-teal-600'
                       }`}
                     >
                       {isMe ? 'Bạn' : 'Nhiều bài nhất'}

@@ -4,71 +4,79 @@
 
 @layer base {
   html {
-    background: #fbf7ff;
+    background: #f7f8fc;
     -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
   }
   body {
     @apply font-sans antialiased;
-    background: #fbf7ff;
-    color: #111827;
+    background: #f7f8fc;
+    color: #1e293b;
   }
   ::selection {
-    background: #d946ef;
-    color: #fff;
+    background: #cdd8ff;
+    color: #151a33;
   }
   :focus-visible {
-    outline: 2px solid #8b5cf6;
+    outline: 2px solid #6877e6;
     outline-offset: 2px;
   }
 }
 
 @layer utilities {
-  /* ===== Gradient chủ đạo: tím -> fuchsia -> hồng -> cam ===== */
+  /* ===== Gradient chủ đạo: xanh chàm -> oải hương -> xanh trời (dịu, không chói) ===== */
   .bg-pop {
-    background-image: linear-gradient(120deg, #7c3aed 0%, #d946ef 36%, #fb7185 68%, #fb923c 100%);
+    background-image: linear-gradient(120deg, #5462d3 0%, #7a6be0 50%, #4fa9cc 100%);
   }
-  /* Bản chuyển động, nhiều màu hơn (thêm vàng, cyan) */
+  /* Bản chuyển động rất chậm */
   .bg-pop-anim {
-    background-image: linear-gradient(
-      120deg,
-      #7c3aed,
-      #d946ef,
-      #fb7185,
-      #fb923c,
-      #facc15,
-      #22d3ee,
-      #7c3aed
-    );
-    background-size: 300% 100%;
-    animation: gradient-x 9s ease-in-out infinite alternate;
+    background-image: linear-gradient(120deg, #5462d3, #7a6be0, #4fa9cc, #7a6be0, #5462d3);
+    background-size: 220% 100%;
+    animation: gradient-x 16s ease-in-out infinite alternate;
   }
-  /* Gradient mát: cyan -> xanh -> tím */
+  /* Gradient mát: xanh trời -> xanh chàm */
   .bg-cool {
-    background-image: linear-gradient(120deg, #22d3ee 0%, #3b82f6 50%, #8b5cf6 100%);
+    background-image: linear-gradient(120deg, #58b8d0 0%, #6877e6 100%);
+  }
+  /* Gradient nền mềm cho các khối nhấn (rất nhạt) */
+  .bg-soft-gradient {
+    background-image: linear-gradient(135deg, #eef1ff 0%, #f3efff 50%, #e9f6fb 100%);
   }
   /* Chữ chuyển sắc */
   .text-pop {
-    background-image: linear-gradient(90deg, #7c3aed, #d946ef, #fb7185, #fb923c, #7c3aed);
+    background-image: linear-gradient(90deg, #4f5bd5, #7a5fdd, #3a9bc4, #4f5bd5);
     background-size: 200% auto;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    animation: gradient-x 5s ease-in-out infinite alternate;
+    animation: gradient-x 10s ease-in-out infinite alternate;
   }
-  /* Nền aurora: các mảng màu hồng, cyan, vàng, tím mờ trên nền trắng */
+  /* Nền aurora: các mảng màu rất nhạt trên nền sáng */
   .bg-aurora {
-    background-color: #fbf7ff;
+    background-color: #f7f8fc;
     background-image:
-      radial-gradient(at 10% 8%, rgba(244, 114, 182, 0.4) 0, transparent 45%),
-      radial-gradient(at 90% 10%, rgba(34, 211, 238, 0.35) 0, transparent 45%),
-      radial-gradient(at 72% 85%, rgba(250, 204, 21, 0.32) 0, transparent 45%),
-      radial-gradient(at 6% 88%, rgba(139, 92, 246, 0.32) 0, transparent 45%);
+      radial-gradient(at 8% 6%, rgba(122, 107, 224, 0.16) 0, transparent 45%),
+      radial-gradient(at 92% 8%, rgba(79, 169, 204, 0.16) 0, transparent 45%),
+      radial-gradient(at 75% 90%, rgba(241, 148, 108, 0.1) 0, transparent 45%),
+      radial-gradient(at 5% 90%, rgba(84, 98, 211, 0.12) 0, transparent 45%);
   }
   /* Kính mờ */
   .glass {
-    background: rgba(255, 255, 255, 0.7);
-    -webkit-backdrop-filter: blur(16px);
-    backdrop-filter: blur(16px);
+    background: rgba(255, 255, 255, 0.72);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    backdrop-filter: blur(16px) saturate(1.4);
+  }
+
+  /* Bóng mềm (thay cho bóng cứng viền đen kiểu báo giấy) */
+  .shadow-soft {
+    box-shadow:
+      0 1px 2px rgba(15, 23, 42, 0.04),
+      0 10px 28px -14px rgba(70, 79, 183, 0.28);
+  }
+  .shadow-soft-lg {
+    box-shadow:
+      0 1px 2px rgba(15, 23, 42, 0.04),
+      0 22px 50px -22px rgba(70, 79, 183, 0.35);
   }
 
   .scroll-reveal {

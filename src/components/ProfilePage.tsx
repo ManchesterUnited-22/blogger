@@ -83,14 +83,14 @@ function PostTile({
       <button
         onClick={onEdit}
         aria-label="Sửa bài"
-        className="rounded-sm p-2 text-gray-500 hover:bg-teal-50 hover:text-teal-600"
+        className="rounded-lg p-2 text-gray-500 hover:bg-teal-50 hover:text-teal-600"
       >
         <Pencil className="h-4 w-4" />
       </button>
       <button
         onClick={onDelete}
         aria-label="Xóa bài"
-        className="rounded-sm p-2 text-gray-500 hover:bg-rose-50 hover:text-rose-600"
+        className="rounded-lg p-2 text-gray-500 hover:bg-rose-50 hover:text-rose-600"
       >
         <Trash2 className="h-4 w-4" />
       </button>
@@ -98,7 +98,7 @@ function PostTile({
   );
   const meta = (
     <>
-      <span className="font-semibold uppercase tracking-wider text-gray-600">{formatDate(post.created_at)}</span>
+      <span className="font-semibold tracking-wide text-gray-600">{formatDate(post.created_at)}</span>
       <span className="inline-flex items-center gap-1 font-serif text-sm font-black tabular-nums text-gray-900">
         <Heart className={`h-3.5 w-3.5 ${(stat?.likes ?? 0) > 0 ? 'fill-rose-500 text-rose-500' : 'text-gray-500'}`} />
         {stat?.likes ?? 0}
@@ -113,13 +113,13 @@ function PostTile({
 
   if (featured) {
     return (
-      <div className={`overflow-hidden rounded-md border border-gray-900 bg-white shadow-[4px_4px_0_0_#111827] ${ring}`}>
+      <div className={`overflow-hidden rounded-xl border border-gray-200 bg-white shadow-soft ${ring}`}>
         <button onClick={onOpen} className="relative block h-52 w-full text-left sm:h-60">
           <div className="absolute inset-0 bg-gradient-to-br from-teal-400 to-cyan-500">
             {post.cover_url && <img src={post.cover_url} alt="" className="h-full w-full object-cover" />}
           </div>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-          <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-sm bg-orange-500 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-white shadow">
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/75 via-slate-900/20 to-transparent" />
+          <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1 text-[11px] font-bold tracking-wide text-teal-700 shadow-sm backdrop-blur">
             <Star className="h-3.5 w-3.5 fill-current" />
             Bài nổi bật
           </span>
@@ -137,7 +137,7 @@ function PostTile({
   }
 
   return (
-    <div className={`flex flex-col overflow-hidden rounded-md border border-gray-300 bg-white transition hover:border-gray-900 hover:shadow-[4px_4px_0_0_#111827] ${ring}`}>
+    <div className={`flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white transition hover:border-teal-300 hover:shadow-soft ${ring}`}>
       <button onClick={onOpen} className="block text-left">
         <div className="h-32 w-full overflow-hidden bg-gray-200">
           {post.cover_url && <img src={post.cover_url} alt="" className="h-full w-full object-cover" />}
@@ -441,9 +441,9 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
   };
 
     const inputCls =
-    'w-full border-0 border-b-2 border-gray-200 bg-transparent px-0 py-3 font-serif text-2xl font-bold text-gray-900 outline-none transition-colors placeholder:font-sans placeholder:text-base placeholder:font-normal placeholder:text-gray-400 focus:border-gray-900';
+    'w-full border-0 border-b-2 border-gray-200 bg-transparent px-0 py-3 font-serif text-2xl font-bold text-gray-900 outline-none transition-colors placeholder:font-sans placeholder:text-base placeholder:font-normal placeholder:text-gray-400 focus:border-teal-400 focus:ring-4 focus:ring-teal-100';
   const chipBtn =
-    'inline-flex items-center gap-2 rounded-sm border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:border-gray-900 hover:text-gray-900 disabled:opacity-50';
+    'inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:border-teal-300 hover:text-gray-900 disabled:opacity-50';
 
   const shownAvatar = editingProfile ? avatarInput : profile.avatarUrl;
   const shownName = editingProfile ? nameInput || profile.name : profile.name;
@@ -460,10 +460,10 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
       </button>
 
       {/* ===== 1. Hồ sơ cá nhân ===== */}
-      <div className="overflow-hidden rounded-md border border-gray-900 bg-white shadow-[6px_6px_0_0_#111827]">
-        <div className="h-28 border-b border-gray-900 bg-[#faf8f3] px-6 pt-4 sm:h-36">
-          <p className="inline-flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-orange-600">
-            <span aria-hidden className="inline-block h-2.5 w-2.5 rotate-45 rounded-sm bg-teal-500" />
+      <div className="overflow-hidden rounded-3xl border border-gray-200/80 bg-white shadow-soft-lg">
+        <div className="h-28 bg-gradient-to-r from-teal-100 via-violet-100 to-cyan-100 px-6 pt-4 sm:h-36">
+          <p className="inline-flex items-center gap-3 text-xs font-bold tracking-wide text-teal-700">
+            <span aria-hidden className="inline-block h-2.5 w-2.5 rounded-full bg-teal-500" />
             Trang cá nhân
           </p>
         </div>
@@ -490,7 +490,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
                     onClick={() => avatarFileRef.current?.click()}
                     disabled={avatarUploading}
                     aria-label="Đổi ảnh đại diện"
-                    className="absolute -bottom-1 -right-1 flex h-9 w-9 items-center justify-center rounded-full bg-gray-900 text-white shadow hover:bg-teal-600 disabled:opacity-60"
+                    className="absolute -bottom-1 -right-1 flex h-9 w-9 items-center justify-center rounded-full bg-pop text-white shadow shadow-md shadow-teal-500/25 hover:brightness-110 disabled:opacity-60"
                   >
                     {avatarUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
                   </button>
@@ -513,7 +513,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
           <div className="mt-4 min-w-0">
             {editingProfile ? (
               <input
-                className="w-full rounded-sm border border-gray-300 bg-white px-3 py-2 text-lg font-bold text-gray-900 outline-none focus:border-gray-900"
+                className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-lg font-bold text-gray-900 outline-none focus:border-teal-400 focus:ring-4 focus:ring-teal-100"
                 placeholder="Tên hiển thị"
                 value={nameInput}
                 maxLength={50}
@@ -529,18 +529,18 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
               {[
                 { Icon: FileText, cls: 'text-teal-600', n: myPosts.length, label: 'Bài viết' },
                 { Icon: Heart, cls: 'fill-rose-500 text-rose-500', n: totalLikes, label: 'Lượt tim' },
-                { Icon: MessageCircle, cls: 'text-orange-500', n: totalComments, label: 'Bình luận' },
+                { Icon: MessageCircle, cls: 'text-cyan-500', n: totalComments, label: 'Bình luận' },
               ].map(({ Icon, cls, n, label }) => (
                 <div key={label} className="flex flex-col items-center gap-1 px-2">
                   <span className="inline-flex items-center gap-2 font-serif text-3xl font-black leading-none text-gray-900">
                     <Icon className={`h-5 w-5 ${cls}`} />
                     {statVal(n)}
                   </span>
-                  <span className="text-xs font-bold uppercase tracking-widest text-gray-600">{label}</span>
+                  <span className="text-xs font-bold tracking-wide text-gray-600">{label}</span>
                 </div>
               ))}
             </div>
-            <p className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-gray-600">
+            <p className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold tracking-wide text-gray-600">
               <CalendarDays className="h-4 w-4" />
               Tham gia {formatDate(user.created_at)}
             </p>
@@ -557,7 +557,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
                   Dùng lại ảnh Google
                 </button>
               )}
-              {profileError && <p className="rounded-sm bg-rose-50 px-3 py-2 text-sm text-rose-600">{profileError}</p>}
+              {profileError && <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-600">{profileError}</p>}
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="text-xs text-gray-500">
                   Ảnh tối đa {MAX_IMAGE_MB}MB. Tên và ảnh mới sẽ áp dụng cho cả các bài đã đăng.
@@ -576,7 +576,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
                     type="button"
                     onClick={handleSaveProfile}
                     disabled={savingProfile || avatarUploading}
-                    className="inline-flex items-center gap-2 rounded-sm bg-gray-900 px-5 py-2 text-sm font-bold uppercase tracking-widest text-white hover:bg-teal-600 disabled:opacity-60"
+                    className="inline-flex items-center gap-2 rounded-lg bg-pop px-5 py-2 text-sm font-bold tracking-wide text-white shadow-md shadow-teal-500/25 hover:brightness-110 disabled:opacity-60"
                   >
                     {savingProfile ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                     Lưu
@@ -605,16 +605,16 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
 
            {/* ===== 3. Ô mời viết: thu gọn 1 khung, bấm thì mở rộng tại chỗ ===== */}
       <section ref={formRef} className="mt-6 scroll-mt-24">
-        {success && <p className="mb-3 rounded-sm bg-teal-50 px-3 py-2 text-sm text-teal-700">{success}</p>}
+        {success && <p className="mb-3 rounded-lg bg-teal-50 px-3 py-2 text-sm text-teal-700">{success}</p>}
         {error && !composerOpen && (
-          <p className="mb-3 rounded-sm bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p>
+          <p className="mb-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p>
         )}
 
         {!composerOpen ? (
           <button
             type="button"
             onClick={openComposer}
-            className="group flex w-full items-center gap-4 rounded-md border border-gray-900 bg-white p-4 text-left transition-colors hover:border-teal-500 hover:bg-teal-50/40"
+            className="group flex w-full items-center gap-4 rounded-xl border border-gray-200 bg-white p-4 text-left transition-colors hover:border-teal-500 hover:bg-teal-50/40"
           >
             <Avatar url={profile.avatarUrl} name={profile.name} className="h-12 w-12 text-base" />
             <span className="min-w-0 flex-1">
@@ -632,12 +632,12 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
             <Video className="hidden h-5 w-5 text-gray-400 sm:block" />
           </button>
         ) : (
-          <div className="rounded-md border border-gray-300 border-t-4 border-t-gray-900 bg-white p-6">
+          <div className="rounded-xl border border-gray-200 border-t-4 border-t-teal-500 bg-white p-6">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-widest text-orange-600">Gửi bài</p>
+                <p className="text-[11px] font-bold tracking-wide text-teal-700">Gửi bài</p>
                 <h2 className="mt-1 flex items-center gap-3 font-serif text-3xl font-black tracking-tight text-gray-900">
-                  <span aria-hidden className="inline-block h-3 w-3 rotate-45 rounded-sm bg-teal-500" />
+                  <span aria-hidden className="inline-block h-3 w-3 rotate-45 rounded-lg bg-teal-500" />
                   {editingId ? 'Chỉnh sửa bài viết' : 'Viết bài mới'}
                 </h2>
               </div>
@@ -646,7 +646,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
                 onClick={handleCancelComposer}
                 disabled={publishing}
                 aria-label="Đóng khung soạn bài"
-                className="rounded-sm p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-50"
+                className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-50"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -662,7 +662,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
               />
 
               {preview ? (
-                <div className="min-h-[12rem] rounded-md border border-gray-300 bg-[#faf8f3] p-4 text-gray-700">
+                <div className="min-h-[12rem] rounded-xl border border-gray-200 bg-gray-50 p-4 text-gray-700">
                   {content.trim() ? <PostContent content={content} /> : <p className="text-gray-400">Chưa có nội dung.</p>}
                 </div>
               ) : (
@@ -674,9 +674,9 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
                 />
               )}
 
-              {error && <p className="rounded-sm bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p>}
+              {error && <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p>}
 
-              <div className="flex flex-wrap items-center gap-2 border-t border-gray-300 pt-4">
+              <div className="flex flex-wrap items-center gap-2 border-t border-gray-200 pt-4">
                 <input
                   ref={fileRef}
                   type="file"
@@ -706,7 +706,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
                     }}
                     placeholder="Dán link YouTube..."
                     disabled={uploading || preview}
-                    className="w-56 rounded-sm border border-gray-300 bg-white px-4 py-2 text-sm outline-none transition-colors focus:border-gray-900 disabled:opacity-50"
+                    className="w-56 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm outline-none transition-colors focus:border-teal-400 focus:ring-4 focus:ring-teal-100 disabled:opacity-50"
                   />
                   <button
                     type="button"
@@ -733,7 +733,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
                     type="button"
                     onClick={editingId ? handleSave : handlePublish}
                     disabled={publishing || uploading}
-                    className="inline-flex items-center gap-2 rounded-sm bg-gray-900 px-6 py-2 text-sm font-bold uppercase tracking-widest text-white transition-colors hover:bg-teal-600 disabled:opacity-60"
+                    className="inline-flex items-center gap-2 rounded-lg bg-pop px-6 py-2 text-sm font-bold tracking-wide text-white transition-colors shadow-md shadow-teal-500/25 hover:brightness-110 disabled:opacity-60"
                   >
                     {publishing ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -768,8 +768,8 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
         ) : (
           restPosts.length > 0 && (
             <>
-              <h2 className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-gray-900">
-                <span aria-hidden className="h-2.5 w-2.5 bg-orange-500" />
+              <h2 className="flex items-center gap-3 text-xs font-bold tracking-wide text-gray-900">
+                <span aria-hidden className="h-2.5 w-2.5 rounded-full bg-teal-500" />
                 {featured ? 'Các bài viết khác' : 'Bài viết của tôi'}
                 <span className="h-px flex-1 bg-gray-300" />
               </h2>

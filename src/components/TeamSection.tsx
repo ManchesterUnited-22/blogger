@@ -5,12 +5,12 @@ type Props = {
 };
 
 const avatarColors = [
-  'from-violet-500 to-fuchsia-500',
-  'from-pink-500 to-orange-400',
-  'from-cyan-400 to-blue-500',
-  'from-amber-400 to-orange-500',
-  'from-emerald-400 to-cyan-500',
-  'from-fuchsia-500 to-rose-500',
+  'from-teal-500 to-violet-500',
+  'from-violet-400 to-pink-400',
+  'from-cyan-400 to-teal-500',
+  'from-orange-300 to-pink-400',
+  'from-cyan-300 to-violet-400',
+  'from-teal-400 to-cyan-400',
 ];
 
 export default function TeamSection({ authors }: Props) {
