@@ -11,11 +11,10 @@ export function signInWithProvider(provider: OAuthProvider) {
     provider,
     options: {
       redirectTo: window.location.origin,
-      // Facebook: xin quyền đọc email + ảnh đại diện
-      
     },
   });
 }
+
 /** Xóa vĩnh viễn tài khoản đang đăng nhập, rồi đăng xuất khỏi máy này. */
 export async function deleteMyAccount() {
   const { error } = await supabase.rpc('delete_my_account');
@@ -57,6 +56,7 @@ export function getUserProfile(user: User): UserProfile {
     provider: user.app_metadata?.provider ?? 'email',
   };
 }
+
 export type Author = {
   id: string;
   name: string;
@@ -81,4 +81,16 @@ export type Article = {
 export function formatDate(dateStr: string): string {
   const d = new Date(dateStr);
   return d.toLocaleDateString('vi-VN', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+/** "Vừa xong", "5 phút trước", "3 giờ trước", "2 ngày trước", cũ hơn thì hiện ngày. */
+export function timeAgo(dateStr: string): string {
+  const minutes = Math.floor((Date.now() - new Date(dateStr).getTime()) / 60000);
+  if (minutes < 1) return 'Vừa xong';
+  if (minutes < 60) return `${minutes} phút trước`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} giờ trước`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days} ngày trước`;
+  return formatDate(dateStr);
 }
