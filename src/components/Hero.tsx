@@ -52,6 +52,13 @@ export default function Hero() {
           Muốn mờ hơn: tăng lên /80. */}
       <div aria-hidden className="absolute inset-0 bg-paper/70" />
 
+      {/* Lớp mờ dần về màu nền ở chân video, để mép sóng không lộ đường kẻ.
+          Muốn video rõ hơn ở chân: giảm h-40 xuống h-28. */}
+      <div
+        aria-hidden
+        className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-paper via-paper/80 to-transparent"
+      />
+
       {/* Các mảng màu phẳng trôi nhẹ phía sau */}
       <div
         aria-hidden
@@ -146,14 +153,26 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Mép lượn sóng xuống phần ảnh */}
+      {/* Mép lượn sóng xuống phần ảnh.
+          - Sóng phía sau mờ hơn để làm mềm viền.
+          - Sóng chính tràn xuống dưới 1px (-bottom-px) để không hở khe.
+          - geometricPrecision giúp viền cong mịn, không còn vệt răng cưa. */}
       <svg
         aria-hidden
         viewBox="0 0 1440 80"
         preserveAspectRatio="none"
-        className="absolute inset-x-0 bottom-0 h-14 w-full text-paper"
+        shapeRendering="geometricPrecision"
+        className="absolute inset-x-0 -bottom-px block h-14 w-full text-paper"
       >
-        <path fill="currentColor" d="M0,40 C240,90 480,0 720,30 C960,60 1200,90 1440,30 L1440,80 L0,80 Z" />
+        <path
+          fill="currentColor"
+          fillOpacity="0.5"
+          d="M0,34 C240,84 480,-6 720,24 C960,54 1200,84 1440,24 L1440,81 L0,81 Z"
+        />
+        <path
+          fill="currentColor"
+          d="M0,40 C240,90 480,0 720,30 C960,60 1200,90 1440,30 L1440,81 L0,81 Z"
+        />
       </svg>
     </header>
   );

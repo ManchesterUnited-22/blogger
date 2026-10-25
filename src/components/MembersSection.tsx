@@ -53,7 +53,7 @@ export default function MembersSection({ members, postCounts, currentUserId }: P
           {/* Câu nói: viết hoa, giãn chữ, có đường kẻ hai bên */}
           <p className="mx-auto mt-4 flex max-w-xl items-center justify-center gap-3 text-[11px] font-semibold uppercase leading-relaxed tracking-[0.22em] text-gray-500 sm:text-xs">
             <span aria-hidden className="hidden h-px w-8 bg-gray-300 sm:block" />
-            <span>Mỗi người một câu chuyện, cùng viết nên trang blog này</span>
+            <span>Mỗi người một câu chuyện, cùng viết nên trang báo này</span>
             <span aria-hidden className="hidden h-px w-8 bg-gray-300 sm:block" />
           </p>
 
