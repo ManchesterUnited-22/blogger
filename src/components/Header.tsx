@@ -15,8 +15,7 @@ type Props = {
 const NAV_LINKS: { label: string; id: string | null }[] = [
   { label: 'Trang chủ', id: null },
   { label: 'Bài viết', id: 'feed' },
-  { label: 'Cây bút', id: 'members' },
-  { label: 'Đội ngũ', id: 'team' },
+  
 ];
 
 function UserMenu({

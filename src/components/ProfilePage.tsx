@@ -12,9 +12,9 @@ import {
   Loader2,
   MessageCircle,
   Pencil,
-  PenLine,
   Save,
   Send,
+  Star,
   Trash2,
   Video,
   X,
@@ -42,6 +42,118 @@ type Props = {
 
 type Stat = { likes: number; comments: number };
 
+/* ---------- Avatar tròn dùng lại nhiều chỗ ---------- */
+function Avatar({ url, name, className }: { url: string | null; name: string; className: string }) {
+  return (
+    <div
+      className={`flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 font-bold text-white ${className}`}
+    >
+      {url ? (
+        <img src={url} alt={name} referrerPolicy="no-referrer" className="h-full w-full object-cover" />
+      ) : (
+        name.charAt(0).toUpperCase()
+      )}
+    </div>
+  );
+}
+
+/* ---------- Thẻ bài viết (thường + nổi bật) ---------- */
+function PostTile({
+  post,
+  stat,
+  featured,
+  editing,
+  onOpen,
+  onEdit,
+  onDelete,
+}: {
+  post: Post;
+  stat?: Stat;
+  featured?: boolean;
+  editing: boolean;
+  onOpen: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  const label = post.title || makeExcerpt(post.content, 60) || 'Bài viết không có tiêu đề';
+  const actions = (
+    <div className="ml-auto flex">
+      <button
+        onClick={onEdit}
+        aria-label="Sửa bài"
+        className="rounded-full p-2 text-gray-400 hover:bg-teal-50 hover:text-teal-600"
+      >
+        <Pencil className="h-4 w-4" />
+      </button>
+      <button
+        onClick={onDelete}
+        aria-label="Xóa bài"
+        className="rounded-full p-2 text-gray-400 hover:bg-rose-50 hover:text-rose-600"
+      >
+        <Trash2 className="h-4 w-4" />
+      </button>
+    </div>
+  );
+  const meta = (
+    <>
+      <span>{formatDate(post.created_at)}</span>
+      <span className="inline-flex items-center gap-1">
+        <Heart className="h-3.5 w-3.5" />
+        {stat?.likes ?? 0}
+      </span>
+      <span className="inline-flex items-center gap-1">
+        <MessageCircle className="h-3.5 w-3.5" />
+        {stat?.comments ?? 0}
+      </span>
+    </>
+  );
+  const ring = editing ? 'ring-2 ring-teal-400' : 'ring-1 ring-gray-100';
+
+  if (featured) {
+    return (
+      <div className={`overflow-hidden rounded-2xl bg-white shadow-md ${ring}`}>
+        <button onClick={onOpen} className="relative block h-52 w-full text-left sm:h-60">
+          <div className="absolute inset-0 bg-gradient-to-br from-teal-400 to-cyan-500">
+            {post.cover_url && <img src={post.cover_url} alt="" className="h-full w-full object-cover" />}
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+          <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-amber-400 px-3 py-1 text-xs font-bold text-amber-950 shadow">
+            <Star className="h-3.5 w-3.5 fill-current" />
+            Bài nổi bật
+          </span>
+          <div className="absolute inset-x-0 bottom-0 p-5">
+            <div className="line-clamp-2 text-xl font-extrabold text-white sm:text-2xl">{label}</div>
+            {post.title && <p className="mt-1 line-clamp-1 text-sm text-white/80">{makeExcerpt(post.content, 120)}</p>}
+          </div>
+        </button>
+        <div className="flex items-center gap-3 px-5 py-2 text-xs text-gray-400">
+          {meta}
+          {actions}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm transition hover:shadow-md ${ring}`}>
+      <button onClick={onOpen} className="block text-left">
+        <div className="h-32 w-full overflow-hidden bg-gradient-to-br from-teal-100 to-cyan-100">
+          {post.cover_url && <img src={post.cover_url} alt="" className="h-full w-full object-cover" />}
+        </div>
+        <div className="px-4 pt-3">
+          <div className="line-clamp-2 font-bold text-gray-900 hover:text-teal-600">{label}</div>
+          {post.title && <p className="mt-1 line-clamp-2 text-sm text-gray-500">{makeExcerpt(post.content, 100)}</p>}
+        </div>
+      </button>
+      <div className="mt-auto flex items-center gap-3 px-4 pb-3 pt-3 text-xs text-gray-400">
+        {meta}
+        {actions}
+      </div>
+    </div>
+  );
+}
+
+/* ====================== TRANG CÁ NHÂN ====================== */
 export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }: Props) {
   const profile = getUserProfile(user);
   // Ảnh gốc của Google (nếu có) để người dùng quay lại dùng
@@ -115,6 +227,15 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
   const totalLikes = myPosts.reduce((n, p) => n + (stats[p.id]?.likes ?? 0), 0);
   const totalComments = myPosts.reduce((n, p) => n + (stats[p.id]?.comments ?? 0), 0);
 
+  // Bài nổi bật = bài nhiều tim nhất (phải có ít nhất 1 tim)
+  const featured = myPosts.reduce<Post | null>((best, p) => {
+    const likes = stats[p.id]?.likes ?? 0;
+    if (likes <= 0) return best;
+    if (!best || likes > (stats[best.id]?.likes ?? 0)) return p;
+    return best;
+  }, null);
+  const restPosts = featured ? myPosts.filter((p) => p.id !== featured.id) : myPosts;
+
   // ===== Mở / đóng khung soạn =====
   const scrollToComposer = () => {
     requestAnimationFrame(() => {
@@ -126,7 +247,6 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
     setError(null);
     setSuccess(null);
     setComposerOpen(true);
-    scrollToComposer();
   };
 
   // Đóng và xóa sạch khung soạn, không hỏi lại
@@ -210,6 +330,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
     }
     resetComposer();
     setSuccess('Đã đăng bài! Bài viết sẽ hiện ở trang chủ.');
+    scrollToComposer(); // kéo về chỗ thông báo để người dùng thấy
     loadMyPosts();
     onPostsChanged();
   };
@@ -250,6 +371,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
 
     resetComposer();
     setSuccess('Đã cập nhật bài viết!');
+    scrollToComposer();
     loadMyPosts();
     onPostsChanged();
   };
@@ -323,6 +445,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
 
   const shownAvatar = editingProfile ? avatarInput : profile.avatarUrl;
   const shownName = editingProfile ? nameInput || profile.name : profile.name;
+  const statVal = (n: number) => (loadingPosts ? '–' : n);
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-10">
@@ -334,27 +457,18 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
         Quay lại trang chủ
       </button>
 
-      {/* ===== Hồ sơ cá nhân ===== */}
+      {/* ===== 1. Hồ sơ cá nhân ===== */}
       <div className="overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-gray-100">
-        {/* Ảnh bìa */}
         <div className="h-28 bg-gradient-to-r from-teal-400 via-cyan-400 to-sky-400 sm:h-36" />
 
         <div className="px-6 pb-6">
           <div className="-mt-12 flex flex-wrap items-end justify-between gap-4 sm:-mt-14">
-            {/* Avatar */}
             <div className="relative shrink-0">
-              <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 text-4xl font-bold text-white shadow-lg ring-4 ring-white sm:h-28 sm:w-28">
-                {shownAvatar ? (
-                  <img
-                    src={shownAvatar}
-                    alt={profile.name}
-                    referrerPolicy="no-referrer"
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  shownName.charAt(0).toUpperCase()
-                )}
-              </div>
+              <Avatar
+                url={shownAvatar}
+                name={shownName}
+                className="h-24 w-24 text-4xl shadow-lg ring-4 ring-white sm:h-28 sm:w-28"
+              />
               {editingProfile && (
                 <>
                   <input
@@ -377,30 +491,18 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
               )}
             </div>
 
-            {/* Nút hành động */}
             {!editingProfile && (
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={startEditProfile}
-                  className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-gray-200 hover:bg-gray-50"
-                >
-                  <Pencil className="h-4 w-4" />
-                  Sửa hồ sơ
-                </button>
-                <button
-                  type="button"
-                  onClick={openComposer}
-                  className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:shadow-md"
-                >
-                  <PenLine className="h-4 w-4" />
-                  Viết bài mới
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={startEditProfile}
+                className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-gray-200 hover:bg-gray-50"
+              >
+                <Pencil className="h-4 w-4" />
+                Sửa hồ sơ
+              </button>
             )}
           </div>
 
-          {/* Tên + email */}
           <div className="mt-4 min-w-0">
             {editingProfile ? (
               <input
@@ -414,13 +516,28 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
               <h1 className="truncate text-2xl font-extrabold text-gray-900">{profile.name}</h1>
             )}
             {profile.email && <p className="mt-0.5 truncate text-sm text-gray-500">{profile.email}</p>}
-            <p className="mt-2 inline-flex items-center gap-1.5 text-xs text-gray-400">
-              <CalendarDays className="h-3.5 w-3.5" />
-              Tham gia {formatDate(user.created_at)}
-            </p>
+
+            {/* Thống kê gọn trên một dòng */}
+            <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm text-gray-600">
+              <span className="inline-flex items-center gap-1.5">
+                <FileText className="h-4 w-4 text-teal-500" />
+                <b className="text-gray-900">{statVal(myPosts.length)}</b> bài viết
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <Heart className="h-4 w-4 text-rose-500" />
+                <b className="text-gray-900">{statVal(totalLikes)}</b> lượt tim
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <MessageCircle className="h-4 w-4 text-cyan-500" />
+                <b className="text-gray-900">{statVal(totalComments)}</b> bình luận
+              </span>
+              <span className="inline-flex items-center gap-1.5 text-gray-400">
+                <CalendarDays className="h-4 w-4" />
+                Tham gia {formatDate(user.created_at)}
+              </span>
+            </div>
           </div>
 
-          {/* Khối sửa hồ sơ */}
           {editingProfile && (
             <div className="mt-4 space-y-3">
               {googleAvatar && avatarInput !== googleAvatar && (
@@ -460,243 +577,194 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
               </div>
             </div>
           )}
-
-          {/* Thống kê */}
-          <div className="mt-5 grid grid-cols-3 divide-x divide-gray-100 rounded-2xl bg-gray-50 py-3 text-center">
-            <div>
-              <div className="inline-flex items-center gap-1.5 text-xl font-extrabold text-gray-900">
-                <FileText className="h-4 w-4 text-teal-500" />
-                {myPosts.length}
-              </div>
-              <div className="text-xs text-gray-500">Bài viết</div>
-            </div>
-            <div>
-              <div className="inline-flex items-center gap-1.5 text-xl font-extrabold text-gray-900">
-                <Heart className="h-4 w-4 text-rose-500" />
-                {totalLikes}
-              </div>
-              <div className="text-xs text-gray-500">Lượt tim</div>
-            </div>
-            <div>
-              <div className="inline-flex items-center gap-1.5 text-xl font-extrabold text-gray-900">
-                <MessageCircle className="h-4 w-4 text-cyan-500" />
-                {totalComments}
-              </div>
-              <div className="text-xs text-gray-500">Bình luận</div>
-            </div>
-          </div>
         </div>
       </div>
 
-      {/* Thông báo chung (đã đăng, đã cập nhật...) */}
-      {success && !composerOpen && (
-        <p className="mt-4 rounded-lg bg-teal-50 px-3 py-2 text-sm text-teal-700">{success}</p>
+      {/* ===== 2. Bài nổi bật (điểm nhấn) ===== */}
+      {featured && (
+        <div className="mt-6">
+          <PostTile
+            featured
+            post={featured}
+            stat={stats[featured.id]}
+            editing={editingId === featured.id}
+            onOpen={() => onOpenPost(featured)}
+            onEdit={() => startEdit(featured)}
+            onDelete={() => handleDelete(featured)}
+          />
+        </div>
       )}
-      {error && !composerOpen && <p className="mt-4 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p>}
 
-      {/* ===== Khung soạn bài (chỉ hiện khi cần) ===== */}
-      {composerOpen && (
-        <section ref={formRef} className="mt-6 scroll-mt-24 rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="text-xl font-extrabold text-gray-900">
-              {editingId ? 'Chỉnh sửa bài viết' : 'Viết bài mới'}
-            </h2>
-            <button
-              type="button"
-              onClick={handleCancelComposer}
-              disabled={publishing}
-              aria-label="Đóng khung soạn bài"
-              className="rounded-full p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-50"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
+      {/* ===== 3. Ô mời viết: thu gọn 1 dòng, bấm thì mở rộng tại chỗ ===== */}
+      <section ref={formRef} className="mt-6 scroll-mt-24">
+        {success && <p className="mb-3 rounded-lg bg-teal-50 px-3 py-2 text-sm text-teal-700">{success}</p>}
+        {error && !composerOpen && (
+          <p className="mb-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p>
+        )}
 
-          <div className="mt-4 space-y-3">
-            <input
-              className={inputCls}
-              placeholder="Tiêu đề bài viết"
-              value={title}
-              maxLength={150}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-
-            {preview ? (
-              <div className="min-h-[12rem] rounded-xl border border-gray-200 bg-gray-50 p-4 text-gray-700">
-                {content.trim() ? <PostContent content={content} /> : <p className="text-gray-400">Chưa có nội dung.</p>}
-              </div>
-            ) : (
-              <BodyEditor
-                ref={editorRef}
-                value={content}
-                onChange={setContent}
-                placeholder="Hôm nay bạn muốn chia sẻ điều gì? Bấm 'Chèn ảnh' hoặc dán link YouTube rồi bấm 'Chèn video' để thêm vào đúng vị trí con trỏ."
-              />
-            )}
-
-            {error && <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p>}
-
-            <div className="flex flex-wrap items-center gap-2">
-              <input
-                ref={fileRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/gif"
-                className="hidden"
-                onChange={(e) => handlePickImage(e.target.files?.[0])}
-              />
+        {!composerOpen ? (
+          <button
+            type="button"
+            onClick={openComposer}
+            className="flex w-full items-center gap-3 rounded-2xl bg-white p-3 text-left shadow-sm ring-1 ring-gray-100 transition hover:shadow-md hover:ring-teal-200"
+          >
+            <Avatar url={profile.avatarUrl} name={profile.name} className="h-10 w-10 text-base" />
+            <span className="flex-1 rounded-full bg-gray-100 px-4 py-2.5 text-sm text-gray-500">
+              Hôm nay bạn muốn chia sẻ điều gì?
+            </span>
+            <ImagePlus className="hidden h-5 w-5 text-teal-500 sm:block" />
+            <Video className="hidden h-5 w-5 text-cyan-500 sm:block" />
+          </button>
+        ) : (
+          <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-xl font-extrabold text-gray-900">
+                {editingId ? 'Chỉnh sửa bài viết' : 'Viết bài mới'}
+              </h2>
               <button
                 type="button"
-                onClick={() => fileRef.current?.click()}
-                disabled={uploading || preview}
-                className={chipBtn}
+                onClick={handleCancelComposer}
+                disabled={publishing}
+                aria-label="Đóng khung soạn bài"
+                className="rounded-full p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-50"
               >
-                {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
-                Chèn ảnh
+                <X className="h-5 w-5" />
               </button>
+            </div>
 
-              {/* Dán link YouTube -> nhúng video */}
-              <div className="inline-flex items-center gap-2">
+            <div className="mt-4 space-y-3">
+              <input
+                className={inputCls}
+                placeholder="Tiêu đề bài viết"
+                value={title}
+                maxLength={150}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+
+              {preview ? (
+                <div className="min-h-[12rem] rounded-xl border border-gray-200 bg-gray-50 p-4 text-gray-700">
+                  {content.trim() ? <PostContent content={content} /> : <p className="text-gray-400">Chưa có nội dung.</p>}
+                </div>
+              ) : (
+                <BodyEditor
+                  ref={editorRef}
+                  value={content}
+                  onChange={setContent}
+                  placeholder="Hôm nay bạn muốn chia sẻ điều gì? Bấm 'Chèn ảnh' hoặc dán link YouTube rồi bấm 'Chèn video' để thêm vào đúng vị trí con trỏ."
+                />
+              )}
+
+              {error && <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p>}
+
+              <div className="flex flex-wrap items-center gap-2">
                 <input
-                  value={ytUrl}
-                  onChange={(e) => setYtUrl(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleAddYoutube();
-                    }
-                  }}
-                  placeholder="Dán link YouTube..."
-                  disabled={uploading || preview}
-                  className="w-56 rounded-full bg-gray-100 px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-200 disabled:opacity-50"
+                  ref={fileRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  onChange={(e) => handlePickImage(e.target.files?.[0])}
                 />
                 <button
                   type="button"
-                  onClick={handleAddYoutube}
-                  disabled={!ytUrl.trim() || uploading || preview}
+                  onClick={() => fileRef.current?.click()}
+                  disabled={uploading || preview}
                   className={chipBtn}
                 >
-                  <Video className="h-4 w-4" />
-                  Chèn video
+                  {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
+                  Chèn ảnh
                 </button>
-              </div>
 
-              <button type="button" onClick={() => setPreview((p) => !p)} className={chipBtn}>
-                {preview ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                {preview ? 'Tiếp tục viết' : 'Xem trước'}
-              </button>
+                <div className="inline-flex items-center gap-2">
+                  <input
+                    value={ytUrl}
+                    onChange={(e) => setYtUrl(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddYoutube();
+                      }
+                    }}
+                    placeholder="Dán link YouTube..."
+                    disabled={uploading || preview}
+                    className="w-56 rounded-full bg-gray-100 px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-200 disabled:opacity-50"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddYoutube}
+                    disabled={!ytUrl.trim() || uploading || preview}
+                    className={chipBtn}
+                  >
+                    <Video className="h-4 w-4" />
+                    Chèn video
+                  </button>
+                </div>
 
-              <div className="ml-auto flex gap-2">
-                <button
-                  type="button"
-                  onClick={handleCancelComposer}
-                  disabled={publishing}
-                  className={chipBtn}
-                >
-                  <X className="h-4 w-4" />
-                  Hủy
+                <button type="button" onClick={() => setPreview((p) => !p)} className={chipBtn}>
+                  {preview ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {preview ? 'Tiếp tục viết' : 'Xem trước'}
                 </button>
-                <button
-                  type="button"
-                  onClick={editingId ? handleSave : handlePublish}
-                  disabled={publishing || uploading}
-                  className="inline-flex items-center gap-2 rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white hover:bg-teal-600 disabled:opacity-60"
-                >
-                  {publishing ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : editingId ? (
-                    <Save className="h-4 w-4" />
-                  ) : (
-                    <Send className="h-4 w-4" />
-                  )}
-                  {editingId ? 'Lưu thay đổi' : 'Đăng bài'}
-                </button>
+
+                <div className="ml-auto flex gap-2">
+                  <button type="button" onClick={handleCancelComposer} disabled={publishing} className={chipBtn}>
+                    <X className="h-4 w-4" />
+                    Hủy
+                  </button>
+                  <button
+                    type="button"
+                    onClick={editingId ? handleSave : handlePublish}
+                    disabled={publishing || uploading}
+                    className="inline-flex items-center gap-2 rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white hover:bg-teal-600 disabled:opacity-60"
+                  >
+                    {publishing ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : editingId ? (
+                      <Save className="h-4 w-4" />
+                    ) : (
+                      <Send className="h-4 w-4" />
+                    )}
+                    {editingId ? 'Lưu thay đổi' : 'Đăng bài'}
+                  </button>
+                </div>
               </div>
+              <p className="text-xs text-gray-400">
+                Ảnh tối đa {MAX_IMAGE_MB}MB (JPG, PNG, WEBP, GIF). Video: dán link YouTube (nên để chế độ Không công
+                khai hoặc Công khai). Ảnh đầu tiên sẽ làm nền mờ cho bài trên trang chủ.
+              </p>
             </div>
-            <p className="text-xs text-gray-400">
-              Ảnh tối đa {MAX_IMAGE_MB}MB (JPG, PNG, WEBP, GIF). Video: dán link YouTube (nên để chế độ Không công khai
-              hoặc Công khai). Ảnh đầu tiên sẽ làm nền mờ cho bài trên trang chủ.
-            </p>
           </div>
-        </section>
-      )}
+        )}
+      </section>
 
-      {/* ===== Bài viết của tôi ===== */}
-      <section className="mt-10">
-        <h2 className="text-xl font-extrabold text-gray-900">Bài viết của tôi</h2>
-
+      {/* ===== 4. Các bài viết còn lại ===== */}
+      <section className="mt-8">
         {loadingPosts ? (
           <div className="flex justify-center py-10">
             <Loader2 className="h-6 w-6 animate-spin text-teal-500" />
           </div>
         ) : myPosts.length === 0 ? (
-          <div className="mt-4 rounded-2xl border border-dashed border-gray-200 px-6 py-10 text-center">
-            <p className="text-sm text-gray-500">Bạn chưa đăng bài nào.</p>
-            {!composerOpen && (
-              <button
-                type="button"
-                onClick={openComposer}
-                className="mt-4 inline-flex items-center gap-2 rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white hover:bg-teal-600"
-              >
-                <PenLine className="h-4 w-4" />
-                Viết bài đầu tiên
-              </button>
-            )}
-          </div>
+          <p className="py-6 text-center text-sm text-gray-400">
+            Bài viết của bạn sẽ xuất hiện ở đây sau khi đăng.
+          </p>
         ) : (
-          <ul className="mt-4 grid gap-4 sm:grid-cols-2">
-            {myPosts.map((p) => {
-              const s = stats[p.id];
-              const label = p.title || makeExcerpt(p.content, 60) || 'Bài viết không có tiêu đề';
-              return (
-                <li
-                  key={p.id}
-                  className={`flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 transition hover:shadow-md ${
-                    editingId === p.id ? 'ring-2 ring-teal-400' : 'ring-gray-100'
-                  }`}
-                >
-                  <button onClick={() => onOpenPost(p)} className="block text-left">
-                    <div className="h-32 w-full overflow-hidden bg-gradient-to-br from-teal-100 to-cyan-100">
-                      {p.cover_url && <img src={p.cover_url} alt="" className="h-full w-full object-cover" />}
-                    </div>
-                    <div className="px-4 pt-3">
-                      <div className="line-clamp-2 font-bold text-gray-900 hover:text-teal-600">{label}</div>
-                      {p.title && (
-                        <p className="mt-1 line-clamp-2 text-sm text-gray-500">{makeExcerpt(p.content, 100)}</p>
-                      )}
-                    </div>
-                  </button>
-
-                  <div className="mt-auto flex items-center gap-3 px-4 pb-3 pt-3 text-xs text-gray-400">
-                    <span>{formatDate(p.created_at)}</span>
-                    <span className="inline-flex items-center gap-1">
-                      <Heart className="h-3.5 w-3.5" />
-                      {s?.likes ?? 0}
-                    </span>
-                    <span className="inline-flex items-center gap-1">
-                      <MessageCircle className="h-3.5 w-3.5" />
-                      {s?.comments ?? 0}
-                    </span>
-                    <div className="ml-auto flex">
-                      <button
-                        onClick={() => startEdit(p)}
-                        aria-label="Sửa bài"
-                        className="rounded-full p-2 text-gray-400 hover:bg-teal-50 hover:text-teal-600"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(p)}
-                        aria-label="Xóa bài"
-                        className="rounded-full p-2 text-gray-400 hover:bg-rose-50 hover:text-rose-600"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+          restPosts.length > 0 && (
+            <>
+              <h2 className="text-xl font-extrabold text-gray-900">{featured ? 'Các bài viết khác' : 'Bài viết của tôi'}</h2>
+              <ul className="mt-4 grid gap-4 sm:grid-cols-2">
+                {restPosts.map((p) => (
+                  <li key={p.id}>
+                    <PostTile
+                      post={p}
+                      stat={stats[p.id]}
+                      editing={editingId === p.id}
+                      onOpen={() => onOpenPost(p)}
+                      onEdit={() => startEdit(p)}
+                      onDelete={() => handleDelete(p)}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </>
+          )
         )}
       </section>
     </div>
