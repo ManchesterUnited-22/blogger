@@ -75,10 +75,12 @@ function UserMenu({
     return (
       <button
         onClick={onLoginClick}
-        className="inline-flex items-center gap-2 rounded-sm bg-gray-900 px-4 py-2.5 text-sm font-bold uppercase tracking-widest text-white shadow-[3px_3px_0_0_#f97316] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0_0_#f97316] sm:px-5"
+        className="skew-sting inline-flex items-center gap-2 bg-teal-600 px-4 py-2.5 text-sm font-bold uppercase tracking-widest text-white shadow-[4px_4px_0_0_#ffe600] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-teal-500 hover:shadow-[2px_2px_0_0_#ffe600] sm:px-5"
       >
-        <LogIn className="h-4 w-4" />
-        Đăng nhập
+        <span className="unskew-sting inline-flex items-center gap-2">
+          <LogIn className="h-4 w-4" />
+          Đăng nhập
+        </span>
       </button>
     );
   }
@@ -116,7 +118,7 @@ function UserMenu({
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label="Tài khoản"
-        className="rounded-full ring-2 ring-gray-900 ring-offset-2 ring-offset-[#faf8f3] transition hover:ring-teal-500"
+        className="rounded-full ring-2 ring-teal-500 ring-offset-2 ring-offset-ink transition hover:ring-volt"
       >
         {avatar('h-11 w-11 text-base')}
       </button>
@@ -201,41 +203,54 @@ export default function Header({
 }: Props) {
   const active = useActiveSection();
 
-  // Mục đang xem: có vệt "bút dạ quang" cam nhạt chạy ngang chân chữ; rê chuột vào mục khác thì vệt cũng trượt ra
-    // Mục đang xem: chữ đậm màu teal; mục còn lại: chữ xám, rê chuột thì đậm lên
+  // Mục đang xem: chữ trắng + vạch đỏ vát chéo dưới chân; mục còn lại: chữ xám, rê chuột thì sáng lên
   const linkClass = (id: string | null) =>
-    `inline-flex shrink-0 items-center gap-2 px-4 py-2.5 text-sm font-bold uppercase tracking-widest transition-colors ${
-      active === id ? 'text-teal-700' : 'text-gray-500 hover:text-gray-900'
+    `relative inline-flex shrink-0 items-center gap-2 px-4 py-2.5 text-sm font-bold uppercase tracking-widest transition-colors after:absolute after:inset-x-3 after:bottom-0 after:h-[3px] after:origin-left after:-skew-x-[20deg] after:bg-teal-500 after:transition-transform after:duration-300 ${
+      active === id
+        ? 'text-white after:scale-x-100'
+        : 'text-gray-400 after:scale-x-0 hover:text-white hover:after:scale-x-100'
     }`;
 
   const navButtons = NAV_ITEMS.map(({ label, id, icon: Icon }) => (
     <button key={label} onClick={() => onNavigate(id)} className={linkClass(id)}>
-      <Icon className={`h-4 w-4 ${active === id ? 'text-teal-600' : 'text-gray-400'}`} />
+      <Icon className={`h-4 w-4 ${active === id ? 'text-teal-500' : 'text-gray-500'}`} />
       {label}
     </button>
   ));
 
   return (
     <>
-      {/* Dải ngày tháng: nền mực đen cho nổi bật, có tem "Hôm nay" nghiêng nhẹ (cuộn đi theo trang) */}
-      <div className="bg-gray-900 text-[#faf8f3]">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-2">
-          <div className="flex items-center gap-3">
-            <span 
-            className="-rotate-2 rounded-sm bg-orange-500 px-2 py-0.5 text-[11px] font-black uppercase tracking-widest text-white shadow-sm">
-              Hôm nay
-            </span>
-            <span className="font-serif text-lg font-bold leading-none sm:text-xl">{dateLine()}</span>
-          </div>
-          <span className="hidden text-xs font-semibold uppercase tracking-widest text-gray-400 md:block">
-            Nhật ký Quy Nhơn · Biển Nam Trung Bộ
+      {/* Dải chữ chạy ngang: đỏ rực, chữ trắng, đúng kiểu băng rôn */}
+      <div className="overflow-hidden bg-teal-600 text-white">
+        <div className="mx-auto flex max-w-6xl items-center gap-4 px-6 py-1.5">
+          <span className="skew-sting shrink-0 bg-volt px-2.5 py-0.5 text-[11px] font-black uppercase tracking-widest text-ink">
+            <span className="unskew-sting inline-block">Hôm nay</span>
           </span>
+          <span className="shrink-0 font-serif text-base font-semibold uppercase leading-none tracking-wide sm:text-lg">
+            {dateLine()}
+          </span>
+          <div className="relative hidden min-w-0 flex-1 overflow-hidden md:block">
+            <div className="flex w-max animate-marquee gap-10 whitespace-nowrap text-xs font-bold uppercase tracking-[0.25em] text-white/85">
+              {[0, 1].map((k) => (
+                <span key={k} className="flex gap-10">
+                  <span>Nhật ký Quy Nhơn</span>
+                  <span className="text-volt">///</span>
+                  <span>Biển Nam Trung Bộ</span>
+                  <span className="text-volt">///</span>
+                  <span>Thực tập nhận thức</span>
+                  <span className="text-volt">///</span>
+                  <span>15–18/10/2026</span>
+                  <span className="text-volt">///</span>
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
-      <nav className="sticky top-0 z-50 border-b border-gray-900 bg-[#faf8f3]/95 backdrop-blur-md">
+      <nav className="sticky top-0 z-50 border-b border-white/10 bg-ink/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3">
-          {/* Tên báo: chữ serif đậm + hình thoi teal, bấm để về trang chủ */}
+          {/* Logo: chữ Anton in hoa, dấu chấm đỏ nhấp nháy khi rê chuột */}
           <button
             onClick={() => onNavigate(null)}
             aria-label="Về trang chủ"
@@ -243,10 +258,10 @@ export default function Header({
           >
             <span
               aria-hidden
-              className="inline-block h-3.5 w-3.5 rotate-45 rounded-sm bg-teal-500 transition-transform duration-500 group-hover:rotate-[225deg] group-hover:bg-orange-500"
+              className="skew-sting inline-block h-7 w-3 bg-teal-500 transition-all duration-300 group-hover:w-5 group-hover:bg-volt"
             />
-            <span className="font-serif text-3xl font-black leading-none tracking-tight text-gray-900">
-              VTD<span className="text-orange-500">.</span>News
+            <span className="font-display text-3xl uppercase leading-none tracking-wide text-white">
+              VTD<span className="text-teal-500 transition-colors group-hover:text-volt">.</span>News
             </span>
           </button>
 
@@ -261,8 +276,8 @@ export default function Header({
           />
         </div>
 
-        {/* Menu trên điện thoại: một hàng dưới tên báo, vuốt ngang nếu thiếu chỗ */}
-        <div className="flex items-center justify-around overflow-x-auto border-t border-gray-300 md:hidden">
+        {/* Menu trên điện thoại: một hàng dưới logo, vuốt ngang nếu thiếu chỗ */}
+        <div className="flex items-center justify-around overflow-x-auto border-t border-white/10 md:hidden">
           {navButtons}
         </div>
       </nav>

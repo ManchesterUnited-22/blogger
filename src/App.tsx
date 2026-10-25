@@ -247,7 +247,7 @@ export default function App() {
   // F5 đang ở trang cá nhân: chờ biết đã đăng nhập chưa rồi mới vẽ, tránh chớp trang chủ
   if (view === 'profile' && !authReady) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-white">
+      <div className="flex min-h-screen items-center justify-center bg-ink">
         <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
       </div>
     );
@@ -290,8 +290,8 @@ export default function App() {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-white">
+    return (
+    <div className="min-h-screen bg-ink">
       <Header
         user={user}
         onLoginClick={() => setAuthOpen(true)}
@@ -303,11 +303,15 @@ export default function App() {
       <GroupPhoto />
 
       {/* ===== Góc cộng đồng: trang nhất của bài cộng đồng ===== */}
-      <section id="feed" className="scroll-mt-20 bg-[#faf8f3]">
-        <div className="mx-auto max-w-6xl px-6 pb-16 pt-10">
-          {/* Đầu báo: vạch đậm + một dòng ngày và số liệu */}
-          <div className="border-t-4 border-gray-900">
-            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-gray-300 py-2.5">
+      <section id="feed" className="scroll-mt-20 bg-ink">
+        <div
+          className="bg-paper"
+          style={{ clipPath: 'polygon(0 3.5rem, 100% 0, 100% calc(100% - 3.5rem), 0 100%)' }}
+        >
+        <div className="mx-auto max-w-6xl px-6 pb-28 pt-24">
+          {/* Đầu mục: vạch đỏ dày + một dòng ngày và số liệu */}
+          <div className="border-t-8 border-teal-600">
+            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b-2 border-ink py-2.5">
               <span className="text-xs font-bold uppercase tracking-widest text-gray-700">{dateLine()}</span>
               <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-xs font-bold uppercase tracking-widest text-gray-700">
                 <span className="inline-flex items-center gap-1.5">
@@ -336,11 +340,11 @@ export default function App() {
             </div>
             <div className="flex flex-wrap items-end justify-between gap-4 py-6">
               <div>
-                <h2 className="flex items-center gap-3 font-serif text-4xl font-black tracking-tight text-gray-900">
-                  <span aria-hidden className="inline-block h-3.5 w-3.5 rotate-45 rounded-sm bg-teal-500" />
+                <h2 className="flex items-center gap-3 font-display text-5xl uppercase leading-none tracking-tight text-ink sm:text-6xl">
+                  <span aria-hidden className="skew-sting inline-block h-10 w-3 bg-teal-600" />
                   Góc cộng đồng
                 </h2>
-                <p className="mt-1 text-sm font-semibold text-gray-700">
+                <p className="mt-2 text-sm font-semibold text-gray-700">
                   Bài viết do các cây bút trong cộng đồng chia sẻ
                 </p>
               </div>
@@ -351,7 +355,7 @@ export default function App() {
                   placeholder="Tìm bài viết..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="rounded-sm border border-gray-300 bg-white py-2 pl-9 pr-4 text-sm text-gray-700 outline-none transition-colors focus:border-gray-900"
+                  className="border-2 border-ink bg-white py-2 pl-9 pr-4 text-sm text-gray-700 outline-none transition-colors placeholder:text-gray-400 focus:border-teal-600 focus:shadow-[3px_3px_0_0_#d4002b]"
                 />
               </div>
             </div>
@@ -371,7 +375,7 @@ export default function App() {
                   <button
                     type="button"
                     onClick={handleWrite}
-                    className="mt-5 inline-flex items-center gap-2 rounded-sm bg-gray-900 px-5 py-2 text-sm font-bold uppercase tracking-widest text-white hover:bg-teal-600"
+                    className="skew-sting mt-5 inline-flex items-center gap-2 bg-teal-600 px-5 py-2.5 text-sm font-bold uppercase tracking-widest text-white shadow-[4px_4px_0_0_#0a0a0b] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_#0a0a0b]"
                   >
                     <PenLine className="h-4 w-4" />
                     Viết bài đầu tiên
@@ -382,6 +386,7 @@ export default function App() {
           ) : (
             <PostFrontPage posts={filteredPosts} stats={stats} onOpen={openPost} onWrite={handleWrite} />
           )}
+        </div>
         </div>
       </section>
 

@@ -12,10 +12,10 @@ type Props = {
 
 // Mỗi thẻ một màu nhấn (vạch trên) + màu chữ cái đầu khi chưa có ảnh
 const ACCENTS = [
-  { bar: 'border-t-teal-500', text: 'text-teal-600', bg: 'bg-teal-50' },
-  { bar: 'border-t-orange-500', text: 'text-orange-600', bg: 'bg-orange-50' },
-  { bar: 'border-t-sky-500', text: 'text-sky-600', bg: 'bg-sky-50' },
-  { bar: 'border-t-rose-500', text: 'text-rose-600', bg: 'bg-rose-50' },
+  { bar: 'border-t-teal-500', text: 'text-teal-400', bg: 'bg-teal-950' },
+  { bar: 'border-t-volt', text: 'text-volt', bg: 'bg-ink-600' },
+  { bar: 'border-t-orange-500', text: 'text-orange-400', bg: 'bg-orange-950' },
+  { bar: 'border-t-white', text: 'text-white', bg: 'bg-ink-600' },
 ];
 
 // Thẻ nghiêng so le như ảnh dán trên bảng tin; rê chuột thì ngay ngắn lại
@@ -26,30 +26,33 @@ export default function MembersSection({ members, postCounts, currentUserId }: P
   const topCount = members.reduce((max, m) => Math.max(max, postCounts[m.id] ?? 0), 0);
 
   return (
-    <section id="members" className="scroll-mt-20 border-t border-gray-900 bg-white py-16">
-      <div className="mx-auto max-w-6xl px-6">
-        {/* Đầu mục: giống "Góc cộng đồng" */}
-        <div className="border-t-4 border-gray-900">
-          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-gray-300 py-2.5 text-xs font-bold uppercase tracking-widest text-gray-700">
+    <section id="members" className="relative scroll-mt-20 overflow-hidden bg-ink py-20 text-white">
+      {/* Nền: lưới chấm + quầng đỏ */}
+      <div aria-hidden className="dots absolute inset-0" />
+      <div
+        aria-hidden
+        className="absolute -right-40 top-10 h-[28rem] w-[28rem] animate-glow rounded-full bg-teal-600/25 blur-[120px]"
+      />
+
+      <div className="relative mx-auto max-w-6xl px-6">
+        {/* Đầu mục */}
+        <div className="border-t-8 border-teal-600">
+          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-white/20 py-2.5 text-xs font-bold uppercase tracking-widest text-gray-400">
             <span>Danh bạ cây bút</span>
             <span className="inline-flex items-center gap-2">
-              <span className="font-serif text-xl font-black leading-none tabular-nums text-gray-900">
-                {members.length}
-              </span>
+              <span className="font-display text-2xl leading-none tabular-nums text-volt">{members.length}</span>
               thành viên
-              <span aria-hidden className="h-4 w-px bg-gray-300" />
-              <span className="font-serif text-xl font-black leading-none tabular-nums text-gray-900">
-                {totalPosts}
-              </span>
+              <span aria-hidden className="h-4 w-px bg-white/20" />
+              <span className="font-display text-2xl leading-none tabular-nums text-volt">{totalPosts}</span>
               bài viết
             </span>
           </div>
           <div className="py-6">
-            <h2 className="flex items-center gap-3 font-serif text-4xl font-black tracking-tight text-gray-900">
-              <span aria-hidden className="inline-block h-3.5 w-3.5 rotate-45 rounded-sm bg-orange-500" />
-              Những cây bút đồng hành
+            <h2 className="flex items-center gap-3 font-display text-5xl uppercase leading-none tracking-tight text-white sm:text-6xl">
+              <span aria-hidden className="skew-sting inline-block h-10 w-3 bg-teal-500" />
+              Những cây bút <span className="text-teal-500">đồng hành</span>
             </h2>
-            <p className="mt-1 font-serif text-base italic text-gray-700">
+            <p className="mt-3 text-base text-gray-400">
               Mỗi người một câu chuyện, cùng viết nên trang blog này
             </p>
           </div>
@@ -69,42 +72,42 @@ export default function MembersSection({ members, postCounts, currentUserId }: P
                 key={m.id}
                 className={`group relative transition-transform duration-300 hover:rotate-0 ${TILTS[i % TILTS.length]}`}
               >
-                {/* Miếng băng keo */}
+                {/* Miếng băng vàng */}
                 {i % 3 === 0 && (
                   <span
                     aria-hidden
-                    className="absolute -top-3 left-1/2 z-10 h-5 w-14 -translate-x-1/2 -rotate-3 bg-orange-200/90 shadow-sm"
+                    className="absolute -top-3 left-1/2 z-10 h-5 w-14 -translate-x-1/2 -rotate-3 bg-volt/90 shadow-sm"
                   />
                 )}
 
                 <article
-                  className={`flex h-full flex-col border border-gray-900 border-t-4 bg-white p-3 shadow-[4px_4px_0_0_#111827] transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[6px_6px_0_0_#111827] ${accent.bar} ${
-                    isMe ? 'ring-2 ring-orange-400 ring-offset-2' : ''
+                  className={`flex h-full flex-col border border-white/15 border-t-4 bg-ink-800 p-3 shadow-[4px_4px_0_0_#d4002b] transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[7px_7px_0_0_#f0173a] ${accent.bar} ${
+                    isMe ? 'ring-2 ring-volt ring-offset-2 ring-offset-ink' : ''
                   }`}
                 >
                   {/* Số thứ tự + nhãn */}
                   <div className="flex items-center justify-between gap-2 text-[10px] font-bold uppercase tracking-widest">
-                    <span className="tabular-nums text-gray-600">Nº {String(i + 1).padStart(2, '0')}</span>
+                    <span className="tabular-nums text-gray-500">Nº {String(i + 1).padStart(2, '0')}</span>
                     {isMe ? (
-                      <span className="rounded-sm bg-orange-500 px-1.5 py-0.5 text-white">Bạn</span>
+                      <span className="bg-volt px-1.5 py-0.5 text-ink">Bạn</span>
                     ) : isTop ? (
-                      <span className="rounded-sm bg-gray-900 px-1.5 py-0.5 text-white">Nhiều bài nhất</span>
+                      <span className="bg-teal-600 px-1.5 py-0.5 text-white">Nhiều bài nhất</span>
                     ) : null}
                   </div>
 
                   {/* Ảnh chân dung vuông */}
-                  <div className="mt-2 aspect-square w-full overflow-hidden border border-gray-900 bg-[#faf8f3]">
+                  <div className="mt-2 aspect-square w-full overflow-hidden border border-white/15 bg-ink">
                     {m.avatar_url ? (
                       <img
                         src={m.avatar_url}
                         alt={name}
                         referrerPolicy="no-referrer"
                         loading="lazy"
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="h-full w-full object-cover transition-all duration-500 group-hover:scale-105"
                       />
                     ) : (
                       <div
-                        className={`flex h-full w-full items-center justify-center font-serif text-6xl font-black ${accent.bg} ${accent.text}`}
+                        className={`flex h-full w-full items-center justify-center font-display text-7xl ${accent.bg} ${accent.text}`}
                       >
                         {name.charAt(0).toUpperCase()}
                       </div>
@@ -113,26 +116,22 @@ export default function MembersSection({ members, postCounts, currentUserId }: P
 
                   {/* Tên */}
                   <h3
-                    className="mt-3 line-clamp-2 font-serif text-lg font-bold leading-snug text-gray-900"
+                    className="mt-3 line-clamp-2 font-serif text-lg font-bold uppercase leading-snug text-white"
                     title={name}
                   >
                     {name}
                   </h3>
 
-                  {/* Số bài: đường kẻ đứt như phiếu */}
-                  <div className="mt-auto flex items-end justify-between gap-2 border-t border-dashed border-gray-400 pt-2">
+                  {/* Số bài */}
+                  <div className="mt-auto flex items-end justify-between gap-2 border-t border-dashed border-white/20 pt-2">
                     {count > 0 ? (
                       <>
-                        <span className="font-serif text-3xl font-black leading-none tabular-nums text-gray-900">
-                          {count}
-                        </span>
-                        <span className="text-[11px] font-bold uppercase tracking-widest text-gray-600">
-                          bài viết
-                        </span>
+                        <span className="font-display text-4xl leading-none tabular-nums text-teal-500">{count}</span>
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400">bài viết</span>
                       </>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-teal-700">
-                        <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-teal-500" />
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-volt">
+                        <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-volt" />
                         Cây bút mới
                       </span>
                     )}

@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
-import { MapPin, ArrowDown, Heart, Waves, UtensilsCrossed, Landmark } from 'lucide-react';
+import { MapPin, ArrowDown, Flame, Waves, UtensilsCrossed, Landmark } from 'lucide-react';
 import VietnamMap from './VietnamMap';
 
 // Các từ khóa xoay vòng trong câu "Những câu chuyện về ..."
 const WORDS = ['biển xanh', 'món ngon', 'đất võ', 'con người'];
 
 const TOPICS = [
-  { icon: Waves, label: 'Biển xanh', color: 'text-teal-600' },
-  { icon: UtensilsCrossed, label: 'Ẩm thực', color: 'text-orange-500' },
-  { icon: Landmark, label: 'Văn hóa', color: 'text-sky-600' },
+  { icon: Waves, label: 'Biển xanh' },
+  { icon: UtensilsCrossed, label: 'Ẩm thực' },
+  { icon: Landmark, label: 'Văn hóa' },
 ];
 
 export default function Hero() {
@@ -31,55 +31,76 @@ export default function Hero() {
   }, []);
 
   return (
-    <header className="relative overflow-hidden border-b border-gray-900 bg-[#faf8f3]">
-      {/* Ảnh nền rất nhạt, như ảnh in mờ trên giấy báo (xóa khối này nếu muốn nền kem trơn) */}
+    <header className="relative overflow-hidden bg-ink text-white">
+      {/* Ảnh nền đen đỏ, rất tối */}
       <img
         src="https://images.pexels.com/photos/29162860/pexels-photo-29162860.jpeg?auto=compress&cs=tinysrgb&w=1600"
         alt=""
         aria-hidden
-        className="absolute inset-0 h-full w-full object-cover opacity-[0.12] grayscale"
+        className="absolute inset-0 h-full w-full object-cover opacity-[0.18] grayscale"
+      />
+      {/* Lớp đỏ phát sáng + lưới chấm + sọc chéo */}
+      <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-ink via-ink/80 to-teal-900/60" />
+      <div
+        aria-hidden
+        className="absolute -left-40 top-1/3 h-[32rem] w-[32rem] animate-glow rounded-full bg-teal-600/40 blur-[120px]"
+      />
+      <div
+        aria-hidden
+        className="absolute -right-32 -top-24 h-[26rem] w-[26rem] animate-glow rounded-full bg-orange-500/30 blur-[110px]"
+      />
+      <div aria-hidden className="dots absolute inset-0" />
+      {/* Vệt chéo lớn bên phải */}
+      <div
+        aria-hidden
+        className="absolute -right-24 top-0 hidden h-full w-48 skew-x-[-14deg] bg-teal-600/25 lg:block"
+      />
+      <div
+        aria-hidden
+        className="absolute right-24 top-0 hidden h-full w-4 skew-x-[-14deg] bg-volt/80 lg:block"
       />
 
-      <div className="relative mx-auto max-w-6xl px-6 py-14 lg:py-20">
+      <div className="relative mx-auto max-w-6xl px-6 pb-24 pt-14 lg:pb-32 lg:pt-20">
         <div className="grid items-center gap-12 lg:grid-cols-[1.25fr_0.75fr]">
-          {/* ===== Cột trái: tiêu đề lớn như trang nhất ===== */}
+          {/* ===== Cột trái: tiêu đề khổng lồ ===== */}
           <div>
-            <p className="inline-flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-orange-600">
-              <span aria-hidden className="inline-block h-2.5 w-2.5 rotate-45 rounded-sm bg-teal-500" />
-              Bản tin chuyến đi
+            <p className="skew-sting inline-flex items-center gap-2 bg-volt px-3 py-1 text-xs font-black uppercase tracking-widest text-ink">
+              <span className="unskew-sting inline-flex items-center gap-2">
+                <Flame className="h-4 w-4" />
+                Bản tin chuyến đi
+              </span>
             </p>
 
-            <h1 className="mt-4 font-serif text-5xl font-black leading-[1.05] tracking-tight text-gray-900 sm:text-6xl lg:text-7xl">
-              Những câu chuyện về{' '}
+            <h1 className="mt-5 font-display text-6xl uppercase leading-[0.95] tracking-tight sm:text-7xl lg:text-[6.5rem]">
+              Những câu chuyện về
+              <br />
               <span
-                                className={`inline-block text-orange-500 transition-opacity duration-300 ${
+                className={`inline-block bg-gradient-to-r from-teal-500 via-orange-500 to-volt bg-clip-text text-transparent transition-opacity duration-300 ${
                   visible ? 'opacity-100' : 'opacity-0'
                 }`}
               >
                 {WORDS[wordIndex]}
               </span>
+              <span className="text-teal-500">.</span>
             </h1>
 
-            
-
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-gray-700">
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-gray-300">
               Một chuyến đi, một nhóm sinh viên và rất nhiều kỷ niệm. VTD.News là nơi bọn mình kể lại Quy Nhơn: những
               nơi đã đi, những người đã gặp và những khoảnh khắc không có trong sách hướng dẫn.
             </p>
 
-            {/* Dải thông tin kẻ đường đứt trên dưới, như hàng chỉ mục trong báo */}
-            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 border-y border-dashed border-gray-400 py-4">
-              <div className="flex items-center gap-2.5 pr-6 sm:border-r sm:border-dashed sm:border-gray-400">
-                <Heart className="h-5 w-5 fill-rose-500 text-rose-500" />
-                <span className="font-serif text-3xl font-black leading-none text-gray-900">100%</span>
-                <span className="text-xs font-bold uppercase tracking-widest text-gray-700">Đam mê</span>
+            {/* Dải chỉ số kiểu băng rôn thể thao */}
+            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 border-y border-white/15 py-4">
+              <div className="flex items-center gap-2.5 pr-6 sm:border-r sm:border-white/15">
+                <span className="font-display text-5xl leading-none text-teal-500">100%</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-gray-300">Đam mê</span>
               </div>
-              {TOPICS.map(({ icon: Icon, label, color }) => (
+              {TOPICS.map(({ icon: Icon, label }) => (
                 <span
                   key={label}
-                  className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-700"
+                  className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-300"
                 >
-                  <Icon className={`h-4 w-4 ${color}`} />
+                  <Icon className="h-4 w-4 text-volt" />
                   {label}
                 </span>
               ))}
@@ -87,28 +108,31 @@ export default function Hero() {
 
             <a
               href="#feed"
-              className="mt-8 inline-flex items-center gap-2 rounded-sm bg-gray-900 px-6 py-3 text-sm font-bold uppercase tracking-widest text-white shadow-[4px_4px_0_0_#f97316] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_#f97316]"
+              className="skew-sting mt-8 inline-flex items-center gap-2 bg-teal-600 px-7 py-3.5 text-sm font-black uppercase tracking-widest text-white shadow-[6px_6px_0_0_#ffe600] transition-all hover:translate-x-[3px] hover:translate-y-[3px] hover:bg-teal-500 hover:shadow-[3px_3px_0_0_#ffe600]"
             >
-              Khám phá bài viết
-              <ArrowDown className="h-4 w-4 animate-bounce" />
+              <span className="unskew-sting inline-flex items-center gap-2">
+                Khám phá bài viết
+                <ArrowDown className="h-4 w-4 animate-bounce" />
+              </span>
             </a>
           </div>
 
-          {/* ===== Cột phải: bản đồ như tấm hình cắt từ báo, dán bằng băng keo ===== */}
-          <figure className="group relative mx-auto w-full max-w-sm rotate-2 transition-transform duration-500 hover:rotate-0">
-            {/* Miếng băng keo */}
+          {/* ===== Cột phải: bản đồ trong khung đen viền đỏ phát sáng ===== */}
+          <figure className="group relative mx-auto w-full max-w-sm -rotate-2 transition-transform duration-500 hover:rotate-0">
             <span
               aria-hidden
-              className="absolute -top-3 left-1/2 z-10 h-6 w-24 -translate-x-1/2 -rotate-3 bg-orange-200/90 shadow-sm"
-            />
-            <div className="border border-gray-900 bg-white p-6 shadow-[6px_6px_0_0_#111827]">
+              className="absolute -top-3 left-6 z-10 skew-x-[-14deg] bg-volt px-3 py-0.5 text-[11px] font-black uppercase tracking-widest text-ink"
+            >
+              <span className="inline-block skew-x-[14deg]">Điểm đến</span>
+            </span>
+            <div className="glow-red border-2 border-teal-500 bg-ink-800 p-6 shadow-[8px_8px_0_0_#d4002b]">
               <VietnamMap />
             </div>
-            <figcaption className="mt-3 flex items-start gap-3 border-t-4 border-gray-900 pt-3">
-              <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-orange-500" />
+            <figcaption className="mt-4 flex items-start gap-3 border-t-4 border-teal-500 pt-3">
+              <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-volt" />
               <div>
-                <div className="font-serif text-lg font-bold leading-tight text-gray-900">Quy Nhơn, Gia Lai</div>
-                <div className="mt-0.5 text-xs font-semibold uppercase tracking-widest text-gray-700">
+                <div className="font-serif text-xl font-bold uppercase leading-tight text-white">Quy Nhơn, Gia Lai</div>
+                <div className="mt-0.5 text-xs font-semibold uppercase tracking-widest text-gray-400">
                   13.78°B, 109.22°Đ · Điểm đến của chuyến đi
                 </div>
               </div>
@@ -116,6 +140,13 @@ export default function Hero() {
           </figure>
         </div>
       </div>
+
+      {/* Mép cắt chéo xuống phần ảnh */}
+      <div
+        aria-hidden
+        className="absolute inset-x-0 bottom-0 h-14 bg-teal-600"
+        style={{ clipPath: 'polygon(0 100%, 100% 0, 100% 100%)' }}
+      />
     </header>
   );
 }

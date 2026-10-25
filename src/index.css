@@ -2,7 +2,71 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html {
+    background: #0a0a0b;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply font-sans antialiased;
+    background: #0a0a0b;
+    color: #111827;
+  }
+  ::selection {
+    background: #f0173a;
+    color: #fff;
+  }
+  /* Thanh cuộn tối, thumb đỏ */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #d4002b #141416;
+  }
+  :focus-visible {
+    outline: 2px solid #ffe600;
+    outline-offset: 2px;
+  }
+}
+
 @layer utilities {
+  /* Vết cắt chéo kiểu poster */
+  .clip-slash-bottom {
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 3.5rem), 0 100%);
+  }
+  .clip-slash-top {
+    clip-path: polygon(0 3.5rem, 100% 0, 100% 100%, 0 100%);
+  }
+  .skew-sting {
+    transform: skewX(-10deg);
+  }
+  .unskew-sting {
+    transform: skewX(10deg);
+  }
+  /* Nền sọc chéo đỏ */
+  .stripes-red {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      rgba(240, 23, 58, 0.14) 0 10px,
+      transparent 10px 22px
+    );
+  }
+  /* Lưới chấm mờ */
+  .dots {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px);
+    background-size: 18px 18px;
+  }
+  /* Chữ viền, ruột rỗng */
+  .text-outline {
+    -webkit-text-stroke: 2px #fff;
+    color: transparent;
+  }
+  .text-outline-red {
+    -webkit-text-stroke: 2px #f0173a;
+    color: transparent;
+  }
+  .glow-red {
+    box-shadow: 0 0 0 1px rgba(240, 23, 58, 0.6), 0 0 32px rgba(240, 23, 58, 0.35);
+  }
+
   .scroll-reveal {
     opacity: 0;
     transform: translateY(18px);
