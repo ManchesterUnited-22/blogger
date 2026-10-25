@@ -171,28 +171,8 @@ export default function GroupPhoto() {
                 <ChevronRight className="h-5 w-5" />
               </button>
 
-              {/* Chấm tròn + số thứ tự */}
-              <div className="absolute right-4 top-4 flex items-center gap-3 rounded-full bg-black/35 px-3 py-1.5 backdrop-blur-sm">
-                <div className="flex gap-1.5">
-                  {photos.map((_, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      aria-label={`Xem ảnh ${i + 1}`}
-                      onClick={() => {
-                        setAnimate(true);
-                        setIndex(i);
-                      }}
-                      className={`h-2 rounded-full transition-all ${
-                        i === index % total ? 'w-5 bg-white' : 'w-2 bg-white/50 hover:bg-white/80'
-                      }`}
-                    />
-                  ))}
-                </div>
-                <span className="text-xs font-medium text-white">
-                  {(index % total) + 1}/{total}
-                </span>
-              </div>
+             
+             
             </>
           )}
         </figure>
