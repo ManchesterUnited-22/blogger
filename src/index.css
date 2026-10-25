@@ -24,40 +24,53 @@
 }
 
 @layer utilities {
-  /* Gradient biển: xanh ngọc -> xanh đại dương -> xanh rêu (dịu, không chói) */
+  /* Gradient biển: ngọc -> đại dương -> rêu -> cát nâu dịu */
   .bg-pop {
-    background-image: linear-gradient(120deg, #2f8a8f 0%, #3c7ea3 55%, #4d9580 100%);
+    background-image: linear-gradient(120deg, #2f8a8f 0%, #3c7ea3 36%, #4d9580 68%, #a98534 100%);
   }
   .bg-pop-anim {
-    background-image: linear-gradient(120deg, #2f8a8f, #3c7ea3, #4d9580, #3c7ea3, #2f8a8f);
-    background-size: 220% 100%;
-    animation: gradient-x 18s ease-in-out infinite alternate;
+    background-image: linear-gradient(
+      120deg,
+      #2f8a8f,
+      #3c7ea3,
+      #4d9580,
+      #a98534,
+      #c0694c,
+      #a98534,
+      #4d9580,
+      #3c7ea3,
+      #2f8a8f
+    );
+    background-size: 260% 100%;
+    animation: gradient-x 22s ease-in-out infinite alternate;
   }
-  /* Gradient ấm: san hô -> cát */
+  /* Gradient ấm: san hô -> hồng đất -> cát */
   .bg-warm {
-    background-image: linear-gradient(120deg, #d08060 0%, #c9a05a 100%);
+    background-image: linear-gradient(120deg, #c9755a 0%, #cf8a7e 45%, #c9a05a 100%);
   }
   .bg-cool {
     background-image: linear-gradient(120deg, #5f98bc 0%, #37898f 100%);
   }
   .bg-soft-gradient {
-    background-image: linear-gradient(135deg, #e9f3f2 0%, #e8eff5 55%, #f3eee3 100%);
+    background-image: linear-gradient(120deg, #e9f3f2 0%, #e8eff5 35%, #f3eee3 68%, #f8ebe4 100%);
   }
   .text-pop {
-    background-image: linear-gradient(90deg, #2a6f76, #346286, #417258, #2a6f76);
-    background-size: 200% auto;
+    background-image: linear-gradient(90deg, #2a6f76, #346286, #417258, #956e26, #b0553a, #956e26, #417258, #2a6f76);
+    background-size: 240% auto;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    animation: gradient-x 12s ease-in-out infinite alternate;
+    animation: gradient-x 14s ease-in-out infinite alternate;
   }
-  /* Nền aurora rất nhạt: ngọc, đại dương, cát, rêu */
+  /* Nền aurora rất nhạt: ngọc, đại dương, cát, rêu, san hô, hồng đất */
   .bg-aurora {
     background-color: #f9faf9;
     background-image:
       radial-gradient(at 8% 6%, rgba(55, 137, 143, 0.1) 0, transparent 45%),
       radial-gradient(at 92% 8%, rgba(65, 123, 162, 0.1) 0, transparent 45%),
-      radial-gradient(at 75% 90%, rgba(203, 164, 75, 0.08) 0, transparent 45%),
+      radial-gradient(at 50% 4%, rgba(207, 138, 126, 0.07) 0, transparent 40%),
+      radial-gradient(at 75% 90%, rgba(205, 107, 71, 0.07) 0, transparent 45%),
+      radial-gradient(at 40% 96%, rgba(203, 164, 75, 0.09) 0, transparent 45%),
       radial-gradient(at 5% 90%, rgba(83, 141, 112, 0.08) 0, transparent 45%);
   }
   .glass {

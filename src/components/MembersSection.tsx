@@ -12,12 +12,12 @@ type Props = {
 
 // Mỗi thẻ một gradient riêng: vạch trên, vòng ảnh và chữ cái đầu
 const GRADIENTS = [
-  { grad: 'from-teal-500 to-violet-500', shadow: 'shadow-teal-300/50', num: 'text-teal-600' },
-  { grad: 'from-violet-400 to-pink-400', shadow: 'shadow-violet-300/50', num: 'text-violet-600' },
-  { grad: 'from-cyan-400 to-teal-500', shadow: 'shadow-cyan-300/50', num: 'text-cyan-600' },
-  { grad: 'from-orange-300 to-pink-400', shadow: 'shadow-pink-300/50', num: 'text-pink-600' },
-  { grad: 'from-cyan-300 to-violet-400', shadow: 'shadow-cyan-300/50', num: 'text-violet-600' },
   { grad: 'from-teal-400 to-cyan-400', shadow: 'shadow-teal-300/50', num: 'text-teal-600' },
+  { grad: 'from-orange-300 to-pink-300', shadow: 'shadow-orange-200/60', num: 'text-orange-600' },
+  { grad: 'from-cyan-300 to-cyan-500', shadow: 'shadow-cyan-300/50', num: 'text-cyan-600' },
+  { grad: 'from-violet-300 to-teal-400', shadow: 'shadow-violet-300/50', num: 'text-violet-600' },
+  { grad: 'from-pink-300 to-rose-400', shadow: 'shadow-pink-300/50', num: 'text-pink-600' },
+  { grad: 'from-amber-300 to-orange-300', shadow: 'shadow-amber-200/60', num: 'text-amber-600' },
 ];
 
 export default function MembersSection({ members, postCounts, currentUserId }: Props) {
@@ -27,13 +27,13 @@ export default function MembersSection({ members, postCounts, currentUserId }: P
   return (
     <section id="members" className="relative scroll-mt-20 overflow-hidden py-20">
       {/* Nền: các mảng màu mờ */}
-      <div
+            <div
         aria-hidden
-        className="absolute -left-32 top-20 h-96 w-96 animate-float-slow rounded-full bg-gradient-to-br from-cyan-200 to-teal-200 opacity-30 blur-3xl"
+        className="absolute -right-32 bottom-10 h-96 w-96 animate-float rounded-full bg-gradient-to-br from-orange-200 to-pink-200 opacity-30 blur-3xl"
       />
       <div
         aria-hidden
-        className="absolute -right-32 bottom-10 h-96 w-96 animate-float rounded-full bg-gradient-to-br from-violet-200 to-teal-200 opacity-30 blur-3xl"
+        className="absolute left-1/3 top-0 h-80 w-80 animate-float-slow rounded-full bg-gradient-to-br from-violet-200 to-amber-100 opacity-30 blur-3xl"
       />
 
       <div className="relative mx-auto max-w-6xl px-6">

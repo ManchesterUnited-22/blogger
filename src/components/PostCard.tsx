@@ -1,7 +1,7 @@
 import { Heart, MessageCircle } from 'lucide-react';
 import { timeAgo } from '@/lib/supabase';
 import { makeExcerpt, type Post } from '@/lib/posts';
-
+import { accentFor } from '@/lib/postMeta';
 type Props = {
   post: Post;
   onClick: () => void;
@@ -11,7 +11,7 @@ type Props = {
 
 export default function PostCard({ post, onClick, likes = 0, comments = 0 }: Props) {
   const hasCover = !!post.cover_url;
-
+const accent = accentFor(post.id);
   return (
     <article onClick={onClick} className="group flex h-full cursor-pointer flex-col">
       {/* Có ảnh thì hiện ảnh; không có ảnh thì chỉ có đường kẻ màu ở trên */}
@@ -25,12 +25,14 @@ export default function PostCard({ post, onClick, likes = 0, comments = 0 }: Pro
           />
         </div>
       ) : (
-        <div className="h-1.5 rounded-full bg-gradient-to-r from-teal-400 via-violet-400 to-cyan-300" />
+        <div className={`h-1.5 rounded-full bg-gradient-to-r ${accent.line}`} />
       )}
 
       <div className="flex flex-1 flex-col pt-5">
         {post.title && (
-          <h3 className="line-clamp-2 font-serif text-2xl font-bold leading-snug text-gray-900 transition-colors group-hover:text-teal-700">
+          <h3 className={`line-clamp-2 font-serif text-2xl font-bold leading-snug text-gray-900 transition-colors ${accent.hover}`}>
+
+// (c) avatar
             {post.title}
           </h3>
         )}
@@ -44,7 +46,7 @@ export default function PostCard({ post, onClick, likes = 0, comments = 0 }: Pro
 
         <div className="mt-auto flex items-center justify-between gap-3 pt-5 text-sm text-gray-500">
           <div className="flex min-w-0 items-center gap-2.5">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 text-xs font-bold text-white">
+            <div className={`flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br ${accent.avatar} text-xs font-bold text-white`}>
               {post.author_avatar ? (
                 <img
                   src={post.author_avatar}

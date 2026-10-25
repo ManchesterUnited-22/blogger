@@ -2,7 +2,7 @@ import { useState, type KeyboardEvent } from 'react';
 import { ArrowRight, Heart, MessageCircle, PenLine } from 'lucide-react';
 
 import { makeExcerpt, type Post } from '@/lib/posts';
-import { briefStamp, isFresh, readMinutes, shortDate } from '@/lib/postMeta';
+import { accentFor,briefStamp, isFresh, readMinutes, shortDate } from '@/lib/postMeta';
 import ScrollReveal from '@/components/ScrollReveal';
 
 type Stat = { likes: number; comments: number } | undefined;
@@ -31,11 +31,12 @@ const headlineOf = (p: Post, max = 90) => p.title || makeExcerpt(p.content, max)
 
 /* ---------- Mảnh nhỏ dùng chung ---------- */
 function Kicker({ post, likes }: { post: Post; likes: number }) {
+  const accent = accentFor(post.id);
   return (
     <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
       {isFresh(post.created_at) && (
-        <span className="inline-flex items-center gap-1 text-[10px] font-bold tracking-wide text-teal-600">
-          <span className="h-1.5 w-1.5 rounded-full bg-teal-500" />
+        <span className={`inline-flex items-center gap-1 text-[10px] font-bold tracking-wide ${accent.text}`}>
+          <span className={`h-1.5 w-1.5 rounded-full ${accent.dot}`} />
           Mới
         </span>
       )}
@@ -148,7 +149,7 @@ function LeadStory({
     <article
       {...linkProps(() => onOpen(post))}
       onClick={() => onOpen(post)}
-      className="group relative cursor-pointer overflow-hidden border-l-4 border-teal-500 py-2 pl-6"
+      className={`group relative cursor-pointer overflow-hidden border-l-4 py-2 pl-6 ${accentFor(post.id).bar}`}
     >
       <span
         aria-hidden
@@ -258,7 +259,7 @@ function Brief({ post, onOpen }: { post: Post; onOpen: (p: Post) => void }) {
       onClick={() => onOpen(post)}
       className="group grid cursor-pointer grid-cols-[3.25rem_1fr] gap-3 border-b border-dotted border-gray-200 py-4"
     >
-      <time dateTime={post.created_at} className="pt-0.5 text-sm font-extrabold tabular-nums text-teal-600">
+      <time dateTime={post.created_at} className={`pt-0.5 text-sm font-extrabold tabular-nums ${accentFor(post.id).text}`}>
         {briefStamp(post.created_at)}
       </time>
       <div className="min-w-0">

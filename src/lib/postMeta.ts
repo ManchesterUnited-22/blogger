@@ -7,6 +7,30 @@ export const KIND_LABEL: Record<PostKind, string> = {
   photo: 'Ảnh',
   text: 'Chia sẻ',
 };
+export type Accent = {
+  bar: string;
+  line: string;
+  hover: string;
+  text: string;
+  dot: string;
+  avatar: string;
+};
+
+export const ACCENTS: Accent[] = [
+  { bar: 'border-teal-500', line: 'from-teal-400 to-cyan-300', hover: 'group-hover:text-teal-700', text: 'text-teal-600', dot: 'bg-teal-500', avatar: 'from-teal-400 to-cyan-500' },
+  { bar: 'border-orange-400', line: 'from-orange-300 to-amber-300', hover: 'group-hover:text-orange-700', text: 'text-orange-600', dot: 'bg-orange-400', avatar: 'from-orange-300 to-orange-500' },
+  { bar: 'border-cyan-500', line: 'from-cyan-400 to-blue-300', hover: 'group-hover:text-cyan-700', text: 'text-cyan-600', dot: 'bg-cyan-500', avatar: 'from-cyan-400 to-cyan-600' },
+  { bar: 'border-violet-400', line: 'from-violet-400 to-teal-300', hover: 'group-hover:text-violet-700', text: 'text-violet-600', dot: 'bg-violet-400', avatar: 'from-violet-400 to-teal-500' },
+  { bar: 'border-pink-400', line: 'from-pink-300 to-orange-300', hover: 'group-hover:text-pink-700', text: 'text-pink-600', dot: 'bg-pink-400', avatar: 'from-pink-300 to-pink-500' },
+  { bar: 'border-amber-400', line: 'from-amber-300 to-orange-300', hover: 'group-hover:text-amber-700', text: 'text-amber-600', dot: 'bg-amber-400', avatar: 'from-amber-300 to-amber-500' },
+];
+
+/** Chọn màu nhấn ổn định theo id bài: cùng một bài luôn ra cùng một màu. */
+export function accentFor(id: string): Accent {
+  let h = 0;
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
+  return ACCENTS[h % ACCENTS.length];
+}
 
 const pad = (n: number) => String(n).padStart(2, '0');
 

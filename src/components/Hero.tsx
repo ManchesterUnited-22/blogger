@@ -43,11 +43,11 @@ export default function Hero() {
       />
       <div
         aria-hidden
-        className="absolute bottom-0 left-1/3 h-72 w-72 animate-float rounded-full bg-gradient-to-br from-orange-100 to-yellow-100 opacity-40 blur-3xl"
+        className="absolute bottom-0 left-1/3 h-72 w-72 animate-float rounded-full bg-gradient-to-br from-orange-200 to-amber-200 opacity-40 blur-3xl"
       />
       <div
         aria-hidden
-        className="absolute bottom-10 right-1/4 h-64 w-64 animate-float-slow rounded-full bg-gradient-to-br from-violet-200 to-teal-200 opacity-30 blur-3xl"
+        className="absolute bottom-10 right-1/4 h-64 w-64 animate-float-slow rounded-full bg-gradient-to-br from-pink-200 to-teal-200 opacity-35 blur-3xl"
       />
 
       <div className="relative mx-auto max-w-6xl px-6 pb-28 pt-14 lg:pb-32 lg:pt-20">
@@ -102,7 +102,7 @@ export default function Hero() {
           </div>
 
           {/* ===== Cột phải: bản đồ trong khung viền gradient ===== */}
-          <figure className="group relative mx-auto w-full max-w-sm rotate-2 transition-transform duration-500 hover:rotate-0">
+         <figure className="relative mx-auto w-full max-w-sm">
             <span
               aria-hidden
               className="absolute -top-4 left-6 z-10 rounded-full bg-white px-4 py-1 text-xs font-bold tracking-wide text-teal-700 shadow-md ring-1 ring-teal-100"
