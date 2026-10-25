@@ -8,11 +8,11 @@ import Footer from '@/components/Footer';
 import type { User } from '@supabase/supabase-js';
 import AuthModal from '@/components/AuthModal';
 import ProfilePage from '@/components/ProfilePage';
-import PostCard from '@/components/PostCard';
+import PostFrontPage from '@/components/PostFrontPage';
 import PostDetail from '@/components/PostDetail';
 import MembersSection, { type Member } from '@/components/MembersSection';
 import { makeExcerpt, type Post } from '@/lib/posts';
-import ScrollReveal from '@/components/ScrollReveal';
+import { dateLine } from '@/lib/postMeta';
 import GroupPhoto from '@/components/GroupPhoto';
 
 // ===== Ghi trang đang xem vào địa chỉ + lịch sử, để nút Back của trình duyệt chạy đúng =====
@@ -208,8 +208,8 @@ export default function App() {
     }, 100);
   };
 
-  // Nút "Viết bài đầu tiên" khi chưa có bài nào: chưa đăng nhập thì mở hộp đăng nhập
-  const handleWriteFirst = () => {
+  // Nút "Viết bài" ở khu cộng đồng: chưa đăng nhập thì mở hộp đăng nhập
+  const handleWrite = () => {
     if (!user) {
       setAuthOpen(true);
       return;
@@ -233,6 +233,10 @@ export default function App() {
     const q = searchQuery.toLowerCase();
     return p.title.toLowerCase().includes(q) || makeExcerpt(p.content, 2000).toLowerCase().includes(q);
   });
+
+  // Số liệu gọn trên đầu báo
+  const totalLikes = filteredPosts.reduce((n, p) => n + (stats[p.id]?.likes ?? 0), 0);
+  const totalComments = filteredPosts.reduce((n, p) => n + (stats[p.id]?.comments ?? 0), 0);
 
   // Số bài viết của từng thành viên (hiện ở khối "Cây bút đồng hành")
   const postCounts = posts.reduce<Record<string, number>>((acc, p) => {
@@ -298,64 +302,64 @@ export default function App() {
       <Hero />
       <GroupPhoto />
 
-      {/* ===== Góc cộng đồng (bài của thành viên) + tìm kiếm ===== */}
-      <section id="feed" className="mx-auto max-w-6xl scroll-mt-20 px-6 pb-14 pt-10">
-        <div className="flex flex-wrap items-end justify-between gap-4 border-b border-gray-200 pb-4">
-          <div>
-            <h2 className="flex items-center gap-3 font-serif text-3xl font-black tracking-tight text-gray-900">
-              <span aria-hidden className="inline-block h-3 w-3 rotate-45 rounded-sm bg-teal-500" />
-              Góc cộng đồng
-            </h2>
-            <p className="mt-1 text-sm text-gray-500">Bài viết do các cây bút trong cộng đồng chia sẻ</p>
-          </div>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Tìm bài viết..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="rounded-full border border-gray-200 bg-white py-2 pl-9 pr-4 text-sm text-gray-700 outline-none transition-all focus:border-teal-400 focus:ring-2 focus:ring-teal-100"
-            />
-          </div>
-        </div>
-
-        {postsLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
-          </div>
-        ) : filteredPosts.length === 0 ? (
-          <div className="py-20 text-center text-gray-400">
-            {searchQuery ? (
-              <p className="text-lg">Không tìm thấy bài viết phù hợp.</p>
-            ) : (
-              <>
-                <p className="text-lg">Chưa có bài viết nào. Hãy là người đầu tiên chia sẻ!</p>
-                <button
-                  type="button"
-                  onClick={handleWriteFirst}
-                  className="mt-5 inline-flex items-center gap-2 rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white hover:bg-teal-600"
-                >
-                  <PenLine className="h-4 w-4" />
-                  Viết bài đầu tiên
-                </button>
-              </>
-            )}
-          </div>
-        ) : (
-          <div className="mt-8 grid gap-x-10 gap-y-12 md:grid-cols-2">
-            {filteredPosts.map((post, i) => (
-              <ScrollReveal key={post.id} className="h-full" delay={(i % 2) * 70}>
-                <PostCard
-                  post={post}
-                  onClick={() => openPost(post)}
-                  likes={stats[post.id]?.likes ?? 0}
-                  comments={stats[post.id]?.comments ?? 0}
+      {/* ===== Góc cộng đồng: trang nhất của bài cộng đồng ===== */}
+      <section id="feed" className="scroll-mt-20 bg-[#faf8f3]">
+        <div className="mx-auto max-w-6xl px-6 pb-16 pt-10">
+          {/* Đầu báo: vạch đậm + một dòng ngày và số liệu */}
+          <div className="border-t-4 border-gray-900">
+            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-gray-300 py-2 text-xs font-semibold uppercase tracking-widest text-gray-500">
+              <span>{dateLine()}</span>
+              <span>
+                {filteredPosts.length} bài · {totalLikes} lượt tim · {totalComments} bình luận
+              </span>
+            </div>
+            <div className="flex flex-wrap items-end justify-between gap-4 py-6">
+              <div>
+                <h2 className="flex items-center gap-3 font-serif text-4xl font-black tracking-tight text-gray-900">
+                  <span aria-hidden className="inline-block h-3.5 w-3.5 rotate-45 rounded-sm bg-teal-500" />
+                  Góc cộng đồng
+                </h2>
+                <p className="mt-1 text-sm text-gray-500">Bài viết do các cây bút trong cộng đồng chia sẻ</p>
+              </div>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Tìm bài viết..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="rounded-full border border-gray-300 bg-white py-2 pl-9 pr-4 text-sm text-gray-700 outline-none transition-all focus:border-teal-400 focus:ring-2 focus:ring-teal-100"
                 />
-              </ScrollReveal>
-            ))}
+              </div>
+            </div>
           </div>
-        )}
+
+          {postsLoading ? (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
+            </div>
+          ) : filteredPosts.length === 0 ? (
+            <div className="py-20 text-center text-gray-400">
+              {searchQuery ? (
+                <p className="text-lg">Không tìm thấy bài viết phù hợp.</p>
+              ) : (
+                <>
+                  <p className="text-lg">Chưa có bài viết nào. Hãy là người đầu tiên chia sẻ!</p>
+                  <button
+                    type="button"
+                    onClick={handleWrite}
+                    className="mt-5 inline-flex items-center gap-2 rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white hover:bg-teal-600"
+                  >
+                    <PenLine className="h-4 w-4" />
+                    Viết bài đầu tiên
+                  </button>
+                </>
+              )}
+            </div>
+          ) : (
+            <PostFrontPage posts={filteredPosts} stats={stats} onOpen={openPost} onWrite={handleWrite} />
+          )}
+        </div>
       </section>
 
       {/* Thành viên cộng đồng */}
