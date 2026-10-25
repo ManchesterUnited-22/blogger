@@ -35,19 +35,19 @@ export default function Hero() {
       {/* Các quả cầu màu trôi nhẹ phía sau */}
       <div
         aria-hidden
-        className="absolute -left-24 top-10 h-72 w-72 animate-float rounded-full bg-gradient-to-br from-teal-300 to-violet-300 opacity-40 blur-3xl"
+        className="absolute -left-24 top-10 h-72 w-72 animate-float rounded-full bg-gradient-to-br from-teal-300 to-violet-300 opacity-30 blur-3xl"
       />
       <div
         aria-hidden
-        className="absolute -right-20 top-0 h-80 w-80 animate-float-slow rounded-full bg-gradient-to-br from-cyan-200 to-blue-300 opacity-50 blur-3xl"
+        className="absolute -right-20 top-0 h-80 w-80 animate-float-slow rounded-full bg-gradient-to-br from-cyan-200 to-blue-300 opacity-30 blur-3xl"
       />
       <div
         aria-hidden
-        className="absolute bottom-0 left-1/3 h-72 w-72 animate-float rounded-full bg-gradient-to-br from-orange-100 to-yellow-100 opacity-70 blur-3xl"
+        className="absolute bottom-0 left-1/3 h-72 w-72 animate-float rounded-full bg-gradient-to-br from-orange-100 to-yellow-100 opacity-40 blur-3xl"
       />
       <div
         aria-hidden
-        className="absolute bottom-10 right-1/4 h-64 w-64 animate-float-slow rounded-full bg-gradient-to-br from-violet-200 to-teal-200 opacity-40 blur-3xl"
+        className="absolute bottom-10 right-1/4 h-64 w-64 animate-float-slow rounded-full bg-gradient-to-br from-violet-200 to-teal-200 opacity-30 blur-3xl"
       />
 
       <div className="relative mx-auto max-w-6xl px-6 pb-28 pt-14 lg:pb-32 lg:pt-20">

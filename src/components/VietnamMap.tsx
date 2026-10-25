@@ -9,9 +9,9 @@ export default function VietnamMap() {
       >
         <defs>
           <linearGradient id="vietnamGradient" x1="0%" y1="0%" x2="60%" y2="100%">
-            <stop offset="0%" stopColor="#38bdf8" />
-            <stop offset="55%" stopColor="#0284c7" />
-            <stop offset="100%" stopColor="#0c4a6e" />
+            <stop offset="0%" stopColor="#6aa6c4" />
+            <stop offset="55%" stopColor="#3f7ea3" />
+            <stop offset="100%" stopColor="#244a5e" />
           </linearGradient>
         </defs>
 
@@ -20,7 +20,7 @@ export default function VietnamMap() {
           d="M181 519 L179 521 L177 521 L177 522 L181 526 L182 532 L182 529 L184 525 L184 521 Z M230 33 L228 33 L225 37 L222 37 L217 40 L215 40 L212 43 L213 49 L211 50 L208 54 L202 54 L196 59 L192 58 L190 56 L190 54 L187 54 L183 59 L183 64 L182 65 L178 65 L174 60 L169 56 L167 57 L167 61 L166 62 L163 62 L160 58 L160 56 L158 55 L157 58 L152 62 L152 64 L149 66 L148 68 L145 68 L141 65 L140 62 L138 62 L135 59 L132 59 L128 56 L126 56 L126 58 L124 59 L124 62 L118 69 L116 69 L117 74 L128 84 L129 87 L131 87 L133 89 L134 97 L135 98 L138 96 L142 96 L143 95 L146 96 L146 102 L143 105 L143 110 L141 113 L143 115 L143 117 L149 124 L151 129 L158 131 L163 131 L165 133 L168 133 L169 135 L171 136 L173 133 L173 131 L175 129 L182 127 L184 125 L188 125 L204 136 L204 140 L201 143 L198 143 L196 145 L198 146 L204 146 L207 149 L207 153 L208 154 L209 153 L213 153 L217 158 L217 162 L211 166 L212 170 L208 172 L205 177 L199 177 L197 175 L193 175 L192 174 L183 175 L186 179 L186 182 L182 185 L179 189 L182 191 L187 192 L190 195 L195 197 L197 200 L200 200 L202 203 L206 206 L217 209 L220 211 L222 211 L224 213 L222 221 L225 224 L225 226 L227 228 L229 228 L230 231 L233 230 L236 231 L237 234 L241 239 L241 243 L245 250 L248 251 L257 262 L261 265 L265 265 L266 266 L266 269 L269 272 L269 274 L274 277 L274 288 L278 291 L278 295 L281 296 L283 294 L285 294 L286 297 L290 301 L293 301 L297 307 L299 307 L301 310 L306 310 L307 311 L307 313 L303 317 L297 319 L296 321 L299 323 L299 325 L304 331 L307 331 L315 340 L313 346 L310 349 L307 350 L307 351 L310 353 L310 356 L309 357 L310 364 L308 370 L304 373 L304 379 L303 380 L303 386 L307 389 L307 395 L313 404 L313 413 L308 421 L308 428 L311 432 L311 444 L310 445 L310 448 L306 451 L304 451 L302 449 L296 451 L291 457 L288 459 L282 459 L280 462 L270 462 L270 472 L269 473 L265 473 L262 471 L255 470 L252 474 L249 474 L248 475 L250 478 L250 487 L251 489 L254 490 L257 494 L260 494 L261 495 L261 498 L259 500 L260 501 L260 504 L259 505 L256 505 L253 503 L249 503 L245 497 L239 500 L233 500 L230 503 L221 500 L220 501 L221 508 L212 516 L203 515 L202 517 L199 519 L201 523 L203 524 L204 528 L205 528 L207 525 L209 525 L214 530 L217 530 L221 534 L221 536 L214 542 L212 549 L211 578 L213 579 L212 583 L209 585 L211 586 L221 584 L226 579 L229 578 L232 570 L237 565 L259 557 L260 556 L260 549 L261 548 L265 548 L267 550 L271 550 L274 547 L274 544 L272 543 L272 541 L277 539 L278 533 L281 532 L282 530 L281 528 L277 527 L276 524 L277 523 L280 523 L281 524 L282 523 L282 520 L285 518 L284 516 L285 513 L287 513 L289 516 L291 516 L293 518 L293 521 L301 519 L302 517 L307 516 L311 512 L315 511 L321 507 L325 508 L327 503 L332 499 L337 499 L339 496 L343 495 L343 493 L347 490 L352 490 L352 488 L355 485 L361 485 L362 484 L362 477 L363 476 L366 476 L369 471 L368 468 L366 467 L366 465 L367 464 L371 465 L371 463 L369 461 L369 448 L373 446 L368 440 L369 436 L377 429 L377 426 L372 420 L372 412 L371 410 L369 409 L369 407 L372 406 L369 400 L369 397 L370 395 L372 394 L372 392 L370 390 L370 385 L368 383 L368 377 L365 373 L364 361 L360 355 L358 341 L356 339 L355 335 L350 334 L343 326 L339 317 L338 317 L334 312 L334 310 L337 308 L335 308 L334 310 L331 310 L330 307 L332 305 L329 305 L326 301 L320 303 L318 301 L318 298 L314 295 L311 291 L298 281 L293 275 L293 273 L285 267 L275 257 L269 247 L269 243 L271 241 L271 239 L268 235 L266 235 L262 230 L258 229 L247 217 L244 208 L239 203 L239 199 L243 196 L244 191 L246 189 L245 187 L246 177 L251 168 L251 165 L253 163 L258 163 L262 160 L267 154 L273 152 L274 150 L274 140 L278 137 L279 135 L281 135 L280 130 L283 129 L284 131 L287 131 L291 134 L291 131 L290 130 L286 130 L285 129 L285 126 L286 125 L294 125 L296 126 L298 123 L302 123 L303 121 L306 120 L307 118 L310 116 L308 116 L307 113 L310 112 L315 108 L318 104 L322 103 L323 104 L323 109 L323 107 L326 106 L325 103 L323 103 L320 99 L317 99 L313 101 L307 101 L306 99 L305 100 L302 100 L300 96 L297 97 L294 94 L290 92 L290 88 L287 88 L278 85 L278 81 L277 80 L277 77 L278 76 L277 73 L275 73 L273 71 L273 67 L274 66 L274 63 L279 61 L280 57 L282 55 L280 53 L276 52 L274 50 L272 50 L269 52 L263 52 L262 49 L258 47 L255 47 L253 49 L249 50 L245 46 L239 45 L237 43 L237 40 L236 40 Z M302 114 L305 113 L306 116 L303 117 Z"
           fill="url(#vietnamGradient)"
           fillRule="evenodd"
-          stroke="#bae6fd"
+          stroke="#cfe3ee"
           strokeWidth="1.5"
           strokeLinejoin="round"
         />
@@ -32,7 +32,7 @@ export default function VietnamMap() {
           fontSize="13"
           fontStyle="italic"
           letterSpacing="3"
-          fill="#0284c7"
+          fill="#3f7ea3"
           fillOpacity="0.55"
           textAnchor="middle"
           className="font-sans"
@@ -43,28 +43,28 @@ export default function VietnamMap() {
         {/* Quần đảo Hoàng Sa (TP. Đà Nẵng) */}
         <g>
           {/* vùng rạn san hô quanh các nhóm đảo */}
-          <ellipse cx="458" cy="290" rx="13" ry="7" fill="#7dd3fc" fillOpacity="0.25" stroke="#38bdf8" strokeWidth="0.7" strokeDasharray="2 1.5" />
-          <ellipse cx="486" cy="273" rx="8" ry="12" fill="#7dd3fc" fillOpacity="0.25" stroke="#38bdf8" strokeWidth="0.7" strokeDasharray="2 1.5" />
-          <circle cx="458.7" cy="288.9" r="2.6" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
-          <circle cx="456.9" cy="287.4" r="2.0" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
-          <circle cx="455.8" cy="291.9" r="2.0" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
-          <circle cx="463.0" cy="290.0" r="2.0" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
-          <circle cx="462.3" cy="291.9" r="2.0" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
-          <circle cx="444.2" cy="316.9" r="2.2" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
-          <circle cx="492.4" cy="307.5" r="2.6" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
-          <circle cx="485.2" cy="277.7" r="2.8" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
-          <circle cx="499.7" cy="283.7" r="2.0" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
-          <circle cx="483.4" cy="271.7" r="2.0" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
-          <circle cx="484.1" cy="268.4" r="2.0" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
-          <circle cx="485.6" cy="272.8" r="1.8" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
-          <circle cx="485.2" cy="274.7" r="1.8" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
+          <ellipse cx="458" cy="290" rx="13" ry="7" fill="#9cc3d8" fillOpacity="0.25" stroke="#6aa6c4" strokeWidth="0.7" strokeDasharray="2 1.5" />
+          <ellipse cx="486" cy="273" rx="8" ry="12" fill="#9cc3d8" fillOpacity="0.25" stroke="#6aa6c4" strokeWidth="0.7" strokeDasharray="2 1.5" />
+          <circle cx="458.7" cy="288.9" r="2.6" fill="#2f6a8a" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="456.9" cy="287.4" r="2.0" fill="#2f6a8a" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="455.8" cy="291.9" r="2.0" fill="#2f6a8a" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="463.0" cy="290.0" r="2.0" fill="#2f6a8a" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="462.3" cy="291.9" r="2.0" fill="#2f6a8a" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="444.2" cy="316.9" r="2.2" fill="#2f6a8a" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="492.4" cy="307.5" r="2.6" fill="#6aa6c4" fillOpacity="0.55" stroke="#3f7ea3" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="485.2" cy="277.7" r="2.8" fill="#2f6a8a" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="499.7" cy="283.7" r="2.0" fill="#2f6a8a" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="483.4" cy="271.7" r="2.0" fill="#2f6a8a" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="484.1" cy="268.4" r="2.0" fill="#2f6a8a" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="485.6" cy="272.8" r="1.8" fill="#2f6a8a" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="485.2" cy="274.7" r="1.8" fill="#2f6a8a" stroke="#ffffff" strokeWidth="0.8" />
         </g>
         <text
           x="472"
           y="337"
           fontSize="12"
           fontWeight="bold"
-          fill="#0c4a6e"
+          fill="#244a5e"
           stroke="white"
           strokeWidth="3"
           paintOrder="stroke"
@@ -77,7 +77,7 @@ export default function VietnamMap() {
           x="472"
           y="349"
           fontSize="9"
-          fill="#0369a1"
+          fill="#2f6a8a"
           stroke="white"
           strokeWidth="2.5"
           paintOrder="stroke"
@@ -89,42 +89,42 @@ export default function VietnamMap() {
 
         {/* Quần đảo Trường Sa (Khánh Hòa) */}
         <g>
-          <circle cx="557.8" cy="479.1" r="2.4" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
-          <circle cx="558.5" cy="477.6" r="1.8" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
-          <circle cx="556.0" cy="493.3" r="2.4" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
-          <circle cx="548.7" cy="498.1" r="2.6" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
-          <circle cx="558.5" cy="505.6" r="1.8" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
-          <circle cx="561.1" cy="507.1" r="1.8" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
-          <circle cx="558.9" cy="518.3" r="2.4" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
-          <circle cx="563.2" cy="518.6" r="2.0" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
-          <circle cx="559.2" cy="525.7" r="2.2" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
-          <circle cx="553.8" cy="525.0" r="2.4" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
-          <circle cx="564.0" cy="535.1" r="2.4" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
-          <circle cx="557.8" cy="536.9" r="2.4" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
-          <circle cx="560.3" cy="535.4" r="1.8" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
-          <circle cx="554.9" cy="541.8" r="2.2" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
-          <circle cx="556.7" cy="543.3" r="2.2" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
-          <circle cx="561.4" cy="540.7" r="2.2" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
-          <circle cx="540.4" cy="531.3" r="2.6" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
-          <circle cx="505.5" cy="549.2" r="3.0" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
-          <circle cx="503.7" cy="574.6" r="2.6" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
-          <circle cx="480.5" cy="574.6" r="2.2" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
-          <circle cx="495.0" cy="575.3" r="2.4" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
-          <circle cx="470.3" cy="583.2" r="2.8" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
-          <circle cx="461.6" cy="582.8" r="2.4" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
-          <circle cx="519.7" cy="600.7" r="2.6" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
-          <circle cx="506.6" cy="611.5" r="2.4" fill="#0369a1" stroke="#ffffff" strokeWidth="0.8" />
-          <circle cx="591.9" cy="594.0" r="2.4" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
-          <circle cx="601.3" cy="536.2" r="3.0" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
-          <circle cx="544.7" cy="621.2" r="2.4" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
-          <circle cx="539.6" cy="630.2" r="2.4" fill="#38bdf8" fillOpacity="0.55" stroke="#0284c7" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="557.8" cy="479.1" r="2.4" fill="#2f6a8a" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="558.5" cy="477.6" r="1.8" fill="#2f6a8a" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="556.0" cy="493.3" r="2.4" fill="#2f6a8a" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="548.7" cy="498.1" r="2.6" fill="#6aa6c4" fillOpacity="0.55" stroke="#3f7ea3" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="558.5" cy="505.6" r="1.8" fill="#2f6a8a" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="561.1" cy="507.1" r="1.8" fill="#2f6a8a" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="558.9" cy="518.3" r="2.4" fill="#2f6a8a" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="563.2" cy="518.6" r="2.0" fill="#2f6a8a" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="559.2" cy="525.7" r="2.2" fill="#2f6a8a" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="553.8" cy="525.0" r="2.4" fill="#6aa6c4" fillOpacity="0.55" stroke="#3f7ea3" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="564.0" cy="535.1" r="2.4" fill="#6aa6c4" fillOpacity="0.55" stroke="#3f7ea3" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="557.8" cy="536.9" r="2.4" fill="#2f6a8a" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="560.3" cy="535.4" r="1.8" fill="#2f6a8a" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="554.9" cy="541.8" r="2.2" fill="#6aa6c4" fillOpacity="0.55" stroke="#3f7ea3" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="556.7" cy="543.3" r="2.2" fill="#6aa6c4" fillOpacity="0.55" stroke="#3f7ea3" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="561.4" cy="540.7" r="2.2" fill="#6aa6c4" fillOpacity="0.55" stroke="#3f7ea3" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="540.4" cy="531.3" r="2.6" fill="#6aa6c4" fillOpacity="0.55" stroke="#3f7ea3" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="505.5" cy="549.2" r="3.0" fill="#6aa6c4" fillOpacity="0.55" stroke="#3f7ea3" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="503.7" cy="574.6" r="2.6" fill="#6aa6c4" fillOpacity="0.55" stroke="#3f7ea3" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="480.5" cy="574.6" r="2.2" fill="#2f6a8a" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="495.0" cy="575.3" r="2.4" fill="#6aa6c4" fillOpacity="0.55" stroke="#3f7ea3" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="470.3" cy="583.2" r="2.8" fill="#2f6a8a" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="461.6" cy="582.8" r="2.4" fill="#6aa6c4" fillOpacity="0.55" stroke="#3f7ea3" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="519.7" cy="600.7" r="2.6" fill="#6aa6c4" fillOpacity="0.55" stroke="#3f7ea3" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="506.6" cy="611.5" r="2.4" fill="#2f6a8a" stroke="#ffffff" strokeWidth="0.8" />
+          <circle cx="591.9" cy="594.0" r="2.4" fill="#6aa6c4" fillOpacity="0.55" stroke="#3f7ea3" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="601.3" cy="536.2" r="3.0" fill="#6aa6c4" fillOpacity="0.55" stroke="#3f7ea3" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="544.7" cy="621.2" r="2.4" fill="#6aa6c4" fillOpacity="0.55" stroke="#3f7ea3" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
+          <circle cx="539.6" cy="630.2" r="2.4" fill="#6aa6c4" fillOpacity="0.55" stroke="#3f7ea3" strokeWidth="0.9" strokeDasharray="1.6 1.2" />
         </g>
         <text
           x="535"
           y="450"
           fontSize="12"
           fontWeight="bold"
-          fill="#0c4a6e"
+          fill="#244a5e"
           stroke="white"
           strokeWidth="3"
           paintOrder="stroke"
@@ -137,7 +137,7 @@ export default function VietnamMap() {
           x="535"
           y="462"
           fontSize="9"
-          fill="#0369a1"
+          fill="#2f6a8a"
           stroke="white"
           strokeWidth="2.5"
           paintOrder="stroke"
@@ -149,18 +149,18 @@ export default function VietnamMap() {
 
         {/* Các thành phố lớn */}
         <g className="font-sans" fontSize="13" fontWeight="bold">
-          <circle cx="249" cy="121" r="4.5" fill="#ffffff" stroke="#0c4a6e" strokeWidth="1.5" />
-          <text x="259" y="117" fill="#0c4a6e" stroke="white" strokeWidth="3" paintOrder="stroke">
+          <circle cx="249" cy="121" r="4.5" fill="#ffffff" stroke="#244a5e" strokeWidth="1.5" />
+          <text x="259" y="117" fill="#244a5e" stroke="white" strokeWidth="3" paintOrder="stroke">
             Hà Nội
           </text>
 
-          <circle cx="328" cy="306" r="4.5" fill="#ffffff" stroke="#0c4a6e" strokeWidth="1.5" />
-          <text x="340" y="302" fill="#0c4a6e" stroke="white" strokeWidth="3" paintOrder="stroke">
+          <circle cx="328" cy="306" r="4.5" fill="#ffffff" stroke="#244a5e" strokeWidth="1.5" />
+          <text x="340" y="302" fill="#244a5e" stroke="white" strokeWidth="3" paintOrder="stroke">
             Đà Nẵng
           </text>
 
-          <circle cx="279" cy="503" r="4.5" fill="#ffffff" stroke="#0c4a6e" strokeWidth="1.5" />
-          <text x="289" y="499" fill="#0c4a6e" stroke="white" strokeWidth="3" paintOrder="stroke">
+          <circle cx="279" cy="503" r="4.5" fill="#ffffff" stroke="#244a5e" strokeWidth="1.5" />
+          <text x="289" y="499" fill="#244a5e" stroke="white" strokeWidth="3" paintOrder="stroke">
             TP. Hồ Chí Minh
           </text>
         </g>

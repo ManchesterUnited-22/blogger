@@ -29,11 +29,11 @@ export default function MembersSection({ members, postCounts, currentUserId }: P
       {/* Nền: các mảng màu mờ */}
       <div
         aria-hidden
-        className="absolute -left-32 top-20 h-96 w-96 animate-float-slow rounded-full bg-gradient-to-br from-cyan-200 to-teal-200 opacity-50 blur-3xl"
+        className="absolute -left-32 top-20 h-96 w-96 animate-float-slow rounded-full bg-gradient-to-br from-cyan-200 to-teal-200 opacity-30 blur-3xl"
       />
       <div
         aria-hidden
-        className="absolute -right-32 bottom-10 h-96 w-96 animate-float rounded-full bg-gradient-to-br from-violet-200 to-teal-200 opacity-50 blur-3xl"
+        className="absolute -right-32 bottom-10 h-96 w-96 animate-float rounded-full bg-gradient-to-br from-violet-200 to-teal-200 opacity-30 blur-3xl"
       />
 
       <div className="relative mx-auto max-w-6xl px-6">
