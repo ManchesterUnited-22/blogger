@@ -4,7 +4,7 @@ import VietnamMap from './VietnamMap';
 import YouTubeBackground from './YouTubeBackground';
 
 // Mã video YouTube làm nền (phần sau v= trong link)
-const YT_ID = 'CKIUpDn39no';
+const YT_ID = 'CSJ-QEfS4';
 
 // Mỗi từ xoay vòng có màu riêng, trùng màu với chip chủ đề bên dưới
 const WORDS = [

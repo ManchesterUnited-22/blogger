@@ -168,14 +168,6 @@ export default function GroupPhoto() {
             </div>
           </figcaption>
 
-          {/* Bộ đếm ảnh */}
-          {total > 1 && (
-            <div className="absolute right-3 top-3 rounded-full bg-black/40 px-3 py-1 font-serif text-xs font-bold tabular-nums text-white backdrop-blur">
-              {String((index % total) + 1).padStart(2, '0')}
-              <span className="text-white/60"> / {String(total).padStart(2, '0')}</span>
-            </div>
-          )}
-
           {/* Mũi tên (chỉ hiện trên máy tính khi rê chuột) */}
           {total > 1 && (
             <>

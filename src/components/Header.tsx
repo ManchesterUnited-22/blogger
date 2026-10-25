@@ -113,12 +113,17 @@ function UserMenu({
 
   return (
     <div ref={ref} className="relative">
+      {/* Avatar + tên tài khoản */}
       <button
         onClick={() => setOpen((o) => !o)}
-        aria-label="Tài khoản"
-        className="rounded-full ring-2 ring-teal-300 ring-offset-2 ring-offset-white transition hover:ring-cyan-300"
+        aria-label={`Tài khoản ${name}`}
+        aria-expanded={open}
+        className="flex items-center gap-2 rounded-full border border-teal-200 bg-white/80 py-1 pl-1 pr-3.5 shadow-sm transition hover:border-cyan-300 hover:bg-white hover:shadow-md sm:gap-2.5 sm:pr-4"
       >
-        {avatar('h-11 w-11 text-base')}
+        {avatar('h-9 w-9 text-sm')}
+        <span className="max-w-[84px] truncate text-sm font-semibold text-gray-800 sm:max-w-[160px]">
+          {name}
+        </span>
       </button>
 
       {open && (
