@@ -52,7 +52,7 @@ export default function Hero() {
             <h1 className="mt-4 font-serif text-5xl font-black leading-[1.05] tracking-tight text-gray-900 sm:text-6xl lg:text-7xl">
               Những câu chuyện về{' '}
               <span
-                className={`inline-block -rotate-1 rounded-sm bg-orange-200 px-3 text-gray-900 transition-opacity duration-300 ${
+                                className={`inline-block text-orange-500 transition-opacity duration-300 ${
                   visible ? 'opacity-100' : 'opacity-0'
                 }`}
               >
@@ -60,7 +60,7 @@ export default function Hero() {
               </span>
             </h1>
 
-            <span className="mt-6 block h-1 w-16 rounded-full bg-orange-400" />
+            
 
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-gray-700">
               Một chuyến đi, một nhóm sinh viên và rất nhiều kỷ niệm. VTD.News là nơi bọn mình kể lại Quy Nhơn: những

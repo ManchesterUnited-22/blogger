@@ -612,7 +612,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
           >
             <Avatar url={profile.avatarUrl} name={profile.name} className="h-12 w-12 text-base" />
             <span className="min-w-0 flex-1">
-              <span className="block text-[11px] font-bold uppercase tracking-widest text-orange-600">Gửi bài</span>
+              
               <span className="mt-0.5 block font-serif text-xl font-bold leading-snug text-gray-900">
                 Hôm nay bạn muốn chia sẻ điều gì?{' '}
                 <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-teal-700 underline decoration-teal-300 decoration-2 underline-offset-4 transition-colors group-hover:decoration-teal-600">

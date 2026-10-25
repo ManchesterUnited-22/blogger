@@ -1,5 +1,6 @@
 import { ArrowLeft } from 'lucide-react';
 import type { Post } from '@/lib/posts';
+import { shortDate } from '@/lib/postMeta';
 import PostContent from '@/components/PostContent';
 import type { User } from '@supabase/supabase-js';
 import CommentSection from '@/components/CommentSection';
@@ -36,7 +37,12 @@ export default function PostDetail({ post, user, onLoginClick, onBack }: Props) 
               post.author_name.charAt(0).toUpperCase()
             )}
           </div>
-          <span className="font-medium text-gray-700">{post.author_name}</span>
+          <div className="leading-tight">
+            <div className="font-medium text-gray-700">{post.author_name}</div>
+            <time dateTime={post.created_at} className="text-xs text-gray-400">
+              {shortDate(post.created_at)}
+            </time>
+          </div>
         </div>
       </div>
 

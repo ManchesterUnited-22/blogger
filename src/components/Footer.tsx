@@ -36,8 +36,7 @@ export default function Footer() {
               </span>
             </div>
             <p className="mt-6 font-serif text-2xl font-black uppercase leading-snug text-gray-900 md:text-3xl">
-              Dã ngoại thực tế Đà Nẵng -{' '}
-              <span className="inline-block -rotate-1 rounded-sm bg-orange-200 px-2">Quy Nhơn</span>
+              Dã ngoại thực tế Đà Nẵng - Quy Nhơn
             </p>
             <span className="mt-5 block h-1 w-14 rounded-full bg-orange-400" />
             <p className="mt-4 text-xs font-bold uppercase tracking-widest text-gray-500">

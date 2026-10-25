@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { IMAGE_LINE, VIDEO_LINE } from '@/lib/posts';
+import { IMAGE_LINE, VIDEO_LINE, stripCreditLines } from '@/lib/posts';
 import RichLine from '@/components/RichLine';
 import VideoEmbed from '@/components/VideoEmbed';
 import Lightbox, { type LightboxImage } from '@/components/Lightbox';
@@ -9,22 +9,25 @@ import { splitAlign } from '@/lib/richText';
 export default function PostContent({ content }: { content: string }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
+  // Bỏ dòng ghi công kiểu "Bởi ... | Ngày đăng: [...]" ở đầu bài
+  const lines = useMemo(() => stripCreditLines(content.split('\n')), [content]);
+
   // Gom mọi ảnh trong bài để lướt qua lại trong lightbox
   const images = useMemo<LightboxImage[]>(() => {
     const list: LightboxImage[] = [];
-    for (const line of content.split('\n')) {
+    for (const line of lines) {
       const m = line.trim().match(IMAGE_LINE);
       if (m) list.push({ alt: m[1] || '', src: m[2] });
     }
     return list;
-  }, [content]);
+  }, [lines]);
 
   let imageCounter = 0;
 
   return (
     <>
       <div className="space-y-5">
-        {content.split('\n').map((line, i) => {
+        {lines.map((line, i) => {
           const t = line.trim();
           if (!t) return null;
 

@@ -2,7 +2,7 @@ import { useState, type KeyboardEvent } from 'react';
 import { ArrowRight, Heart, MessageCircle, PenLine } from 'lucide-react';
 
 import { makeExcerpt, type Post } from '@/lib/posts';
-import { isFresh, readMinutes } from '@/lib/postMeta';
+import { briefStamp, isFresh, readMinutes, shortDate } from '@/lib/postMeta';
 import ScrollReveal from '@/components/ScrollReveal';
 
 type Stat = { likes: number; comments: number } | undefined;
@@ -73,11 +73,14 @@ function Byline({ post, small }: { post: Post; small?: boolean }) {
       <Avatar post={post} className={small ? 'h-5 w-5 text-[10px]' : 'h-7 w-7 text-xs'} />
       <span className="font-semibold text-gray-800">{post.author_name}</span>
       <span aria-hidden>·</span>
+      <time dateTime={post.created_at} className="text-xs text-gray-400">
+        {shortDate(post.created_at)}
+      </time>
+      <span aria-hidden>·</span>
       <span>{readMinutes(post.content)} phút đọc</span>
     </div>
   );
 }
-
 function Counts({ stat }: { stat: Stat }) {
   const likes = stat?.likes ?? 0;
   return (
@@ -228,7 +231,11 @@ function OpinionCard({ post, stat, onOpen }: { post: Post; stat: Stat; onOpen: (
         <div className="min-w-0">
           <div className="text-[11px] font-bold uppercase tracking-widest text-orange-600">Góc nhìn</div>
           <div className="truncate font-semibold text-gray-900">{post.author_name}</div>
-                    <div className="text-xs text-gray-500">{readMinutes(post.content)} phút đọc</div>
+            <div className="text-xs text-gray-400">
+            <time dateTime={post.created_at}>{shortDate(post.created_at)}</time>
+            {' · '}
+            {readMinutes(post.content)} phút đọc
+          </div>
         </div>
       </div>
       <blockquote className="relative mt-4 line-clamp-5 font-serif text-xl font-bold leading-snug text-gray-900">
@@ -237,6 +244,30 @@ function OpinionCard({ post, stat, onOpen }: { post: Post; stat: Stat; onOpen: (
       {sub && <p className="relative mt-2 line-clamp-2 text-sm leading-relaxed text-gray-600">{sub}</p>}
       <div className="relative mt-4 flex justify-end">
         <Counts stat={stat} />
+      </div>
+    </article>
+  );
+}
+/* ---------- Tin vắn (bài chỉ có chữ) ---------- */
+function Brief({ post, onOpen }: { post: Post; onOpen: (p: Post) => void }) {
+  const sub = post.title ? makeExcerpt(post.content, 140) : '';
+  return (
+    <article
+      {...linkProps(() => onOpen(post))}
+      onClick={() => onOpen(post)}
+      className="group grid cursor-pointer grid-cols-[3.25rem_1fr] gap-3 border-b border-dotted border-gray-300 py-4"
+    >
+      <time dateTime={post.created_at} className="pt-0.5 text-sm font-extrabold tabular-nums text-orange-600">
+        {briefStamp(post.created_at)}
+      </time>
+      <div className="min-w-0">
+        <h4 className="line-clamp-2 font-serif text-lg font-bold leading-snug text-gray-900">
+          <span className={UNDERLINE}>{headlineOf(post)}</span>
+        </h4>
+        {sub && <p className="mt-1 line-clamp-2 text-sm text-gray-600">{sub}</p>}
+        <p className="mt-1 text-xs text-gray-400">
+          {post.author_name} · {shortDate(post.created_at)}
+        </p>
       </div>
     </article>
   );
@@ -276,23 +307,10 @@ function GridStory({ post, stat, onOpen }: { post: Post; stat: Stat; onOpen: (p:
 
 /* ---------- Tin vắn (bài chỉ có chữ) ---------- */
 /* ---------- Tin vắn (bài chỉ có chữ): chỉ hiện tiêu đề + vài dòng đầu ---------- */
-function Brief({ post, onOpen }: { post: Post; onOpen: (p: Post) => void }) {
-  const sub = post.title ? makeExcerpt(post.content, 140) : '';
-  return (
-    <article
-      {...linkProps(() => onOpen(post))}
-      onClick={() => onOpen(post)}
-      className="group cursor-pointer border-b border-dotted border-gray-300 py-4"
-    >
-      <h4 className="line-clamp-2 font-serif text-lg font-bold leading-snug text-gray-900">
-        <span className={UNDERLINE}>{headlineOf(post)}</span>
-      </h4>
-      {sub && <p className="mt-1 line-clamp-2 text-sm text-gray-600">{sub}</p>}
-    </article>
-  );
-}
+
 
 /* ---------- Khung "Gửi bài": to khi ít bài, gọn khi nhiều bài ---------- */
+/* ---------- Khung "Gửi bài": bấm vào bất kỳ đâu trong khung là mở trình viết bài ---------- */
 /* ---------- Khung "Gửi bài": bấm vào bất kỳ đâu trong khung là mở trình viết bài ---------- */
 function SubmitStrip({ big, onWrite }: { big: boolean; onWrite: () => void }) {
   if (big) {
@@ -300,7 +318,7 @@ function SubmitStrip({ big, onWrite }: { big: boolean; onWrite: () => void }) {
       <button
         type="button"
         onClick={onWrite}
-        className="group relative block w-full overflow-hidden rounded-md border border-gray-900 bg-white px-6 py-12 text-center transition-colors hover:border-teal-500 hover:bg-teal-50/40"
+        className="group relative block w-full overflow-hidden rounded-md border border-gray-900 bg-white px-6 py-12 text-center shadow-[6px_6px_0_0_#111827] transition-all hover:translate-x-[3px] hover:translate-y-[3px] hover:bg-teal-50/40 hover:shadow-[3px_3px_0_0_#111827]"
       >
         <span
           aria-hidden
@@ -308,8 +326,7 @@ function SubmitStrip({ big, onWrite }: { big: boolean; onWrite: () => void }) {
         >
           “
         </span>
-        <span className="relative block text-xs font-bold uppercase tracking-widest text-orange-600">Gửi bài</span>
-        <span className="relative mt-3 block font-serif text-3xl font-black text-gray-900 sm:text-4xl">
+        <span className="relative block font-serif text-3xl font-black text-gray-900 sm:text-4xl">
           <span className={UNDERLINE}>Bạn có câu chuyện muốn chia sẻ?</span>
         </span>
         <span className="relative mx-auto mt-3 block max-w-xl text-lg text-gray-600">
@@ -323,13 +340,12 @@ function SubmitStrip({ big, onWrite }: { big: boolean; onWrite: () => void }) {
       </button>
     );
   }
-    return (
+  return (
     <button
       type="button"
       onClick={onWrite}
       className="group block w-full border-y border-gray-300 py-5 text-left transition-colors hover:bg-teal-50/40"
     >
-      <span className="mr-3 font-sans text-xs font-bold uppercase tracking-widest text-orange-600">Gửi bài</span>
       <span className="font-serif text-xl font-bold text-gray-900">
         Bạn có câu chuyện muốn chia sẻ?{' '}
         <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-teal-700 underline decoration-teal-300 decoration-2 underline-offset-4 transition-colors group-hover:decoration-teal-600">

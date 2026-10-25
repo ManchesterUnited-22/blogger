@@ -33,6 +33,11 @@ export function postKind(content: string): PostKind {
 export function readMinutes(content: string): number {
   return Math.max(1, Math.round(wordCount(content) / 200));
 }
+/** Ngày đăng dạng gọn kiểu báo mạng: "22/10/2026". */
+export function shortDate(dateStr: string): string {
+  const d = new Date(dateStr);
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+}
 
 /** Nhãn giờ cho tin vắn: hôm nay thì "14:32", cũ hơn thì "25/10". */
 export function briefStamp(dateStr: string): string {

@@ -32,14 +32,33 @@ export function extractCover(content: string): string | null {
   return null;
 }
 
+
 /** Đoạn trích: bỏ dòng ảnh/video, nối các dòng chữ lại. */
+/**
+ * Dòng "ghi công" tác giả tự gõ ở đầu bài, ví dụ: "Bởi Bá Khí | Ngày đăng: [22/10/2026]".
+ * Tên người đăng và ngày đăng đã có sẵn ở hệ thống nên không cần hiện lại trong nội dung.
+ */
+const CREDIT_LINE = /ngày\s*đăng\s*[:：]|^bởi\s+[^|]{1,60}\||^(nhóm|tác giả|người đăng|biên tập)\s*[:：]/i;
+
+/** Bỏ các dòng ghi công nằm trong vài dòng chữ đầu tiên của bài (không đụng tới phần thân bài). */
+export function stripCreditLines(lines: string[]): string[] {
+  let textSeen = 0;
+  return lines.filter((raw) => {
+    const t = raw.trim();
+    if (!t || IMAGE_LINE.test(t) || VIDEO_LINE.test(t)) return true;
+    textSeen++;
+    if (textSeen > 3) return true;
+    return !CREDIT_LINE.test(lineToText(t).trim());
+  });
+}
+
+/** Đoạn trích: bỏ dòng ghi công + dòng ảnh/video, nối các dòng chữ lại. */
 export function makeExcerpt(content: string, max = 240): string {
-  const text = content
-    .split('\n')
+  const text = stripCreditLines(content.split('\n'))
     .map((l) => l.trim())
     .filter((l) => l && !IMAGE_LINE.test(l) && !VIDEO_LINE.test(l))
-     .map((l) => lineToText(l).trim())
-     .filter(Boolean)
+    .map((l) => lineToText(l).trim())
+    .filter(Boolean)
     .join(' ');
   return text.length > max ? text.slice(0, max).trimEnd() + '…' : text;
 }

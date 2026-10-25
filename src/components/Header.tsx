@@ -202,11 +202,10 @@ export default function Header({
   const active = useActiveSection();
 
   // Mục đang xem: có vệt "bút dạ quang" cam nhạt chạy ngang chân chữ; rê chuột vào mục khác thì vệt cũng trượt ra
+    // Mục đang xem: chữ đậm màu teal; mục còn lại: chữ xám, rê chuột thì đậm lên
   const linkClass = (id: string | null) =>
-    `relative isolate inline-flex shrink-0 items-center gap-2 px-4 py-2.5 text-sm font-bold uppercase tracking-widest transition-colors before:absolute before:inset-x-2 before:bottom-2 before:-z-10 before:h-3 before:origin-left before:-rotate-1 before:bg-orange-300/70 before:transition-transform before:duration-300 ${
-      active === id
-        ? 'text-gray-900 before:scale-x-100'
-        : 'text-gray-500 hover:text-gray-900 before:scale-x-0 hover:before:scale-x-100'
+    `inline-flex shrink-0 items-center gap-2 px-4 py-2.5 text-sm font-bold uppercase tracking-widest transition-colors ${
+      active === id ? 'text-teal-700' : 'text-gray-500 hover:text-gray-900'
     }`;
 
   const navButtons = NAV_ITEMS.map(({ label, id, icon: Icon }) => (
@@ -222,7 +221,8 @@ export default function Header({
       <div className="bg-gray-900 text-[#faf8f3]">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-2">
           <div className="flex items-center gap-3">
-            <span className="-rotate-2 rounded-sm bg-orange-500 px-2 py-0.5 text-[11px] font-black uppercase tracking-widest text-white shadow-sm">
+            <span 
+            className="-rotate-2 rounded-sm bg-orange-500 px-2 py-0.5 text-[11px] font-black uppercase tracking-widest text-white shadow-sm">
               Hôm nay
             </span>
             <span className="font-serif text-lg font-bold leading-none sm:text-xl">{dateLine()}</span>
