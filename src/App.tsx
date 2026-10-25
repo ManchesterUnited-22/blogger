@@ -159,16 +159,7 @@ export default function App() {
   };
 
   // Nút "Viết bài": chưa đăng nhập thì mở hộp đăng nhập, rồi cuộn thẳng tới khung viết
-  const handleWriteClick = () => {
-    if (!user) {
-      setAuthOpen(true);
-      return;
-    }
-    openProfile();
-    setTimeout(() => {
-      document.getElementById('write')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 250);
-  };
+ 
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -239,7 +230,7 @@ export default function App() {
           onProfileClick={openProfile}
           onAccountDeleted={handleAccountDeleted}
           onNavigate={goToSection}
-          onWriteClick={handleWriteClick}
+          
         />
         {selectedPost ? (
          <PostDetail
@@ -277,7 +268,7 @@ export default function App() {
         onProfileClick={openProfile}
         onAccountDeleted={handleAccountDeleted}
         onNavigate={goToSection}
-        onWriteClick={handleWriteClick}
+       
       />
       <Hero />
       <GroupPhoto />

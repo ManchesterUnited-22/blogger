@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Newspaper, LogOut, UserRound, Trash2, Menu, X, PenLine } from 'lucide-react';
+import { Newspaper, LogOut, UserRound, Trash2, Menu, X} from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import { supabase, formatDate, getUserProfile, deleteMyAccount } from '@/lib/supabase';
 
@@ -9,7 +9,6 @@ type Props = {
   onProfileClick: () => void;
   onAccountDeleted: () => void;
   onNavigate: (sectionId: string | null)=>void;
-  onWriteClick: ()=>void;
 };
 
 
@@ -167,7 +166,7 @@ function UserMenu({
   onProfileClick,
   onAccountDeleted,
   onNavigate,
-  onWriteClick,
+ 
 }: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -204,16 +203,7 @@ function UserMenu({
         </ul>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          <button
-            onClick={() => {
-              setMenuOpen(false);
-              onWriteClick();
-            }}
-            className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:shadow-md sm:px-4"
-          >
-            <PenLine className="h-4 w-4" />
-            <span className="hidden sm:inline">Viết bài</span>
-          </button>
+          
 
           <UserMenu
             user={user}
