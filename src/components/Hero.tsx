@@ -22,17 +22,6 @@ const TOPICS = [
   { icon: ScrollText, label: 'Lịch sử', cls: 'bg-violet-100 text-violet-700' },
 ];
 
-// Thời điểm (ms) từng phần hiện ra, sau khi video đã lộ rõ khoảng 1 giây đầu
-const DELAY = {
-  panel: 800,
-  badge: 1000,
-  title: 1150,
-  text: 1300,
-  chips: 1450,
-  button: 1600,
-  map: 1200,
-};
-
 export default function Hero() {
   const [wordIndex, setWordIndex] = useState(0);
   const [visible, setVisible] = useState(true);
@@ -59,35 +48,38 @@ export default function Hero() {
       {/* Video nền YouTube: tự phát, tắt tiếng, lặp lại */}
       <YouTubeBackground videoId={YT_ID} />
 
-      {/* Lớp phủ mỏng (40%). Lúc mới mở web nó trong suốt nên video hiện rõ,
-          sau đó mới đặc dần lên. Muốn thấy video rõ hơn: giảm /40 xuống /30. */}
-      <div aria-hidden className="hero-veil absolute inset-0 bg-paper/40" />
+      {/* Lớp phủ làm video mờ nhẹ. Muốn rõ video hơn: giảm /70 xuống /60 hoặc /50.
+          Muốn mờ hơn: tăng lên /80. */}
+      <div aria-hidden className="absolute inset-0 bg-paper/70" />
 
-      {/* Các mảng màu: đứng yên, nhạt hơn để không che video */}
-      <div aria-hidden className="absolute -left-24 top-10 h-72 w-72 rounded-full bg-violet-200 opacity-25 blur-3xl" />
-      <div aria-hidden className="absolute -right-20 top-0 h-80 w-80 rounded-full bg-cyan-200 opacity-25 blur-3xl" />
-      <div aria-hidden className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-orange-200 opacity-30 blur-3xl" />
-      <div aria-hidden className="absolute bottom-10 right-1/4 h-64 w-64 rounded-full bg-pink-200 opacity-25 blur-3xl" />
+      {/* Các mảng màu phẳng trôi nhẹ phía sau */}
+      <div
+        aria-hidden
+        className="absolute -left-24 top-10 h-72 w-72 animate-float rounded-full bg-violet-200 opacity-30 blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="absolute -right-20 top-0 h-80 w-80 animate-float-slow rounded-full bg-cyan-200 opacity-30 blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="absolute bottom-0 left-1/3 h-72 w-72 animate-float rounded-full bg-orange-200 opacity-40 blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="absolute bottom-10 right-1/4 h-64 w-64 animate-float-slow rounded-full bg-pink-200 opacity-35 blur-3xl"
+      />
 
       <div className="relative mx-auto max-w-6xl px-6 pb-28 pt-14 lg:pb-32 lg:pt-20">
         <div className="grid items-center gap-12 lg:grid-cols-[1.2fr_0.8fr]">
-          {/* ===== Cột trái: nằm trong khung kính mờ ===== */}
-          <div
-            className="hero-fade-up rounded-3xl border border-white/70 bg-white/60 p-6 shadow-soft backdrop-blur-md sm:p-8 lg:p-10"
-            style={{ animationDelay: `${DELAY.panel}ms` }}
-          >
-            <p
-              className="hero-fade-up glass inline-flex items-center gap-2 rounded-full border border-white px-4 py-1.5 text-sm font-semibold text-violet-700 shadow-sm"
-              style={{ animationDelay: `${DELAY.badge}ms` }}
-            >
+          {/* ===== Cột trái ===== */}
+          <div>
+            <p className="glass inline-flex items-center gap-2 rounded-full border border-white px-4 py-1.5 text-sm font-semibold text-violet-700 shadow-sm">
               <Sparkles className="h-4 w-4 text-teal-500" />
               Bản tin chuyến đi
             </p>
 
-            <h1
-              className="hero-fade-up mt-5 font-display text-5xl font-extrabold leading-[1.1] tracking-tight text-ink sm:text-6xl lg:text-7xl"
-              style={{ animationDelay: `${DELAY.title}ms` }}
-            >
+            <h1 className="mt-5 font-display text-5xl font-extrabold leading-[1.1] tracking-tight text-ink sm:text-6xl lg:text-7xl">
               Những câu chuyện về
               <br />
               <span
@@ -99,19 +91,13 @@ export default function Hero() {
               </span>
             </h1>
 
-            <p
-              className="hero-fade-up mt-5 max-w-xl text-lg leading-relaxed text-gray-700"
-              style={{ animationDelay: `${DELAY.text}ms` }}
-            >
+            <p className="mt-5 max-w-xl text-lg leading-relaxed text-gray-600">
               Một chuyến đi, một nhóm sinh viên và rất nhiều kỷ niệm. VTD.News là nơi bọn mình kể lại Quy Nhơn: những
               nơi đã đi, những người đã gặp và những khoảnh khắc không có trong sách hướng dẫn.
             </p>
 
             {/* Chip chủ đề: mỗi chip một màu riêng */}
-            <div
-              className="hero-fade-up mt-7 flex flex-wrap items-center gap-2.5"
-              style={{ animationDelay: `${DELAY.chips}ms` }}
-            >
+            <div className="mt-7 flex flex-wrap items-center gap-2.5">
               {TOPICS.map(({ icon: Icon, label, cls }) => (
                 <span
                   key={label}
@@ -125,19 +111,15 @@ export default function Hero() {
 
             <a
               href="#feed"
-              className="hero-fade-up mt-8 inline-flex items-center gap-2 rounded-full bg-ink px-8 py-4 text-base font-bold text-white shadow-lg shadow-gray-900/20 transition-colors hover:bg-gray-800"
-              style={{ animationDelay: `${DELAY.button}ms` }}
+              className="mt-8 inline-flex items-center gap-2 rounded-full bg-ink px-8 py-4 text-base font-bold text-white shadow-lg shadow-gray-900/20 transition-all hover:-translate-y-1 hover:bg-gray-800"
             >
               Khám phá bài viết
-              <ArrowDown className="h-5 w-5 animate-bounce [animation-duration:2.4s]" />
+              <ArrowDown className="h-5 w-5 animate-bounce" />
             </a>
           </div>
 
-          {/* ===== Cột phải: bản đồ đứng yên, trượt vào một lần ===== */}
-          <figure
-            className="hero-slide-in relative mx-auto w-full max-w-sm"
-            style={{ animationDelay: `${DELAY.map}ms` }}
-          >
+          {/* ===== Cột phải: bản đồ đứng yên ===== */}
+          <figure className="relative mx-auto w-full max-w-sm">
             <span
               aria-hidden
               className="absolute -top-4 left-6 z-10 rounded-full bg-white px-4 py-1 text-xs font-bold tracking-wide text-teal-700 shadow-md ring-1 ring-teal-100"
