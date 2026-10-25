@@ -5,13 +5,13 @@ import ScrollReveal from '@/components/ScrollReveal';
 /* ===================== CẤU HÌNH ===================== */
 const INTERVAL_MS = 3500; // thời gian dừng ở mỗi ảnh
 const SLIDE_MS = 700; // thời gian trượt giữa 2 ảnh
-const PLAY_ONLY_ON_HOVER = true; // true: rê chuột mới chạy | false: luôn tự chạy
+const PLAY_ONLY_ON_HOVER = false; // true: rê chuột mới chạy | false: luôn tự chạy
 
 type Caption = { title?: string; sub?: string };
 
 // Chú thích mặc định cho ảnh nào không có trong CAPTIONS
 const DEFAULT_CAPTION: Caption = {
-  title: 'Cả đoàn tại Quy Nhơn',
+  
   sub: 'Dã ngoại thực tế Đà Nẵng – Quy Nhơn · Thực tập Nhận thức',
 };
 
