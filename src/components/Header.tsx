@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { Newspaper, LogOut, UserRound, Trash2 } from 'lucide-react';
+import { Newspaper, LogOut, LogIn, UserRound, Trash2, Home, BookOpen, Users, type LucideIcon } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import { supabase, formatDate, getUserProfile, deleteMyAccount } from '@/lib/supabase';
 
 /** Các mục trên thanh menu. id = id của section trong trang chủ (null = đầu trang). */
-const NAV_ITEMS: { label: string; id: string | null }[] = [
-  { label: 'Trang chủ', id: null },
-  { label: 'Bài viết', id: 'feed' },
-  { label: 'Thành viên', id: 'members' },
+const NAV_ITEMS: { label: string; id: string | null; icon: LucideIcon }[] = [
+  { label: 'Trang chủ', id: null, icon: Home },
+  { label: 'Bài viết', id: 'feed', icon: BookOpen },
+  { label: 'Thành viên', id: 'members', icon: Users },
 ];
 
 /** Theo dõi section nào đang nằm trong màn hình để tô sáng mục menu tương ứng. */
@@ -72,10 +72,11 @@ function UserMenu({
 
   if (!user) {
     return (
-      <button
+            <button
         onClick={onLoginClick}
-        className="rounded-full bg-gray-900 px-4 py-1.5 text-sm font-semibold text-white transition hover:bg-gray-700"
+        className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 px-5 py-2.5 text-base font-semibold text-white shadow-md shadow-teal-500/25 transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-teal-500/30"
       >
+        <LogIn className="h-5 w-5" />
         Đăng nhập
       </button>
     );

@@ -336,20 +336,20 @@ function SubmitStrip({ big, onWrite }: { big: boolean; onWrite: () => void }) {
       </button>
     );
   }
-  return (
+    return (
     <button
       type="button"
       onClick={onWrite}
-      className="group flex w-full flex-wrap items-center justify-between gap-3 border-y border-gray-300 py-5 text-left transition-colors hover:bg-teal-50/40"
+      className="group block w-full border-y border-gray-300 py-5 text-left transition-colors hover:bg-teal-50/40"
     >
+      <span className="mr-3 font-sans text-xs font-bold uppercase tracking-widest text-orange-600">Gửi bài</span>
       <span className="font-serif text-xl font-bold text-gray-900">
-        <span className="mr-3 font-sans text-xs font-bold uppercase tracking-widest text-orange-600">Gửi bài</span>
-        <span className={UNDERLINE}>Bạn có câu chuyện muốn chia sẻ?</span>
-      </span>
-      <span className="inline-flex items-center gap-2 text-base font-bold text-teal-700">
-        <PenLine className="h-5 w-5" />
-        Kể ngay
-        <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1.5" />
+        Bạn có câu chuyện muốn chia sẻ?{' '}
+        <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-teal-700 underline decoration-teal-300 decoration-2 underline-offset-4 transition-colors group-hover:decoration-teal-600">
+          <PenLine className="h-5 w-5" />
+          Kể ngay
+          <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1.5" />
+        </span>
       </span>
     </button>
   );
