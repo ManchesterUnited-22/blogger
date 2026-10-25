@@ -139,12 +139,25 @@
 .modal-enter {
   animation: modal-enter 180ms ease-out both;
 }
+@keyframes hero-veil {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.hero-veil {
+  animation: hero-veil 1200ms ease 700ms both;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .scroll-reveal,
   .hero-fade-up,
   .hero-slide-in,
   .hero-float,
+  .hero-veil,
   .modal-enter,
   .text-pop,
   .bg-pop-anim {
