@@ -1,14 +1,21 @@
 import { useEffect, useState } from 'react';
-import { MapPin, ArrowDown, Sparkles, Waves, UtensilsCrossed, Landmark } from 'lucide-react';
+import { MapPin, ArrowDown, Sparkles, Waves, UtensilsCrossed, Landmark, ScrollText } from 'lucide-react';
 import VietnamMap from './VietnamMap';
 
-// Các từ khóa xoay vòng trong câu "Những câu chuyện về ..."
-const WORDS = ['biển xanh', 'món ngon', 'đất võ', 'con người'];
+// Mỗi từ xoay vòng có màu riêng, trùng màu với chip chủ đề bên dưới
+const WORDS = [
+  { text: 'biển xanh', color: 'text-cyan-600' },
+  { text: 'món ngon', color: 'text-orange-600' },
+  { text: 'đất võ', color: 'text-violet-600' },
+  { text: 'con người', color: 'text-pink-600' },
+];
 
+// Mỗi chủ đề một màu và một icon riêng
 const TOPICS = [
   { icon: Waves, label: 'Biển xanh', cls: 'bg-cyan-100 text-cyan-700' },
-  { icon: UtensilsCrossed, label: 'Ẩm thực', cls: 'bg-amber-100 text-amber-700' },
+  { icon: UtensilsCrossed, label: 'Ẩm thực', cls: 'bg-orange-100 text-orange-700' },
   { icon: Landmark, label: 'Văn hóa', cls: 'bg-pink-100 text-pink-700' },
+  { icon: ScrollText, label: 'Lịch sử', cls: 'bg-violet-100 text-violet-700' },
 ];
 
 export default function Hero() {
@@ -30,24 +37,26 @@ export default function Hero() {
     };
   }, []);
 
+  const word = WORDS[wordIndex];
+
   return (
     <header className="bg-aurora relative overflow-hidden">
-      {/* Các quả cầu màu trôi nhẹ phía sau */}
+      {/* Các mảng màu phẳng trôi nhẹ phía sau */}
       <div
         aria-hidden
-        className="absolute -left-24 top-10 h-72 w-72 animate-float rounded-full bg-gradient-to-br from-teal-300 to-violet-300 opacity-30 blur-3xl"
+        className="absolute -left-24 top-10 h-72 w-72 animate-float rounded-full bg-violet-200 opacity-30 blur-3xl"
       />
       <div
         aria-hidden
-        className="absolute -right-20 top-0 h-80 w-80 animate-float-slow rounded-full bg-gradient-to-br from-cyan-200 to-blue-300 opacity-30 blur-3xl"
+        className="absolute -right-20 top-0 h-80 w-80 animate-float-slow rounded-full bg-cyan-200 opacity-30 blur-3xl"
       />
       <div
         aria-hidden
-        className="absolute bottom-0 left-1/3 h-72 w-72 animate-float rounded-full bg-gradient-to-br from-orange-200 to-amber-200 opacity-40 blur-3xl"
+        className="absolute bottom-0 left-1/3 h-72 w-72 animate-float rounded-full bg-orange-200 opacity-40 blur-3xl"
       />
       <div
         aria-hidden
-        className="absolute bottom-10 right-1/4 h-64 w-64 animate-float-slow rounded-full bg-gradient-to-br from-pink-200 to-teal-200 opacity-35 blur-3xl"
+        className="absolute bottom-10 right-1/4 h-64 w-64 animate-float-slow rounded-full bg-pink-200 opacity-35 blur-3xl"
       />
 
       <div className="relative mx-auto max-w-6xl px-6 pb-28 pt-14 lg:pb-32 lg:pt-20">
@@ -63,11 +72,11 @@ export default function Hero() {
               Những câu chuyện về
               <br />
               <span
-                className={`text-pop inline-block pb-2 transition-opacity duration-300 ${
+                className={`inline-block pb-2 transition-opacity duration-300 ${word.color} ${
                   visible ? 'opacity-100' : 'opacity-0'
                 }`}
               >
-                {WORDS[wordIndex]}
+                {word.text}
               </span>
             </h1>
 
@@ -76,11 +85,8 @@ export default function Hero() {
               nơi đã đi, những người đã gặp và những khoảnh khắc không có trong sách hướng dẫn.
             </p>
 
-            {/* Chip chủ đề nhiều màu */}
+            {/* Chip chủ đề: mỗi chip một màu riêng */}
             <div className="mt-7 flex flex-wrap items-center gap-2.5">
-              <span className="bg-pop inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold text-white shadow-md shadow-teal-500/25">
-                <span className="font-display text-lg leading-none">100%</span> Đam mê
-              </span>
               {TOPICS.map(({ icon: Icon, label, cls }) => (
                 <span
                   key={label}
@@ -94,28 +100,28 @@ export default function Hero() {
 
             <a
               href="#feed"
-              className="bg-pop-anim mt-8 inline-flex items-center gap-2 rounded-full px-8 py-4 text-base font-bold text-white shadow-xl shadow-teal-500/30 transition-all hover:-translate-y-1 hover:shadow-2xl hover:shadow-teal-500/40"
+              className="mt-8 inline-flex items-center gap-2 rounded-full bg-ink px-8 py-4 text-base font-bold text-white shadow-lg shadow-gray-900/20 transition-all hover:-translate-y-1 hover:bg-gray-800"
             >
               Khám phá bài viết
               <ArrowDown className="h-5 w-5 animate-bounce" />
             </a>
           </div>
 
-          {/* ===== Cột phải: bản đồ trong khung viền gradient ===== */}
-         <figure className="relative mx-auto w-full max-w-sm">
+          {/* ===== Cột phải: bản đồ đứng yên ===== */}
+          <figure className="relative mx-auto w-full max-w-sm">
             <span
               aria-hidden
               className="absolute -top-4 left-6 z-10 rounded-full bg-white px-4 py-1 text-xs font-bold tracking-wide text-teal-700 shadow-md ring-1 ring-teal-100"
             >
               Điểm đến
             </span>
-            <div className="bg-pop-anim rounded-[2rem] p-1.5 shadow-soft-lg">
+            <div className="rounded-[2rem] bg-cyan-100 p-1.5 shadow-soft-lg">
               <div className="rounded-[1.6rem] bg-white p-6">
                 <VietnamMap />
               </div>
             </div>
             <figcaption className="glass mt-4 flex items-center gap-3 rounded-2xl border border-white px-4 py-3 shadow-sm">
-              <span className="bg-pop flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-teal-500 text-white">
                 <MapPin className="h-5 w-5" />
               </span>
               <div>

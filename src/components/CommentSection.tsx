@@ -56,7 +56,7 @@ function addUnique(list: Comment[], c: Comment): Comment[] {
 function Avatar({ name, url, size = 'h-9 w-9' }: { name: string; url: string | null; size?: string }) {
   return (
     <div
-      className={`flex ${size} shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 text-sm font-bold text-white`}
+      className={`flex ${size} shrink-0 items-center justify-center overflow-hidden rounded-full bg-teal-500 text-sm font-bold text-white`}
     >
       {url ? (
         <img src={url} alt={name} referrerPolicy="no-referrer" className="h-full w-full object-cover" />

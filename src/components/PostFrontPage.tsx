@@ -2,7 +2,7 @@ import { useState, type KeyboardEvent } from 'react';
 import { ArrowRight, Heart, MessageCircle, PenLine } from 'lucide-react';
 
 import { makeExcerpt, type Post } from '@/lib/posts';
-import { accentFor,briefStamp, isFresh, readMinutes, shortDate } from '@/lib/postMeta';
+import { accentFor, briefStamp, isFresh, readMinutes, shortDate } from '@/lib/postMeta';
 import ScrollReveal from '@/components/ScrollReveal';
 
 type Stat = { likes: number; comments: number } | undefined;
@@ -52,7 +52,7 @@ function Kicker({ post, likes }: { post: Post; likes: number }) {
 function Avatar({ post, className }: { post: Post; className: string }) {
   return (
     <span
-      className={`flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 font-bold text-white ${className}`}
+      className={`flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-teal-500 font-bold text-white ${className}`}
     >
       {post.author_avatar ? (
         <img

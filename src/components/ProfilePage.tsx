@@ -48,7 +48,7 @@ type Stat = { likes: number; comments: number };
 function Avatar({ url, name, className }: { url: string | null; name: string; className: string }) {
   return (
     <div
-      className={`flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 font-bold text-white ${className}`}
+      className={`flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-teal-500 font-bold text-white ${className}`}
     >
       {url ? (
         <img src={url} alt={name} referrerPolicy="no-referrer" className="h-full w-full object-cover" />
@@ -115,7 +115,7 @@ function PostTile({
     return (
       <div className={`overflow-hidden rounded-xl border border-gray-200 bg-white shadow-soft ${ring}`}>
         <button onClick={onOpen} className="relative block h-52 w-full text-left sm:h-60">
-          <div className="absolute inset-0 bg-gradient-to-br from-teal-400 to-cyan-500">
+          <div className="absolute inset-0 bg-teal-500">
             {post.cover_url && <img src={post.cover_url} alt="" className="h-full w-full object-cover" />}
           </div>
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900/75 via-slate-900/20 to-transparent" />
@@ -461,7 +461,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
 
       {/* ===== 1. Hồ sơ cá nhân ===== */}
       <div className="overflow-hidden rounded-3xl border border-gray-200/80 bg-white shadow-soft-lg">
-        <div className="h-28 bg-gradient-to-r from-teal-100 via-violet-100 to-cyan-100 px-6 pt-4 sm:h-36">
+        <div className="h-28 bg-teal-100 px-6 pt-4 sm:h-36">
           <p className="inline-flex items-center gap-3 text-xs font-bold tracking-wide text-teal-700">
             <span aria-hidden className="inline-block h-2.5 w-2.5 rounded-full bg-teal-500" />
             Trang cá nhân

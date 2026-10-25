@@ -7,22 +7,31 @@ export const KIND_LABEL: Record<PostKind, string> = {
   photo: 'Ảnh',
   text: 'Chia sẻ',
 };
+
+/** Bộ màu nhấn dịu, mỗi bài một màu (ngọc, san hô, đại dương, rêu, hồng đất, cát).
+ *  Viết đủ tên lớp để Tailwind giữ lại khi build. */
 export type Accent = {
+  /** vạch kẻ bên trái */
   bar: string;
+  /** đường kẻ gradient trên thẻ không có ảnh */
   line: string;
+  /** màu tiêu đề khi rê chuột (đặt trong phần tử có class "group") */
   hover: string;
+  /** chữ nhấn (giờ đăng, nhãn "Mới") */
   text: string;
+  /** chấm tròn nhỏ */
   dot: string;
+  /** nền ảnh đại diện khi không có ảnh */
   avatar: string;
 };
 
 export const ACCENTS: Accent[] = [
-  { bar: 'border-teal-500', line: 'from-teal-400 to-cyan-300', hover: 'group-hover:text-teal-700', text: 'text-teal-600', dot: 'bg-teal-500', avatar: 'from-teal-400 to-cyan-500' },
-  { bar: 'border-orange-400', line: 'from-orange-300 to-amber-300', hover: 'group-hover:text-orange-700', text: 'text-orange-600', dot: 'bg-orange-400', avatar: 'from-orange-300 to-orange-500' },
-  { bar: 'border-cyan-500', line: 'from-cyan-400 to-blue-300', hover: 'group-hover:text-cyan-700', text: 'text-cyan-600', dot: 'bg-cyan-500', avatar: 'from-cyan-400 to-cyan-600' },
-  { bar: 'border-violet-400', line: 'from-violet-400 to-teal-300', hover: 'group-hover:text-violet-700', text: 'text-violet-600', dot: 'bg-violet-400', avatar: 'from-violet-400 to-teal-500' },
-  { bar: 'border-pink-400', line: 'from-pink-300 to-orange-300', hover: 'group-hover:text-pink-700', text: 'text-pink-600', dot: 'bg-pink-400', avatar: 'from-pink-300 to-pink-500' },
-  { bar: 'border-amber-400', line: 'from-amber-300 to-orange-300', hover: 'group-hover:text-amber-700', text: 'text-amber-600', dot: 'bg-amber-400', avatar: 'from-amber-300 to-amber-500' },
+  { bar: 'border-teal-500', line: 'bg-teal-300', hover: 'group-hover:text-teal-700', text: 'text-teal-600', dot: 'bg-teal-500', avatar: 'bg-teal-500' },
+  { bar: 'border-orange-400', line: 'bg-orange-300', hover: 'group-hover:text-orange-700', text: 'text-orange-600', dot: 'bg-orange-400', avatar: 'bg-orange-500' },
+  { bar: 'border-cyan-500', line: 'bg-cyan-300', hover: 'group-hover:text-cyan-700', text: 'text-cyan-600', dot: 'bg-cyan-500', avatar: 'bg-cyan-500' },
+  { bar: 'border-violet-400', line: 'bg-violet-300', hover: 'group-hover:text-violet-700', text: 'text-violet-600', dot: 'bg-violet-400', avatar: 'bg-violet-500' },
+  { bar: 'border-pink-400', line: 'bg-pink-300', hover: 'group-hover:text-pink-700', text: 'text-pink-600', dot: 'bg-pink-400', avatar: 'bg-pink-500' },
+  { bar: 'border-amber-400', line: 'bg-amber-300', hover: 'group-hover:text-amber-700', text: 'text-amber-600', dot: 'bg-amber-400', avatar: 'bg-amber-500' },
 ];
 
 /** Chọn màu nhấn ổn định theo id bài: cùng một bài luôn ra cùng một màu. */

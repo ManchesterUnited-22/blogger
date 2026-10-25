@@ -10,14 +10,14 @@ type Props = {
   currentUserId?: string;
 };
 
-// Mỗi thẻ một gradient riêng: vạch trên, vòng ảnh và chữ cái đầu
+// Mỗi thẻ một màu phẳng riêng: vạch trên, vòng ảnh và chữ cái đầu
 const GRADIENTS = [
-  { grad: 'from-teal-400 to-cyan-400', shadow: 'shadow-teal-300/50', num: 'text-teal-600' },
-  { grad: 'from-orange-300 to-pink-300', shadow: 'shadow-orange-200/60', num: 'text-orange-600' },
-  { grad: 'from-cyan-300 to-cyan-500', shadow: 'shadow-cyan-300/50', num: 'text-cyan-600' },
-  { grad: 'from-violet-300 to-teal-400', shadow: 'shadow-violet-300/50', num: 'text-violet-600' },
-  { grad: 'from-pink-300 to-rose-400', shadow: 'shadow-pink-300/50', num: 'text-pink-600' },
-  { grad: 'from-amber-300 to-orange-300', shadow: 'shadow-amber-200/60', num: 'text-amber-600' },
+  { bg: 'bg-teal-400', solid: 'bg-teal-500', shadow: 'shadow-teal-300/50', num: 'text-teal-600' },
+  { bg: 'bg-orange-400', solid: 'bg-orange-500', shadow: 'shadow-orange-200/60', num: 'text-orange-600' },
+  { bg: 'bg-cyan-400', solid: 'bg-cyan-500', shadow: 'shadow-cyan-300/50', num: 'text-cyan-600' },
+  { bg: 'bg-violet-400', solid: 'bg-violet-500', shadow: 'shadow-violet-300/50', num: 'text-violet-600' },
+  { bg: 'bg-pink-400', solid: 'bg-pink-500', shadow: 'shadow-pink-300/50', num: 'text-pink-600' },
+  { bg: 'bg-amber-400', solid: 'bg-amber-500', shadow: 'shadow-amber-200/60', num: 'text-amber-600' },
 ];
 
 export default function MembersSection({ members, postCounts, currentUserId }: Props) {
@@ -27,13 +27,17 @@ export default function MembersSection({ members, postCounts, currentUserId }: P
   return (
     <section id="members" className="relative scroll-mt-20 overflow-hidden py-20">
       {/* Nền: các mảng màu mờ */}
-            <div
+      <div
         aria-hidden
-        className="absolute -right-32 bottom-10 h-96 w-96 animate-float rounded-full bg-gradient-to-br from-orange-200 to-pink-200 opacity-30 blur-3xl"
+        className="absolute -left-32 top-20 h-96 w-96 animate-float-slow rounded-full bg-cyan-200 opacity-30 blur-3xl"
       />
       <div
         aria-hidden
-        className="absolute left-1/3 top-0 h-80 w-80 animate-float-slow rounded-full bg-gradient-to-br from-violet-200 to-amber-100 opacity-30 blur-3xl"
+        className="absolute -right-32 bottom-10 h-96 w-96 animate-float rounded-full bg-orange-200 opacity-30 blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="absolute left-1/3 top-0 h-80 w-80 animate-float-slow rounded-full bg-violet-200 opacity-30 blur-3xl"
       />
 
       <div className="relative mx-auto max-w-6xl px-6">
@@ -75,7 +79,7 @@ export default function MembersSection({ members, postCounts, currentUserId }: P
                   }`}
                 >
                   {/* Dải gradient phía trên thẻ */}
-                  <div aria-hidden className={`absolute inset-x-0 top-0 h-20 bg-gradient-to-br ${g.grad}`} />
+                  <div aria-hidden className={`absolute inset-x-0 top-0 h-20 ${g.bg}`} />
 
                   {/* Nhãn góc */}
                   {(isMe || isTop) && (
@@ -89,7 +93,7 @@ export default function MembersSection({ members, postCounts, currentUserId }: P
                   )}
 
                   {/* Ảnh tròn đè lên dải gradient */}
-                  <div className={`relative z-10 rounded-full bg-gradient-to-br p-1 ${g.grad}`}>
+                  <div className={`relative z-10 rounded-full p-1 ${g.bg}`}>
                     <div className="h-20 w-20 overflow-hidden rounded-full border-4 border-white bg-white">
                       {m.avatar_url ? (
                         <img
@@ -101,7 +105,7 @@ export default function MembersSection({ members, postCounts, currentUserId }: P
                         />
                       ) : (
                         <div
-                          className={`flex h-full w-full items-center justify-center bg-gradient-to-br font-display text-3xl font-extrabold text-white ${g.grad}`}
+                          className={`flex h-full w-full items-center justify-center font-display text-3xl font-extrabold text-white ${g.solid}`}
                         >
                           {name.charAt(0).toUpperCase()}
                         </div>

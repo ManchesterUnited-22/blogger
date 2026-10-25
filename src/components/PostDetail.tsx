@@ -25,7 +25,7 @@ export default function PostDetail({ post, user, onLoginClick, onBack }: Props) 
 
       <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-gray-500">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 text-xs font-bold text-white">
+          <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-teal-500 text-xs font-bold text-white">
             {post.author_avatar ? (
               <img
                 src={post.author_avatar}

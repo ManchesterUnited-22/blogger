@@ -4,14 +4,7 @@ type Props = {
   authors: Author[];
 };
 
-const avatarColors = [
-  'from-teal-400 to-cyan-400',
-  'from-orange-300 to-pink-300',
-  'from-cyan-300 to-cyan-500',
-  'from-violet-300 to-teal-400',
-  'from-pink-300 to-rose-400',
-  'from-amber-300 to-orange-300',
-];
+const avatarColors = ['bg-teal-400', 'bg-orange-400', 'bg-cyan-400', 'bg-violet-400', 'bg-pink-400', 'bg-amber-400'];
 
 export default function TeamSection({ authors }: Props) {
   return (
@@ -30,7 +23,7 @@ export default function TeamSection({ authors }: Props) {
               key={author.id}
               className="group flex flex-col items-center rounded-3xl border border-white bg-white/80 p-5 text-center shadow-lg shadow-violet-200/50 backdrop-blur transition-all hover:-translate-y-1.5 hover:shadow-xl"
             >
-              <div className={`rounded-full bg-gradient-to-br p-1 ${avatarColors[i % avatarColors.length]}`}>
+              <div className={`rounded-full p-1 ${avatarColors[i % avatarColors.length]}`}>
                 {author.avatar_url ? (
                   <img
                     src={author.avatar_url}

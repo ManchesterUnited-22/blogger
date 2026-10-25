@@ -134,7 +134,7 @@ export default function ArticleCard({ article, onClick, variant = 'tile', index 
         </h3>
         {isLead && (
           <>
-            <span className="mt-3 block h-1 w-14 rounded-full bg-gradient-to-r from-teal-300 to-cyan-300 transition-all duration-300 group-hover:w-28" />
+            <span className="mt-3 block h-1 w-14 rounded-full bg-teal-300 transition-all duration-300 group-hover:w-28" />
             <p className="mt-3 hidden max-w-xl line-clamp-2 text-base leading-relaxed text-white/80 sm:block">
               {article.excerpt}
             </p>

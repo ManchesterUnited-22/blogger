@@ -87,7 +87,7 @@ function UserMenu({
   const providerLabel: Record<string, string> = { google: 'Google', email: 'Email' };
   const avatar = (size: string) => (
     <div
-      className={`${size} flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-teal-500 to-cyan-400 font-bold text-white`}
+      className={`${size} flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-teal-500 font-bold text-white`}
     >
       {avatarUrl ? (
         <img src={avatarUrl} alt={name} referrerPolicy="no-referrer" className="h-full w-full object-cover" />
