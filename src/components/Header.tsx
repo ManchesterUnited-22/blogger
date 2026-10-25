@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Newspaper, LogOut, UserRound, Trash2 } from 'lucide-react';
+import { Newspaper, LogOut, UserRound, Trash2, Menu, X, PenLine } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import { supabase, formatDate, getUserProfile, deleteMyAccount } from '@/lib/supabase';
 
@@ -8,7 +8,17 @@ type Props = {
   onLoginClick: () => void;
   onProfileClick: () => void;
   onAccountDeleted: () => void;
+  onNavigate: (sectionId: string | null)=>void;
+  onWriteClick: ()=>void;
 };
+
+
+const NAV_LINKS: { label: string; id: string | null }[] = [
+  { label: 'Trang chủ', id: null },
+  { label: 'Bài viết', id: 'feed' },
+  { label: 'Cây bút', id: 'members' },
+  { label: 'Đội ngũ', id: 'team' },
+];
 
 function UserMenu({
   user,
@@ -151,26 +161,94 @@ function UserMenu({
   );
 }
 
-export default function Header({ user, onLoginClick, onProfileClick, onAccountDeleted }: Props) {
+ export default function Header({
+  user,
+  onLoginClick,
+  onProfileClick,
+  onAccountDeleted,
+  onNavigate,
+  onWriteClick,
+}: Props) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const go = (id: string | null) => {
+    setMenuOpen(false);
+    onNavigate(id);
+  };
+
   return (
-    <nav className="sticky top-0 z-50 border-b border-gray-100 bg-white/90 backdrop-blur-md shadow-sm">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
-        <div className="flex items-center gap-2">
+    <nav className="sticky top-0 z-50 border-b border-gray-100 bg-white/90 shadow-sm backdrop-blur-md">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3">
+        {/* Logo: bấm để về trang chủ */}
+        <button onClick={() => go(null)} aria-label="Về trang chủ" className="flex items-center gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-400 to-cyan-500">
             <Newspaper className="h-5 w-5 text-white" />
           </div>
           <span className="text-xl font-extrabold tracking-tight text-gray-900">
             VTD<span className="text-orange-500">.</span>News
           </span>
-        </div>
+        </button>
 
-        <UserMenu
-          user={user}
-          onLoginClick={onLoginClick}
-          onProfileClick={onProfileClick}
-          onAccountDeleted={onAccountDeleted}
-        />
+        {/* Menu trên máy tính */}
+        <ul className="hidden items-center gap-1 md:flex">
+          {NAV_LINKS.map((l) => (
+            <li key={l.label}>
+              <button
+                onClick={() => go(l.id)}
+                className="rounded-full px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-teal-50 hover:text-teal-700"
+              >
+                {l.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        <div className="flex items-center gap-2 sm:gap-3">
+          <button
+            onClick={() => {
+              setMenuOpen(false);
+              onWriteClick();
+            }}
+            className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:shadow-md sm:px-4"
+          >
+            <PenLine className="h-4 w-4" />
+            <span className="hidden sm:inline">Viết bài</span>
+          </button>
+
+          <UserMenu
+            user={user}
+            onLoginClick={onLoginClick}
+            onProfileClick={onProfileClick}
+            onAccountDeleted={onAccountDeleted}
+          />
+
+          {/* Nút mở menu trên điện thoại */}
+          <button
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-label="Menu"
+            aria-expanded={menuOpen}
+            className="flex h-10 w-10 items-center justify-center rounded-full text-gray-700 hover:bg-gray-100 md:hidden"
+          >
+            {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
+
+      {/* Menu xổ xuống trên điện thoại */}
+      {menuOpen && (
+        <ul className="border-t border-gray-100 bg-white px-4 py-2 md:hidden">
+          {NAV_LINKS.map((l) => (
+            <li key={l.label}>
+              <button
+                onClick={() => go(l.id)}
+                className="w-full rounded-xl px-4 py-3 text-left text-sm font-medium text-gray-700 hover:bg-teal-50 hover:text-teal-700"
+              >
+                {l.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </nav>
   );
 }

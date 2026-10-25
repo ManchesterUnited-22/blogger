@@ -48,7 +48,7 @@ export default function PostDetail({ post, user, onLoginClick, onBack }: Props) 
         <PostContent content={post.content} />
       </div>
             <div className="mt-8 text-lg leading-relaxed text-gray-700">
-        <PostContent content={post.content} />
+        <PostContent content={post.id} />
       </div>
       <PostActions post={post} user={user} onLoginClick={onLoginClick} />
       <CommentSection postId={post.id} postOwnerId={post.user_id} user={user} onLoginClick={onLoginClick} />

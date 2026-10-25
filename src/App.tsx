@@ -29,6 +29,7 @@ export default function App() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
+    const [stats, setStats] = useState<Record<string, { likes: number; comments: number }>>({});
   // ===== Link riêng cho từng bài: ?post=<id> =====
   const pendingPostId = useRef<string | null>(
     new URLSearchParams(window.location.search).get('post'),
@@ -92,6 +93,18 @@ export default function App() {
     // Chưa chạy SQL thì bỏ qua, không làm hỏng trang chủ
     if (!error) setPosts((data as Post[]) ?? []);
   }, []);
+    const fetchStats = useCallback(async () => {
+    const { data, error } = await supabase.from('post_stats').select('post_id, likes, comments');
+    if (error || !data) return; // chưa chạy SQL thì bỏ qua, số hiện 0
+    const map: Record<string, { likes: number; comments: number }> = {};
+    for (const r of data) map[r.post_id as string] = { likes: Number(r.likes), comments: Number(r.comments) };
+    setStats(map);
+  }, []);
+
+  // Tải lại số tim/bình luận mỗi khi quay về trang chủ
+  useEffect(() => {
+    if (!selectedPost) fetchStats();
+  }, [selectedPost, fetchStats]);
 
   useEffect(() => {
     fetchPosts();
@@ -134,7 +147,28 @@ export default function App() {
     setSelectedPost(null);
     setView('profile');
   };
+  // Bấm menu: từ trang con (bài viết, trang cá nhân) tự về trang chủ rồi cuộn tới mục
+  const goToSection = (id: string | null) => {
+    setSelectedPost(null);
+    setSelectedArticle(null);
+    setView('home');
+    setTimeout(() => {
+      if (!id) window.scrollTo({ top: 0, behavior: 'smooth' });
+      else document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
 
+  // Nút "Viết bài": chưa đăng nhập thì mở hộp đăng nhập, rồi cuộn thẳng tới khung viết
+  const handleWriteClick = () => {
+    if (!user) {
+      setAuthOpen(true);
+      return;
+    }
+    openProfile();
+    setTimeout(() => {
+      document.getElementById('write')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 250);
+  };
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -204,6 +238,8 @@ export default function App() {
           onLoginClick={() => setAuthOpen(true)}
           onProfileClick={openProfile}
           onAccountDeleted={handleAccountDeleted}
+          onNavigate={goToSection}
+          onWriteClick={handleWriteClick}
         />
         {selectedPost ? (
          <PostDetail
@@ -240,12 +276,14 @@ export default function App() {
         onLoginClick={() => setAuthOpen(true)}
         onProfileClick={openProfile}
         onAccountDeleted={handleAccountDeleted}
+        onNavigate={goToSection}
+        onWriteClick={handleWriteClick}
       />
       <Hero />
       <GroupPhoto />
 
       {/* Search bar */}
-      <section id="feed" className="mx-auto max-w-6xl px-6 pt-10">
+      <section id="feed" className="mx-auto max-w-6xl scroll-mt-20 px-6 pt-10">
         <div className="flex items-center justify-between gap-4">
           <h2 className="text-2xl font-extrabold text-gray-900">
             Mẩu tin mới nhất
@@ -272,8 +310,13 @@ export default function App() {
           </div>
           <div className="grid gap-6 md:grid-cols-2">
             {filteredPosts.map((post) => (
-              <ScrollReveal key={post.id} delay={(filteredPosts.indexOf(post) % 4) * 70}>
-                <PostCard post={post} onClick={() => setSelectedPost(post)} />
+              <ScrollReveal key={post.id} className="h-full" delay={(filteredPosts.indexOf(post) % 4) * 70}>
+                <PostCard
+                  post={post}
+                  onClick={() => setSelectedPost(post)}
+                  likes={stats[post.id]?.likes ?? 0}
+                  comments={stats[post.id]?.comments ?? 0}
+                />
               </ScrollReveal>
             ))}
           </div>
