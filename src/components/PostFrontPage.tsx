@@ -1,8 +1,8 @@
 import { useState, type KeyboardEvent } from 'react';
-import { Heart, Image as ImageIcon, MessageCircle, PenLine, Play } from 'lucide-react';
+import { Heart, MessageCircle, PenLine } from 'lucide-react';
 import { timeAgo } from '@/lib/supabase';
 import { makeExcerpt, type Post } from '@/lib/posts';
-import { KIND_LABEL, briefStamp, isFresh, postKind, readMinutes } from '@/lib/postMeta';
+import { briefStamp, isFresh, readMinutes } from '@/lib/postMeta';
 import ScrollReveal from '@/components/ScrollReveal';
 
 type Stat = { likes: number; comments: number } | undefined;
@@ -31,14 +31,8 @@ const headlineOf = (p: Post, max = 90) => p.title || makeExcerpt(p.content, max)
 
 /* ---------- Mảnh nhỏ dùng chung ---------- */
 function Kicker({ post, likes }: { post: Post; likes: number }) {
-  const kind = postKind(post.content);
   return (
     <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
-      <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-widest text-orange-600">
-        {kind === 'video' && <Play className="h-3 w-3 fill-current" />}
-        {kind === 'photo' && <ImageIcon className="h-3 w-3" />}
-        {KIND_LABEL[kind]}
-      </span>
       {isFresh(post.created_at) && (
         <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-teal-600">
           <span className="h-1.5 w-1.5 rounded-full bg-teal-500" />

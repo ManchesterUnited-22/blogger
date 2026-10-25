@@ -23,7 +23,7 @@ const ringColors = [
 
 export default function MembersSection({ members, postCounts, currentUserId }: Props) {
   return (
-    <section className="bg-gradient-to-b from-teal-50/60 to-white py-16">
+    <section id="members" className="scroll-mt-20 bg-gradient-to-b from-teal-50/60 to-white py-16">
       <div className="mx-auto max-w-6xl px-6">
         <div className="text-center">
           <Feather className="mx-auto h-6 w-6 text-teal-500" />

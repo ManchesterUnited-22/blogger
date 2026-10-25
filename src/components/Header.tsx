@@ -3,6 +3,36 @@ import { Newspaper, LogOut, UserRound, Trash2 } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import { supabase, formatDate, getUserProfile, deleteMyAccount } from '@/lib/supabase';
 
+/** Các mục trên thanh menu. id = id của section trong trang chủ (null = đầu trang). */
+const NAV_ITEMS: { label: string; id: string | null }[] = [
+  { label: 'Trang chủ', id: null },
+  { label: 'Bài viết', id: 'feed' },
+  { label: 'Thành viên', id: 'members' },
+];
+
+/** Theo dõi section nào đang nằm trong màn hình để tô sáng mục menu tương ứng. */
+function useActiveSection(): string | null {
+  const [active, setActive] = useState<string | null>(null);
+
+  useEffect(() => {
+    const onScroll = () => {
+      // Duyệt từ dưới lên: section nào có đỉnh đã vượt quá vạch 120px thì là section đang xem
+      let current: string | null = null;
+      for (const item of NAV_ITEMS) {
+        if (!item.id) continue;
+        const el = document.getElementById(item.id);
+        if (el && el.getBoundingClientRect().top <= 120) current = item.id;
+      }
+      setActive(current);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  return active;
+}
+
 type Props = {
   user: User | null;
   onLoginClick: () => void;
@@ -163,11 +193,18 @@ export default function Header({
   onAccountDeleted,
   onNavigate,
 }: Props) {
+  const active = useActiveSection();
+
+  const linkClass = (id: string | null) =>
+    `relative rounded-full px-3.5 py-1.5 text-sm font-semibold transition-colors ${
+      active === id ? 'bg-teal-50 text-teal-700' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+    }`;
+
   return (
     <nav className="sticky top-0 z-50 border-b border-gray-100 bg-white/90 shadow-sm backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3">
         {/* Logo: bấm để về trang chủ */}
-        <button onClick={() => onNavigate(null)} aria-label="Về trang chủ" className="flex items-center gap-2">
+        <button onClick={() => onNavigate(null)} aria-label="Về trang chủ" className="flex shrink-0 items-center gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-400 to-cyan-500">
             <Newspaper className="h-5 w-5 text-white" />
           </div>
@@ -176,12 +213,30 @@ export default function Header({
           </span>
         </button>
 
+        {/* Menu điều hướng (màn hình từ md trở lên) */}
+        <div className="hidden items-center gap-1 md:flex">
+          {NAV_ITEMS.map((item) => (
+            <button key={item.label} onClick={() => onNavigate(item.id)} className={linkClass(item.id)}>
+              {item.label}
+            </button>
+          ))}
+        </div>
+
         <UserMenu
           user={user}
           onLoginClick={onLoginClick}
           onProfileClick={onProfileClick}
           onAccountDeleted={onAccountDeleted}
         />
+      </div>
+
+      {/* Menu điều hướng trên điện thoại: một hàng nhỏ phía dưới, vuốt ngang nếu thiếu chỗ */}
+      <div className="flex items-center gap-1 overflow-x-auto border-t border-gray-100 px-4 py-1.5 md:hidden">
+        {NAV_ITEMS.map((item) => (
+          <button key={item.label} onClick={() => onNavigate(item.id)} className={`shrink-0 ${linkClass(item.id)}`}>
+            {item.label}
+          </button>
+        ))}
       </div>
     </nav>
   );
