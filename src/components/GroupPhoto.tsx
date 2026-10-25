@@ -5,18 +5,21 @@ import ScrollReveal from '@/components/ScrollReveal';
 /* ===================== CẤU HÌNH ===================== */
 const INTERVAL_MS = 3500; // thời gian dừng ở mỗi ảnh
 const SLIDE_MS = 700; // thời gian trượt giữa 2 ảnh
-const PLAY_ONLY_ON_HOVER = false; // true: rê chuột mới chạy | false: luôn tự chạy
+const PLAY_ONLY_ON_HOVER = true; // true: rê chuột mới chạy | false: luôn tự chạy
 
-// Chú thích mặc định cho mọi ảnh
-const DEFAULT_CAPTION = {
-  
+type Caption = { title?: string; sub?: string };
+
+// Chú thích mặc định cho ảnh nào không có trong CAPTIONS
+const DEFAULT_CAPTION: Caption = {
+  title: 'Cả đoàn tại Quy Nhơn',
   sub: 'Dã ngoại thực tế Đà Nẵng – Quy Nhơn · Thực tập Nhận thức',
 };
 
-// (Tùy chọn) chú thích riêng cho từng ảnh, khóa là TÊN FILE
-const CAPTIONS: Record<string, { title: string; sub?: string }> = {
-  '01.jpg': { title: 'Eo Gió', sub: 'Dã ngoại thực tế Đà Nẵng – Quy Nhơn · Thực tập Nhận thức' },
-  
+// (Tùy chọn) chú thích riêng cho từng ảnh, khóa là TÊN FILE.
+// Chỉ ghi title, chỉ ghi sub, hoặc cả hai đều được. Đặt {} nếu không muốn chữ.
+const CAPTIONS: Record<string, Caption> = {
+  '01.jpg': { sub: 'Dã ngoại thực tế Đà Nẵng – Quy Nhơn · Thực tập Nhận thức' },
+  // '02.jpg': { title: 'Tháp Đôi Quy Nhơn', sub: 'Di tích Chăm Pa' },
 };
 /* ==================================================== */
 
@@ -27,7 +30,7 @@ const modules = import.meta.glob('../assets/gallery/*.{jpg,jpeg,png,webp,JPG,PNG
   import: 'default',
 }) as Record<string, string>;
 
-type Photo = { src: string; title: string; sub?: string };
+type Photo = { src: string; title?: string; sub?: string };
 
 export default function GroupPhoto() {
   const photos: Photo[] = useMemo(
@@ -54,6 +57,7 @@ export default function GroupPhoto() {
   const canHover = useMemo(() => window.matchMedia('(hover: hover)').matches, []);
   const reduceMotion = useMemo(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches, []);
 
+  // Máy tính: rê chuột mới chạy. Điện thoại (không có chuột): tự chạy luôn
   const playing = total > 1 && !reduceMotion && (!PLAY_ONLY_ON_HOVER || !canHover || hovering);
 
   const next = useCallback(() => {
@@ -63,7 +67,7 @@ export default function GroupPhoto() {
 
   const prev = useCallback(() => {
     setAnimate(true);
-    setIndex((i) => (i <= 0 ? total - 1 : (i >= total ? total : i) - 1));
+    setIndex((i) => (i <= 0 ? total - 1 : Math.min(i, total) - 1));
   }, [total]);
 
   // Tự chuyển ảnh
@@ -83,8 +87,6 @@ export default function GroupPhoto() {
     }
   };
 
-  const current = photos[index % total] ?? photos[0];
-
   if (total === 0) {
     return (
       <section className="mx-auto max-w-6xl px-6 pt-4">
@@ -94,6 +96,8 @@ export default function GroupPhoto() {
       </section>
     );
   }
+
+  const current = photos[index % total] ?? photos[0];
 
   return (
     <section className="mx-auto max-w-6xl px-6 pt-4">
@@ -123,7 +127,7 @@ export default function GroupPhoto() {
               <img
                 key={i}
                 src={p.src}
-                alt={p.title}
+                alt={p.title ?? p.sub ?? 'Ảnh chuyến đi Quy Nhơn'}
                 loading={i < 2 ? 'eager' : 'lazy'}
                 decoding="async"
                 draggable={false}
@@ -138,8 +142,20 @@ export default function GroupPhoto() {
           {/* Chú thích (đổi theo ảnh hiện tại) */}
           <figcaption className="absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-3 p-4 sm:p-6">
             <div key={index % total} className="animate-[fadeIn_0.6s_ease]">
-              <div className="text-lg font-extrabold text-white drop-shadow sm:text-2xl">{current.title}</div>
-              {current.sub && <div className="mt-0.5 text-xs text-white/85 sm:text-sm">{current.sub}</div>}
+              {current.title && (
+                <div className="text-lg font-extrabold text-white drop-shadow sm:text-2xl">{current.title}</div>
+              )}
+              {current.sub && (
+                <div
+                  className={
+                    current.title
+                      ? 'mt-0.5 text-xs text-white/85 sm:text-sm'
+                      : 'text-base font-semibold text-white drop-shadow sm:text-lg'
+                  }
+                >
+                  {current.sub}
+                </div>
+              )}
             </div>
             <div className="flex flex-wrap gap-2 text-xs font-medium text-white sm:text-sm">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1.5 backdrop-blur-sm">
@@ -151,9 +167,9 @@ export default function GroupPhoto() {
             </div>
           </figcaption>
 
+          {/* Mũi tên (chỉ hiện trên máy tính khi rê chuột) */}
           {total > 1 && (
             <>
-              {/* Mũi tên (chỉ hiện trên máy tính khi rê chuột) */}
               <button
                 type="button"
                 onClick={prev}
@@ -170,9 +186,6 @@ export default function GroupPhoto() {
               >
                 <ChevronRight className="h-5 w-5" />
               </button>
-
-             
-             
             </>
           )}
         </figure>
