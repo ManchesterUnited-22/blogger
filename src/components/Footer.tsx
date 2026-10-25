@@ -24,8 +24,8 @@ const CONTACTS = [
 export default function Footer() {
   return (
     <footer className="bg-aurora relative mt-10 overflow-hidden rounded-t-[2rem] border-t border-gray-200/80 text-gray-800">
-      <div className="relative mx-auto max-w-6xl px-6 py-9">
-        <div className="grid items-center gap-6 lg:grid-cols-[0.8fr_1.2fr]">
+      <div className="relative mx-auto max-w-6xl px-6 py-8">
+        <div className="grid items-center gap-6 lg:grid-cols-[0.7fr_1.3fr]">
           {/* ===== Thương hiệu ===== */}
           <div>
             <div className="flex items-center gap-2.5">
@@ -37,24 +37,27 @@ export default function Footer() {
               </span>
             </div>
             <p className="mt-3 font-display text-xl font-extrabold leading-snug text-ink md:text-2xl">
-              Dã ngoại thực tế <span className="text-pop">Đà Nẵng – Quy Nhơn</span>
+              Dã ngoại thực tế
+              <br />
+              <span className="text-pop">Đà Nẵng – Quy Nhơn</span>
             </p>
             <p className="mt-1 text-sm font-medium text-gray-500">Môn học thực tập nhận thức</p>
           </div>
 
-          {/* ===== Liên hệ ===== */}
-          <ul className="grid gap-3 sm:grid-cols-2">
+          {/* ===== Liên hệ: mỗi người một hàng, Mơ trên – Dương dưới ===== */}
+          <ul className="space-y-3">
             {CONTACTS.map((c) => {
               const RoleIcon = c.roleIcon;
               const initial = c.name.split(' ').pop()?.charAt(0) ?? '?';
               return (
                 <li
                   key={c.email}
-                  className="rounded-2xl border border-white bg-white/90 p-4 shadow-md shadow-gray-900/5 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-teal-500/15"
+                  className="flex flex-col gap-3 rounded-2xl border border-white bg-white/90 p-3.5 shadow-md shadow-gray-900/5 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-teal-500/15 md:flex-row md:items-center md:gap-4"
                 >
-                  <div className="flex items-center gap-3">
+                  {/* Avatar + tên + chức vụ */}
+                  <div className="flex items-center gap-3 md:w-56 md:shrink-0">
                     <span
-                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${c.avatarCls} font-display text-lg font-extrabold text-white shadow`}
+                      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${c.avatarCls} font-display text-lg font-extrabold text-white shadow`}
                     >
                       {initial}
                     </span>
@@ -69,7 +72,8 @@ export default function Footer() {
                     </div>
                   </div>
 
-                  <div className="mt-3 flex flex-col gap-1.5 text-[13px] font-semibold">
+                  {/* Điện thoại + email cùng một dòng */}
+                  <div className="flex min-w-0 flex-1 flex-wrap gap-2 text-[13px] font-semibold">
                     <a
                       href={`tel:${c.phone}`}
                       className="group inline-flex items-center gap-2 rounded-lg bg-teal-50 px-3 py-1.5 text-teal-800 transition-colors hover:bg-teal-500 hover:text-white"
@@ -79,7 +83,7 @@ export default function Footer() {
                     </a>
                     <a
                       href={`mailto:${c.email}`}
-                      className="group inline-flex items-center gap-2 break-all rounded-lg bg-violet-50 px-3 py-1.5 text-violet-800 transition-colors hover:bg-violet-500 hover:text-white"
+                      className="group inline-flex min-w-0 items-center gap-2 break-all rounded-lg bg-violet-50 px-3 py-1.5 text-violet-800 transition-colors hover:bg-violet-500 hover:text-white"
                     >
                       <Mail className="h-3.5 w-3.5 shrink-0 text-violet-500 group-hover:text-white" />
                       {c.email}
