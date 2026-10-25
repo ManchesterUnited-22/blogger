@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react';
 import { Loader2, PenLine, Search } from 'lucide-react';
 import { supabase, type Article, type Author } from '@/lib/supabase';
 import Header from '@/components/Header';
@@ -16,6 +16,21 @@ import MembersSection, { type Member } from '@/components/MembersSection';
 import { makeExcerpt, type Post } from '@/lib/posts';
 import ScrollReveal from '@/components/ScrollReveal';
 import GroupPhoto from '@/components/GroupPhoto';
+// ===== Ghi trang đang xem vào địa chỉ + lịch sử, để nút Back của trình duyệt chạy đúng =====
+const NAV_KEYS = ['post', 'page', 'article'];
+
+function buildUrl(params: Record<string, string>) {
+  const url = new URL(window.location.href);
+  NAV_KEYS.forEach((k) => url.searchParams.delete(k));
+  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+  return url;
+}
+function pushUrl(params: Record<string, string>) {
+  window.history.pushState({ app: true }, '', buildUrl(params));
+}
+function replaceUrl(params: Record<string, string>) {
+  window.history.replaceState(window.history.state, '', buildUrl(params));
+}
 export default function App() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [authors, setAuthors] = useState<Author[]>([]);
@@ -25,7 +40,10 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [user, setUser] = useState<User | null>(null);
   const [authOpen, setAuthOpen] = useState(false);
-  const [view, setView] = useState<'home' | 'profile'>('home');
+    const [view, setView] = useState<'home' | 'profile'>(() =>
+    new URLSearchParams(window.location.search).get('page') === 'profile' ? 'profile' : 'home',
+  );
+  const [authReady, setAuthReady] = useState(false); // đã biết đăng nhập hay chưa
   const [posts, setPosts] = useState<Post[]>([]);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
@@ -57,33 +75,70 @@ export default function App() {
     });
   }, [loadPostById]);
 
-  // 2) Mở / đóng bài thì địa chỉ trang đổi theo
-  useEffect(() => {
-    if (pendingPostId.current) return;
-    const url = new URL(window.location.href);
-    const current = url.searchParams.get('post');
-    if (selectedPost && current !== selectedPost.id) {
-      url.searchParams.set('post', selectedPost.id);
-      window.history.pushState(null, '', url);
-    } else if (!selectedPost && current) {
-      url.searchParams.delete('post');
-      window.history.replaceState(null, '', url);
-    }
-  }, [selectedPost]);
+   // Danh sách tin để Back/Forward tìm lại được tin đang mở
+  const articlesRef = useRef<Article[]>([]);
+  articlesRef.current = articles;
 
-  // 3) Nút Back / Forward của trình duyệt và điện thoại
+  // Lúc mới vào: tắt khôi phục vị trí cuộn tự động, dọn địa chỉ cũ còn sót
+    // Lúc mới vào: tắt khôi phục vị trí cuộn tự động của trình duyệt
+  useEffect(() => {
+    window.history.scrollRestoration = 'manual';
+  }, []);
+
+  // F5 khi đang xem một tin: đợi danh sách tin tải xong rồi mở lại đúng tin đó
+  const pendingArticleId = useRef<string | null>(
+    new URLSearchParams(window.location.search).get('article'),
+  );
+  useEffect(() => {
+    const id = pendingArticleId.current;
+    if (!id || loading) return;
+    pendingArticleId.current = null;
+    const found = articles.find((a) => String(a.id) === id);
+    if (found) setSelectedArticle(found);
+    else replaceUrl({}); // tin đã bị xóa / link sai -> về trang chủ
+  }, [articles, loading]);
+  // Nút Back / Forward của trình duyệt và điện thoại: dựng lại màn hình từ địa chỉ
   useEffect(() => {
     const onPop = () => {
-      const id = new URLSearchParams(window.location.search).get('post');
-      if (!id) {
+      const params = new URLSearchParams(window.location.search);
+      const postId = params.get('post');
+      const articleId = params.get('article');
+      setView(params.get('page') === 'profile' ? 'profile' : 'home');
+      setSelectedArticle(
+        articleId ? articlesRef.current.find((a) => String(a.id) === articleId) ?? null : null,
+      );
+      if (!postId) {
         setSelectedPost(null);
         return;
       }
-      loadPostById(id).then((p) => p && setSelectedPost(p));
+      loadPostById(postId).then((p) => setSelectedPost(p));
     };
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
   }, [loadPostById]);
+
+  // Mở bài / mở tin: ghi vào lịch sử
+  const openPost = (post: Post) => {
+    pushUrl({ post: post.id });
+    setSelectedPost(post);
+  };
+  const openArticle = (article: Article) => {
+    pushUrl({ article: String(article.id) });
+    setSelectedArticle(article);
+  };
+
+  // Nút "Quay lại" trong app: lùi đúng 1 bước lịch sử như nút Back
+  const goBack = () => {
+    if (window.history.state?.app) {
+      window.history.back();
+      return;
+    }
+    // Vào thẳng bằng link nên không có trang trước trong app -> về trang chủ
+    replaceUrl({});
+    setSelectedPost(null);
+    setSelectedArticle(null);
+    setView('home');
+  };
   const fetchPosts = useCallback(async () => {
     const { data, error } = await supabase
       .from('posts')
@@ -124,31 +179,41 @@ export default function App() {
     fetchMembers();
   }, [fetchMembers]);
 
-  // Đăng xuất khi đang ở trang cá nhân -> về trang chủ
+    // Đăng xuất khi đang ở trang cá nhân -> về trang chủ
+    // Chưa đăng nhập mà đang ở trang cá nhân -> về trang chủ (chờ biết chắc đã)
   useEffect(() => {
-    if (!user && view === 'profile') setView('home');
-  }, [user, view]);
+    if (authReady && !user && view === 'profile') {
+      setView('home');
+      if (!selectedPost) replaceUrl({});
+    }
+  }, [authReady, user, view, selectedPost]);
 
   // Sau khi xóa tài khoản: về trang chủ và tải lại danh sách thành viên + bài viết
   const handleAccountDeleted = () => {
+    replaceUrl({});
     setView('home');
     setSelectedPost(null);
     setSelectedArticle(null);
     fetchMembers();
     fetchPosts();
   };
-  // Đổi trang thì cuộn lên đầu
-  useEffect(() => {
+
+  // Đổi trang thì cuộn lên đầu (chạy trước khi vẽ nên không bị giật)
+  useLayoutEffect(() => {
     window.scrollTo(0, 0);
   }, [view, selectedPost, selectedArticle]);
 
   const openProfile = () => {
+    if (view === 'profile' && !selectedPost && !selectedArticle) return; // đang ở đó rồi
     setSelectedArticle(null);
     setSelectedPost(null);
     setView('profile');
+    pushUrl({ page: 'profile' });
   };
-  // Bấm menu: từ trang con (bài viết, trang cá nhân) tự về trang chủ rồi cuộn tới mục
+
+  // Bấm logo: từ trang con tự về trang chủ rồi cuộn tới mục
   const goToSection = (id: string | null) => {
+    if (selectedPost || selectedArticle || view === 'profile') pushUrl({});
     setSelectedPost(null);
     setSelectedArticle(null);
     setView('home');
@@ -192,8 +257,11 @@ export default function App() {
     fetchData();
   }, [fetchData]);
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null));
+    useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setUser(data.session?.user ?? null);
+      setAuthReady(true);
+    });
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
@@ -219,7 +287,14 @@ export default function App() {
     acc[p.user_id] = (acc[p.user_id] ?? 0) + 1;
     return acc;
   }, {});
-
+  // F5 đang ở trang cá nhân: chờ biết đã đăng nhập chưa rồi mới vẽ, tránh chớp trang chủ
+  if (view === 'profile' && !authReady) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
+      </div>
+    );
+  }
   // Các trang con: chi tiết bài viết, trang cá nhân, chi tiết tin
   if (selectedPost || selectedArticle || (view === 'profile' && user)) {
     return (
