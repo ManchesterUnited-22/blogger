@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { LogOut, LogIn, UserRound, Trash2, Home, BookOpen, Users, type LucideIcon } from 'lucide-react';
+import { LogOut, LogIn, UserRound, Trash2, Home, BookOpen, Users, Sparkles, type LucideIcon } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import { supabase, formatDate, getUserProfile, deleteMyAccount } from '@/lib/supabase';
 import { dateLine } from '@/lib/postMeta';
@@ -75,12 +75,10 @@ function UserMenu({
     return (
       <button
         onClick={onLoginClick}
-        className="skew-sting inline-flex items-center gap-2 bg-teal-600 px-4 py-2.5 text-sm font-bold uppercase tracking-widest text-white shadow-[4px_4px_0_0_#ffe600] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-teal-500 hover:shadow-[2px_2px_0_0_#ffe600] sm:px-5"
+        className="bg-pop-anim inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-fuchsia-500/30 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-fuchsia-500/40"
       >
-        <span className="unskew-sting inline-flex items-center gap-2">
-          <LogIn className="h-4 w-4" />
-          Đăng nhập
-        </span>
+        <LogIn className="h-4 w-4" />
+        Đăng nhập
       </button>
     );
   }
@@ -89,7 +87,7 @@ function UserMenu({
   const providerLabel: Record<string, string> = { google: 'Google', email: 'Email' };
   const avatar = (size: string) => (
     <div
-      className={`${size} flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 font-bold text-white`}
+      className={`${size} flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-fuchsia-500 to-orange-400 font-bold text-white`}
     >
       {avatarUrl ? (
         <img src={avatarUrl} alt={name} referrerPolicy="no-referrer" className="h-full w-full object-cover" />
@@ -118,21 +116,21 @@ function UserMenu({
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label="Tài khoản"
-        className="rounded-full ring-2 ring-teal-500 ring-offset-2 ring-offset-ink transition hover:ring-volt"
+        className="rounded-full ring-2 ring-fuchsia-400 ring-offset-2 ring-offset-white transition hover:ring-orange-400"
       >
         {avatar('h-11 w-11 text-base')}
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-3 w-64 rounded-md border border-gray-900 bg-white p-4 shadow-xl">
+        <div className="absolute right-0 mt-3 w-64 rounded-2xl border border-violet-100 bg-white p-4 shadow-2xl shadow-violet-500/20">
           <div className="flex items-center gap-3">
             {avatar('h-12 w-12 text-lg')}
             <div className="min-w-0">
-              <p className="truncate font-serif text-lg font-bold text-gray-900">{name}</p>
+              <p className="truncate font-serif text-base font-bold text-gray-900">{name}</p>
               {email && <p className="truncate text-xs text-gray-500">{email}</p>}
             </div>
           </div>
-          <p className="mt-3 border-t border-gray-200 pt-3 text-xs text-gray-500">
+          <p className="mt-3 border-t border-violet-100 pt-3 text-xs text-gray-500">
             Đăng nhập bằng {providerLabel[provider] ?? provider} · Tham gia: {formatDate(user.created_at)}
           </p>
           <button
@@ -140,7 +138,7 @@ function UserMenu({
               onProfileClick();
               setOpen(false);
             }}
-            className="mt-3 flex w-full items-center justify-center gap-2 rounded-sm bg-gray-900 py-2 text-sm font-semibold text-white transition-colors hover:bg-teal-600"
+            className="bg-pop mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold text-white shadow-md shadow-fuchsia-500/25 transition-all hover:-translate-y-0.5"
           >
             <UserRound className="h-4 w-4" /> Trang cá nhân
           </button>
@@ -149,7 +147,7 @@ function UserMenu({
               supabase.auth.signOut();
               setOpen(false);
             }}
-            className="mt-2 flex w-full items-center justify-center gap-2 rounded-sm border border-gray-300 bg-white py-2 text-sm font-semibold text-gray-700 transition-colors hover:border-gray-900 hover:text-gray-900"
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl border border-violet-200 bg-white py-2.5 text-sm font-semibold text-gray-700 transition-colors hover:bg-violet-50 hover:text-violet-700"
           >
             <LogOut className="h-4 w-4" /> Đăng xuất
           </button>
@@ -157,12 +155,12 @@ function UserMenu({
           {!confirming ? (
             <button
               onClick={() => setConfirming(true)}
-              className="mt-2 flex w-full items-center justify-center gap-2 rounded-sm py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+              className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl py-2 text-sm font-medium text-red-600 hover:bg-red-50"
             >
               <Trash2 className="h-4 w-4" /> Xóa tài khoản
             </button>
           ) : (
-            <div className="mt-2 rounded-md border border-red-200 bg-red-50 p-3">
+            <div className="mt-2 rounded-xl border border-red-200 bg-red-50 p-3">
               <p className="text-xs text-red-700">
                 Tài khoản và các bài viết của bạn sẽ bị xóa vĩnh viễn, không thể khôi phục. Bạn chắc chắn chứ?
               </p>
@@ -174,14 +172,14 @@ function UserMenu({
                     setDeleteError(null);
                   }}
                   disabled={deleting}
-                  className="flex-1 rounded-sm bg-white py-1.5 text-xs font-semibold text-gray-700 ring-1 ring-gray-200 hover:bg-gray-50 disabled:opacity-50"
+                  className="flex-1 rounded-lg bg-white py-1.5 text-xs font-semibold text-gray-700 ring-1 ring-gray-200 hover:bg-gray-50 disabled:opacity-50"
                 >
                   Hủy
                 </button>
                 <button
                   onClick={handleDelete}
                   disabled={deleting}
-                  className="flex-1 rounded-sm bg-red-600 py-1.5 text-xs font-semibold text-white hover:bg-red-700 disabled:opacity-60"
+                  className="flex-1 rounded-lg bg-red-600 py-1.5 text-xs font-semibold text-white hover:bg-red-700 disabled:opacity-60"
                 >
                   {deleting ? 'Đang xóa...' : 'Xóa vĩnh viễn'}
                 </button>
@@ -203,44 +201,42 @@ export default function Header({
 }: Props) {
   const active = useActiveSection();
 
-  // Mục đang xem: chữ trắng + vạch đỏ vát chéo dưới chân; mục còn lại: chữ xám, rê chuột thì sáng lên
+  // Mục đang xem: nền gradient + chữ trắng; mục còn lại: chữ xám, rê chuột thì ngả tím
   const linkClass = (id: string | null) =>
-    `relative inline-flex shrink-0 items-center gap-2 px-4 py-2.5 text-sm font-bold uppercase tracking-widest transition-colors after:absolute after:inset-x-3 after:bottom-0 after:h-[3px] after:origin-left after:-skew-x-[20deg] after:bg-teal-500 after:transition-transform after:duration-300 ${
+    `inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all ${
       active === id
-        ? 'text-white after:scale-x-100'
-        : 'text-gray-400 after:scale-x-0 hover:text-white hover:after:scale-x-100'
+        ? 'bg-pop text-white shadow-md shadow-fuchsia-500/30'
+        : 'text-gray-600 hover:bg-violet-100 hover:text-violet-700'
     }`;
 
   const navButtons = NAV_ITEMS.map(({ label, id, icon: Icon }) => (
     <button key={label} onClick={() => onNavigate(id)} className={linkClass(id)}>
-      <Icon className={`h-4 w-4 ${active === id ? 'text-teal-500' : 'text-gray-500'}`} />
+      <Icon className="h-4 w-4" />
       {label}
     </button>
   ));
 
   return (
     <>
-      {/* Dải chữ chạy ngang: đỏ rực, chữ trắng, đúng kiểu băng rôn */}
-      <div className="overflow-hidden bg-teal-600 text-white">
-        <div className="mx-auto flex max-w-6xl items-center gap-4 px-6 py-1.5">
-          <span className="skew-sting shrink-0 bg-volt px-2.5 py-0.5 text-[11px] font-black uppercase tracking-widest text-ink">
-            <span className="unskew-sting inline-block">Hôm nay</span>
+      {/* Dải trên cùng: gradient đổi màu liên tục, ngày + chữ chạy ngang */}
+      <div className="bg-pop-anim overflow-hidden text-white">
+        <div className="mx-auto flex max-w-6xl items-center gap-4 px-6 py-2">
+          <span className="shrink-0 rounded-full bg-white/25 px-3 py-0.5 text-[11px] font-bold uppercase tracking-wider backdrop-blur">
+            Hôm nay
           </span>
-          <span className="shrink-0 font-serif text-base font-semibold uppercase leading-none tracking-wide sm:text-lg">
-            {dateLine()}
-          </span>
+          <span className="shrink-0 text-sm font-semibold">{dateLine()}</span>
           <div className="relative hidden min-w-0 flex-1 overflow-hidden md:block">
-            <div className="flex w-max animate-marquee gap-10 whitespace-nowrap text-xs font-bold uppercase tracking-[0.25em] text-white/85">
+            <div className="flex w-max animate-marquee gap-8 whitespace-nowrap text-xs font-semibold text-white/90">
               {[0, 1].map((k) => (
-                <span key={k} className="flex gap-10">
+                <span key={k} className="flex gap-8">
                   <span>Nhật ký Quy Nhơn</span>
-                  <span className="text-volt">///</span>
+                  <span>✦</span>
                   <span>Biển Nam Trung Bộ</span>
-                  <span className="text-volt">///</span>
+                  <span>✦</span>
                   <span>Thực tập nhận thức</span>
-                  <span className="text-volt">///</span>
+                  <span>✦</span>
                   <span>15–18/10/2026</span>
-                  <span className="text-volt">///</span>
+                  <span>✦</span>
                 </span>
               ))}
             </div>
@@ -248,25 +244,24 @@ export default function Header({
         </div>
       </div>
 
-      <nav className="sticky top-0 z-50 border-b border-white/10 bg-ink/90 backdrop-blur-md">
+      <nav className="glass sticky top-0 z-50 border-b border-violet-100">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3">
-          {/* Logo: chữ Anton in hoa, dấu chấm đỏ nhấp nháy khi rê chuột */}
+          {/* Logo: ô gradient + chữ chuyển sắc */}
           <button
             onClick={() => onNavigate(null)}
             aria-label="Về trang chủ"
             className="group flex shrink-0 items-center gap-2.5"
           >
-            <span
-              aria-hidden
-              className="skew-sting inline-block h-7 w-3 bg-teal-500 transition-all duration-300 group-hover:w-5 group-hover:bg-volt"
-            />
-            <span className="font-display text-3xl uppercase leading-none tracking-wide text-white">
-              VTD<span className="text-teal-500 transition-colors group-hover:text-volt">.</span>News
+            <span className="bg-pop-anim flex h-10 w-10 items-center justify-center rounded-xl text-white shadow-lg shadow-fuchsia-500/30 transition-transform duration-300 group-hover:rotate-12">
+              <Sparkles className="h-5 w-5" />
+            </span>
+            <span className="font-display text-2xl font-extrabold tracking-tight text-gray-900">
+              VTD<span className="text-pop">.News</span>
             </span>
           </button>
 
           {/* Menu giữa (từ md trở lên) */}
-          <div className="hidden items-center md:flex">{navButtons}</div>
+          <div className="hidden items-center gap-1 md:flex">{navButtons}</div>
 
           <UserMenu
             user={user}
@@ -277,7 +272,7 @@ export default function Header({
         </div>
 
         {/* Menu trên điện thoại: một hàng dưới logo, vuốt ngang nếu thiếu chỗ */}
-        <div className="flex items-center justify-around overflow-x-auto border-t border-white/10 md:hidden">
+        <div className="flex items-center justify-around gap-1 overflow-x-auto border-t border-violet-100 px-3 py-2 md:hidden">
           {navButtons}
         </div>
       </nav>

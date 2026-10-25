@@ -247,7 +247,7 @@ export default function App() {
   // F5 đang ở trang cá nhân: chờ biết đã đăng nhập chưa rồi mới vẽ, tránh chớp trang chủ
   if (view === 'profile' && !authReady) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-ink">
+            <div className="flex min-h-screen items-center justify-center bg-paper">
         <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
       </div>
     );
@@ -256,7 +256,7 @@ export default function App() {
   // Các trang con: chi tiết bài viết, trang cá nhân
   if (selectedPost || (view === 'profile' && user)) {
     return (
-      <div className="min-h-screen bg-white">
+            <div className="min-h-screen bg-paper">   {/* trang con: trước là bg-white */}
         <Header
           user={user}
           onLoginClick={() => setAuthOpen(true)}
@@ -291,7 +291,7 @@ export default function App() {
   }
 
     return (
-    <div className="min-h-screen bg-ink">
+        <div className="min-h-screen bg-paper">     {/* trang chủ: trước là bg-ink */}
       <Header
         user={user}
         onLoginClick={() => setAuthOpen(true)}
@@ -303,59 +303,47 @@ export default function App() {
       <GroupPhoto />
 
       {/* ===== Góc cộng đồng: trang nhất của bài cộng đồng ===== */}
-      <section id="feed" className="scroll-mt-20 bg-ink">
-        <div
-          className="bg-paper"
-          style={{ clipPath: 'polygon(0 3.5rem, 100% 0, 100% calc(100% - 3.5rem), 0 100%)' }}
-        >
-        <div className="mx-auto max-w-6xl px-6 pb-28 pt-24">
-          {/* Đầu mục: vạch đỏ dày + một dòng ngày và số liệu */}
-          <div className="border-t-8 border-teal-600">
-            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b-2 border-ink py-2.5">
-              <span className="text-xs font-bold uppercase tracking-widest text-gray-700">{dateLine()}</span>
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-xs font-bold uppercase tracking-widest text-gray-700">
-                <span className="inline-flex items-center gap-1.5">
-                  <span className="font-serif text-xl font-black leading-none tabular-nums text-gray-900">
-                    {filteredPosts.length}
-                  </span>
+           <section id="feed" className="scroll-mt-20">
+        <div className="mx-auto max-w-6xl px-6 pb-20 pt-10">
+          {/* Đầu mục: vạch gradient + dòng ngày và số liệu */}
+          <div>
+            <div className="bg-pop-anim h-2 rounded-full" />
+            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 py-3">
+              <span className="text-sm font-semibold text-gray-600">{dateLine()}</span>
+              <div className="flex flex-wrap items-center gap-2 text-sm font-semibold">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-100 px-3 py-1 text-violet-700">
+                  <span className="font-serif text-base font-bold tabular-nums">{filteredPosts.length}</span>
                   bài
                 </span>
-                <span aria-hidden className="h-4 w-px bg-gray-300" />
-                <span className="inline-flex items-center gap-1.5">
-                  <Heart className="h-4 w-4 fill-rose-500 text-rose-500" />
-                  <span className="font-serif text-xl font-black leading-none tabular-nums text-gray-900">
-                    {totalLikes}
-                  </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-pink-100 px-3 py-1 text-pink-700">
+                  <Heart className="h-4 w-4 fill-pink-500 text-pink-500" />
+                  <span className="font-serif text-base font-bold tabular-nums">{totalLikes}</span>
                   lượt tim
                 </span>
-                <span aria-hidden className="h-4 w-px bg-gray-300" />
-                <span className="inline-flex items-center gap-1.5">
-                  <MessageCircle className="h-4 w-4 text-teal-600" />
-                  <span className="font-serif text-xl font-black leading-none tabular-nums text-gray-900">
-                    {totalComments}
-                  </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-cyan-100 px-3 py-1 text-cyan-700">
+                  <MessageCircle className="h-4 w-4" />
+                  <span className="font-serif text-base font-bold tabular-nums">{totalComments}</span>
                   bình luận
                 </span>
               </div>
             </div>
-            <div className="flex flex-wrap items-end justify-between gap-4 py-6">
+            <div className="flex flex-wrap items-end justify-between gap-4 pb-6 pt-3">
               <div>
-                <h2 className="flex items-center gap-3 font-display text-5xl uppercase leading-none tracking-tight text-ink sm:text-6xl">
-                  <span aria-hidden className="skew-sting inline-block h-10 w-3 bg-teal-600" />
-                  Góc cộng đồng
+                <h2 className="font-display text-4xl font-extrabold tracking-tight text-ink sm:text-5xl">
+                  <span className="text-pop">Góc</span> cộng đồng
                 </h2>
-                <p className="mt-2 text-sm font-semibold text-gray-700">
+                <p className="mt-2 text-sm font-medium text-gray-600">
                   Bài viết do các cây bút trong cộng đồng chia sẻ
                 </p>
               </div>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-violet-400" />
                 <input
                   type="text"
                   placeholder="Tìm bài viết..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="border-2 border-ink bg-white py-2 pl-9 pr-4 text-sm text-gray-700 outline-none transition-colors placeholder:text-gray-400 focus:border-teal-600 focus:shadow-[3px_3px_0_0_#d4002b]"
+                  className="rounded-full border-2 border-violet-200 bg-white py-2.5 pl-10 pr-5 text-sm text-gray-700 outline-none transition-all placeholder:text-gray-400 focus:border-fuchsia-400 focus:shadow-lg focus:shadow-fuchsia-500/20"
                 />
               </div>
             </div>
@@ -375,7 +363,7 @@ export default function App() {
                   <button
                     type="button"
                     onClick={handleWrite}
-                    className="skew-sting mt-5 inline-flex items-center gap-2 bg-teal-600 px-5 py-2.5 text-sm font-bold uppercase tracking-widest text-white shadow-[4px_4px_0_0_#0a0a0b] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_#0a0a0b]"
+                    className="bg-pop-anim mt-5 inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold text-white shadow-lg shadow-fuchsia-500/30 transition-all hover:-translate-y-0.5"
                   >
                     <PenLine className="h-4 w-4" />
                     Viết bài đầu tiên
@@ -386,7 +374,6 @@ export default function App() {
           ) : (
             <PostFrontPage posts={filteredPosts} stats={stats} onOpen={openPost} onWrite={handleWrite} />
           )}
-        </div>
         </div>
       </section>
 

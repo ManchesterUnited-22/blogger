@@ -4,67 +4,71 @@
 
 @layer base {
   html {
-    background: #0a0a0b;
+    background: #fbf7ff;
     -webkit-tap-highlight-color: transparent;
   }
   body {
     @apply font-sans antialiased;
-    background: #0a0a0b;
+    background: #fbf7ff;
     color: #111827;
   }
   ::selection {
-    background: #f0173a;
+    background: #d946ef;
     color: #fff;
   }
-  /* Thanh cuộn tối, thumb đỏ */
-  * {
-    scrollbar-width: thin;
-    scrollbar-color: #d4002b #141416;
-  }
   :focus-visible {
-    outline: 2px solid #ffe600;
+    outline: 2px solid #8b5cf6;
     outline-offset: 2px;
   }
 }
 
 @layer utilities {
-  /* Vết cắt chéo kiểu poster */
-  .clip-slash-bottom {
-    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 3.5rem), 0 100%);
+  /* ===== Gradient chủ đạo: tím -> fuchsia -> hồng -> cam ===== */
+  .bg-pop {
+    background-image: linear-gradient(120deg, #7c3aed 0%, #d946ef 36%, #fb7185 68%, #fb923c 100%);
   }
-  .clip-slash-top {
-    clip-path: polygon(0 3.5rem, 100% 0, 100% 100%, 0 100%);
-  }
-  .skew-sting {
-    transform: skewX(-10deg);
-  }
-  .unskew-sting {
-    transform: skewX(10deg);
-  }
-  /* Nền sọc chéo đỏ */
-  .stripes-red {
-    background-image: repeating-linear-gradient(
-      -45deg,
-      rgba(240, 23, 58, 0.14) 0 10px,
-      transparent 10px 22px
+  /* Bản chuyển động, nhiều màu hơn (thêm vàng, cyan) */
+  .bg-pop-anim {
+    background-image: linear-gradient(
+      120deg,
+      #7c3aed,
+      #d946ef,
+      #fb7185,
+      #fb923c,
+      #facc15,
+      #22d3ee,
+      #7c3aed
     );
+    background-size: 300% 100%;
+    animation: gradient-x 9s ease-in-out infinite alternate;
   }
-  /* Lưới chấm mờ */
-  .dots {
-    background-image: radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px);
-    background-size: 18px 18px;
+  /* Gradient mát: cyan -> xanh -> tím */
+  .bg-cool {
+    background-image: linear-gradient(120deg, #22d3ee 0%, #3b82f6 50%, #8b5cf6 100%);
   }
-  /* Chữ viền, ruột rỗng */
-  .text-outline {
-    -webkit-text-stroke: 2px #fff;
+  /* Chữ chuyển sắc */
+  .text-pop {
+    background-image: linear-gradient(90deg, #7c3aed, #d946ef, #fb7185, #fb923c, #7c3aed);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
     color: transparent;
+    animation: gradient-x 5s ease-in-out infinite alternate;
   }
-  .text-outline-red {
-    -webkit-text-stroke: 2px #f0173a;
-    color: transparent;
+  /* Nền aurora: các mảng màu hồng, cyan, vàng, tím mờ trên nền trắng */
+  .bg-aurora {
+    background-color: #fbf7ff;
+    background-image:
+      radial-gradient(at 10% 8%, rgba(244, 114, 182, 0.4) 0, transparent 45%),
+      radial-gradient(at 90% 10%, rgba(34, 211, 238, 0.35) 0, transparent 45%),
+      radial-gradient(at 72% 85%, rgba(250, 204, 21, 0.32) 0, transparent 45%),
+      radial-gradient(at 6% 88%, rgba(139, 92, 246, 0.32) 0, transparent 45%);
   }
-  .glow-red {
-    box-shadow: 0 0 0 1px rgba(240, 23, 58, 0.6), 0 0 32px rgba(240, 23, 58, 0.35);
+  /* Kính mờ */
+  .glass {
+    background: rgba(255, 255, 255, 0.7);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
   }
 
   .scroll-reveal {
@@ -78,6 +82,15 @@
   .scroll-reveal-visible {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes gradient-x {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 100% 50%;
   }
 }
 
@@ -144,7 +157,9 @@
   .hero-fade-up,
   .hero-slide-in,
   .hero-float,
-  .modal-enter {
+  .modal-enter,
+  .text-pop,
+  .bg-pop-anim {
     animation: none;
     opacity: 1;
     transform: none;

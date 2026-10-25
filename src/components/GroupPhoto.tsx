@@ -86,10 +86,10 @@ export default function GroupPhoto() {
       requestAnimationFrame(() => requestAnimationFrame(() => setAnimate(true)));
     }
   };
-  if (total === 0) {
+    if (total === 0) {
     return (
       <section className="mx-auto max-w-6xl px-6 pb-2 pt-4">
-        <p className="border border-teal-500 bg-ink-800 p-6 text-center text-sm text-gray-400">
+        <p className="rounded-2xl border border-violet-100 bg-white p-6 text-center text-sm text-gray-500">
           Chưa có ảnh nào. Hãy bỏ ảnh vào thư mục <code>src/assets/gallery/</code>.
         </p>
       </section>
@@ -99,11 +99,12 @@ export default function GroupPhoto() {
   const current = photos[index % total] ?? photos[0];
 
   return (
-    <section className="bg-ink px-6 pb-10 pt-6">
+    <section className="px-6 pb-10 pt-6">
       <div className="mx-auto max-w-6xl">
       <ScrollReveal>
+        <div className="bg-pop-anim rounded-[2rem] p-1.5 shadow-2xl shadow-fuchsia-500/25">
         <figure
-          className="group relative aspect-[3/2] w-full select-none overflow-hidden border-2 border-teal-500 bg-ink-800 shadow-[10px_10px_0_0_#d4002b]"
+          className="group relative aspect-[3/2] w-full select-none overflow-hidden rounded-[1.6rem] bg-gray-100"
           onMouseEnter={() => setHovering(true)}
           onMouseLeave={() => setHovering(false)}
           onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
@@ -137,7 +138,7 @@ export default function GroupPhoto() {
           </div>
 
           {/* Lớp mờ dưới ảnh để chữ dễ đọc */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink via-ink/50 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
 
           {/* Chú thích (đổi theo ảnh hiện tại) */}
           <figcaption className="absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-3 p-4 sm:p-6">
@@ -158,24 +159,20 @@ export default function GroupPhoto() {
               )}
             </div>
             <div className="flex flex-wrap gap-2 text-xs font-medium text-white sm:text-sm">
-              <span className="skew-sting inline-flex items-center bg-volt px-3 py-1.5 text-[11px] font-black uppercase tracking-widest text-ink">
-                <span className="unskew-sting inline-flex items-center gap-1.5">
-                  <CalendarDays className="h-4 w-4" /> 15–18/10/2026
-                </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3.5 py-1.5 text-xs font-bold text-gray-900 shadow-lg backdrop-blur">
+                <CalendarDays className="h-4 w-4 text-pink-500" /> 15–18/10/2026
               </span>
-              <span className="skew-sting inline-flex items-center bg-teal-600 px-3 py-1.5 text-[11px] font-black uppercase tracking-widest text-white">
-                <span className="unskew-sting inline-flex items-center gap-1.5">
-                  <MapPin className="h-4 w-4" /> Quy Nhơn
-                </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3.5 py-1.5 text-xs font-bold text-gray-900 shadow-lg backdrop-blur">
+                <MapPin className="h-4 w-4 text-cyan-500" /> Quy Nhơn
               </span>
             </div>
           </figcaption>
 
           {/* Bộ đếm ảnh */}
           {total > 1 && (
-            <div className="absolute right-3 top-3 border border-teal-500 bg-ink/80 px-2 py-1 font-serif text-sm font-bold tabular-nums text-white backdrop-blur">
+            <div className="absolute right-3 top-3 rounded-full bg-black/40 px-3 py-1 font-serif text-xs font-bold tabular-nums text-white backdrop-blur">
               {String((index % total) + 1).padStart(2, '0')}
-              <span className="text-gray-400"> / {String(total).padStart(2, '0')}</span>
+              <span className="text-white/60"> / {String(total).padStart(2, '0')}</span>
             </div>
           )}
 
@@ -186,7 +183,7 @@ export default function GroupPhoto() {
                 type="button"
                 onClick={prev}
                 aria-label="Ảnh trước"
-                className="absolute left-3 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center border border-teal-500 bg-ink text-white opacity-0 shadow-[3px_3px_0_0_#d4002b] transition-all hover:bg-teal-600 group-hover:opacity-100 md:flex"
+                className="absolute left-3 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-violet-700 opacity-0 shadow-lg backdrop-blur transition-all hover:scale-110 hover:bg-white group-hover:opacity-100 md:flex"
               >
                 <ChevronLeft className="h-5 w-5" />
               </button>
@@ -194,13 +191,14 @@ export default function GroupPhoto() {
                 type="button"
                 onClick={next}
                 aria-label="Ảnh sau"
-                className="absolute right-3 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center border border-teal-500 bg-ink text-white opacity-0 shadow-[3px_3px_0_0_#d4002b] transition-all hover:bg-teal-600 group-hover:opacity-100 md:flex"
+                className="absolute right-3 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-violet-700 opacity-0 shadow-lg backdrop-blur transition-all hover:scale-110 hover:bg-white group-hover:opacity-100 md:flex"
               >
                 <ChevronRight className="h-5 w-5" />
               </button>
             </>
           )}
         </figure>
+        </div>
       </ScrollReveal>
       </div>
     </section>
