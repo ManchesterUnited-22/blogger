@@ -20,7 +20,7 @@ export default function PostDetail({ post, user, onLoginClick, onBack }: Props) 
       </button>
 
       {post.title && (
-        <h1 className="text-3xl font-extrabold leading-tight text-gray-900 lg:text-4xl">{post.title}</h1>
+        <h1 className="font-serif text-3xl font-black leading-tight text-gray-900 lg:text-5xl">{post.title}</h1>
       )}
 
       <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-gray-500">
@@ -39,7 +39,7 @@ export default function PostDetail({ post, user, onLoginClick, onBack }: Props) 
           </div>
           <div className="leading-tight">
             <div className="font-medium text-gray-700">{post.author_name}</div>
-            <time dateTime={post.created_at} className="text-xs text-gray-400">
+            <time dateTime={post.created_at} className="text-xs font-semibold uppercase tracking-wider text-gray-600">
               {shortDate(post.created_at)}
             </time>
           </div>

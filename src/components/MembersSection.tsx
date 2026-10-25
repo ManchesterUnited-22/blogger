@@ -31,7 +31,7 @@ export default function MembersSection({ members, postCounts, currentUserId }: P
           <p className="mt-2 font-serif italic text-gray-500">
             Mỗi người một câu chuyện, cùng viết nên trang blog này
           </p>
-          <p className="mt-1 text-xs text-gray-400">{members.length} thành viên</p>
+          <p className="mt-1 text-xs font-bold uppercase tracking-widest text-gray-600">{members.length} thành viên</p>
         </div>
 
         <ul className="mt-10 flex flex-wrap justify-center gap-x-8 gap-y-6">

@@ -136,21 +136,21 @@ export default function PostActions({ post, user, onLoginClick }: Props) {
   };
 
   return (
-    <div className="mt-10 border-t border-gray-100 pt-5">
+    <div className="mt-10 border-t border-gray-300 pt-5">
       <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
           onClick={toggleLike}
           aria-pressed={liked}
-          className={`inline-flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-semibold transition-all active:scale-95 ${
+          className={`inline-flex items-center gap-2 rounded-sm border px-5 py-2 text-sm font-bold uppercase tracking-widest transition-all active:scale-95 ${
             liked
-              ? 'border-rose-200 bg-rose-50 text-rose-600'
-              : 'border-gray-200 bg-white text-gray-700 hover:border-rose-200 hover:text-rose-500'
+              ? 'border-rose-600 bg-rose-50 text-rose-600'
+              : 'border-gray-900 bg-white text-gray-900 hover:bg-rose-50 hover:text-rose-600'
           }`}
         >
           <Heart className={`h-5 w-5 transition-transform ${liked ? 'scale-110 fill-rose-500 text-rose-500' : ''}`} />
           {liked ? 'Đã thích' : 'Thích'}
-          <span className="text-gray-400">· {likedBy.length}</span>
+          <span className="font-serif font-black tabular-nums text-gray-900">· {likedBy.length}</span>
         </button>
 
         <div className="relative" ref={menuRef}>
@@ -158,18 +158,18 @@ export default function PostActions({ post, user, onLoginClick }: Props) {
             type="button"
             onClick={() => setMenuOpen((o) => !o)}
             aria-expanded={menuOpen}
-            className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-5 py-2 text-sm font-semibold text-gray-700 transition-all hover:border-teal-300 hover:text-teal-600"
+            className="inline-flex items-center gap-2 rounded-sm border border-gray-900 bg-white px-5 py-2 text-sm font-bold uppercase tracking-widest text-gray-900 transition-all hover:bg-teal-50 hover:text-teal-700"
           >
             <Share2 className="h-5 w-5" />
             Chia sẻ
           </button>
 
           {menuOpen && (
-            <div className="absolute bottom-full left-0 z-20 mb-2 w-56 overflow-hidden rounded-xl border border-gray-200 bg-white py-1 shadow-lg">
+            <div className="absolute bottom-full left-0 z-20 mb-2 w-56 overflow-hidden rounded-md border border-gray-900 bg-white py-1 shadow-[4px_4px_0_0_#111827]">
               <button
                 type="button"
                 onClick={shareFacebook}
-                className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-50"
+                className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-teal-50/60"
               >
                 <Facebook className="h-5 w-5 text-[#1877F2]" />
                 Facebook
@@ -177,7 +177,7 @@ export default function PostActions({ post, user, onLoginClick }: Props) {
               <button
                 type="button"
                 onClick={shareZalo}
-                className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-50"
+                className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-teal-50/60"
               >
                 <span className="flex h-5 w-5 items-center justify-center rounded bg-[#0068FF] text-[9px] font-extrabold text-white">
                   Z
@@ -187,7 +187,7 @@ export default function PostActions({ post, user, onLoginClick }: Props) {
               <button
                 type="button"
                 onClick={copyLink}
-                className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-50"
+                className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-teal-50/60"
               >
                 <Link2 className="h-5 w-5 text-gray-500" />
                 Sao chép liên kết

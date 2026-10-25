@@ -69,29 +69,30 @@ function Avatar({ post, className }: { post: Post; className: string }) {
 
 function Byline({ post, small }: { post: Post; small?: boolean }) {
   return (
-    <div className={`flex flex-wrap items-center gap-x-2 gap-y-1 text-gray-500 ${small ? 'text-xs' : 'text-sm'}`}>
+    <div className={`flex flex-wrap items-center gap-x-2 gap-y-1 text-gray-600 ${small ? 'text-xs' : 'text-sm'}`}>
       <Avatar post={post} className={small ? 'h-5 w-5 text-[10px]' : 'h-7 w-7 text-xs'} />
       <span className="font-semibold text-gray-800">{post.author_name}</span>
       <span aria-hidden>·</span>
-      <time dateTime={post.created_at} className="text-xs text-gray-400">
+      <time dateTime={post.created_at} className="text-xs font-semibold uppercase tracking-wider text-gray-600">
         {shortDate(post.created_at)}
       </time>
       <span aria-hidden>·</span>
-      <span>{readMinutes(post.content)} phút đọc</span>
+      <span className="font-semibold text-teal-700">{readMinutes(post.content)} phút đọc</span>
     </div>
   );
 }
 function Counts({ stat }: { stat: Stat }) {
   const likes = stat?.likes ?? 0;
+  const comments = stat?.comments ?? 0;
   return (
-    <div className="flex shrink-0 items-center gap-3 text-sm text-gray-500">
+    <div className="flex shrink-0 items-center gap-4 font-serif text-base font-black tabular-nums text-gray-900">
       <span className="inline-flex items-center gap-1.5" title="Lượt thích">
-        <Heart className={`h-4 w-4 ${likes > 0 ? 'fill-rose-500 text-rose-500' : ''}`} />
+        <Heart className={`h-4 w-4 ${likes > 0 ? 'fill-rose-500 text-rose-500' : 'text-gray-500'}`} />
         {likes}
       </span>
       <span className="inline-flex items-center gap-1.5" title="Bình luận">
-        <MessageCircle className="h-4 w-4" />
-        {stat?.comments ?? 0}
+        <MessageCircle className={`h-4 w-4 ${comments > 0 ? 'text-teal-600' : 'text-gray-500'}`} />
+        {comments}
       </span>
     </div>
   );
@@ -231,7 +232,7 @@ function OpinionCard({ post, stat, onOpen }: { post: Post; stat: Stat; onOpen: (
         <div className="min-w-0">
           <div className="text-[11px] font-bold uppercase tracking-widest text-orange-600">Góc nhìn</div>
           <div className="truncate font-semibold text-gray-900">{post.author_name}</div>
-            <div className="text-xs text-gray-400">
+            <div className="text-xs font-semibold uppercase tracking-wider text-gray-600">
             <time dateTime={post.created_at}>{shortDate(post.created_at)}</time>
             {' · '}
             {readMinutes(post.content)} phút đọc
@@ -265,7 +266,7 @@ function Brief({ post, onOpen }: { post: Post; onOpen: (p: Post) => void }) {
           <span className={UNDERLINE}>{headlineOf(post)}</span>
         </h4>
         {sub && <p className="mt-1 line-clamp-2 text-sm text-gray-600">{sub}</p>}
-        <p className="mt-1 text-xs text-gray-400">
+        <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-gray-600">
           {post.author_name} · {shortDate(post.created_at)}
         </p>
       </div>
@@ -305,12 +306,6 @@ function GridStory({ post, stat, onOpen }: { post: Post; stat: Stat; onOpen: (p:
   );
 }
 
-/* ---------- Tin vắn (bài chỉ có chữ) ---------- */
-/* ---------- Tin vắn (bài chỉ có chữ): chỉ hiện tiêu đề + vài dòng đầu ---------- */
-
-
-/* ---------- Khung "Gửi bài": to khi ít bài, gọn khi nhiều bài ---------- */
-/* ---------- Khung "Gửi bài": bấm vào bất kỳ đâu trong khung là mở trình viết bài ---------- */
 /* ---------- Khung "Gửi bài": bấm vào bất kỳ đâu trong khung là mở trình viết bài ---------- */
 function SubmitStrip({ big, onWrite }: { big: boolean; onWrite: () => void }) {
   if (big) {

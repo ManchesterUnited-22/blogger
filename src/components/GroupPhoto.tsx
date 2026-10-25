@@ -89,8 +89,8 @@ export default function GroupPhoto() {
 
   if (total === 0) {
     return (
-      <section className="mx-auto max-w-6xl px-6 pt-4">
-        <p className="rounded-2xl bg-gray-50 p-6 text-center text-sm text-gray-500">
+      <section className="mx-auto max-w-6xl px-6 pb-2 pt-4">
+        <p className="rounded-md border border-gray-900 bg-white p-6 text-center text-sm text-gray-500">
           Chưa có ảnh nào. Hãy bỏ ảnh vào thư mục <code>src/assets/gallery/</code>.
         </p>
       </section>
@@ -100,10 +100,10 @@ export default function GroupPhoto() {
   const current = photos[index % total] ?? photos[0];
 
   return (
-    <section className="mx-auto max-w-6xl px-6 pt-4">
+    <section className="mx-auto max-w-6xl px-6 pb-2 pt-4">
       <ScrollReveal>
         <figure
-          className="group relative aspect-[3/2] w-full select-none overflow-hidden rounded-3xl border border-teal-100 bg-gray-100 shadow-xl"
+          className="group relative aspect-[3/2] w-full select-none overflow-hidden rounded-md border border-gray-900 bg-gray-100 shadow-[6px_6px_0_0_#111827]"
           onMouseEnter={() => setHovering(true)}
           onMouseLeave={() => setHovering(false)}
           onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
@@ -158,14 +158,22 @@ export default function GroupPhoto() {
               )}
             </div>
             <div className="flex flex-wrap gap-2 text-xs font-medium text-white sm:text-sm">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1.5 backdrop-blur-sm">
-                <CalendarDays className="h-4 w-4" /> 15–18/10/2026
+              <span className="inline-flex items-center gap-1.5 rounded-sm bg-white px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-gray-900">
+                <CalendarDays className="h-4 w-4 text-orange-500" /> 15–18/10/2026
               </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1.5 backdrop-blur-sm">
-                <MapPin className="h-4 w-4" /> Quy Nhơn
+              <span className="inline-flex items-center gap-1.5 rounded-sm bg-white px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-gray-900">
+                <MapPin className="h-4 w-4 text-orange-500" /> Quy Nhơn
               </span>
             </div>
           </figcaption>
+
+          {/* Bộ đếm ảnh */}
+          {total > 1 && (
+            <div className="absolute right-3 top-3 border border-gray-900 bg-white px-2 py-1 font-serif text-xs font-black tabular-nums text-gray-900">
+              {String((index % total) + 1).padStart(2, '0')}
+              <span className="text-gray-500"> / {String(total).padStart(2, '0')}</span>
+            </div>
+          )}
 
           {/* Mũi tên (chỉ hiện trên máy tính khi rê chuột) */}
           {total > 1 && (
@@ -174,7 +182,7 @@ export default function GroupPhoto() {
                 type="button"
                 onClick={prev}
                 aria-label="Ảnh trước"
-                className="absolute left-3 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-gray-900 opacity-0 shadow transition-opacity hover:bg-white group-hover:opacity-100 md:flex"
+                className="absolute left-3 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-sm border border-gray-900 bg-white text-gray-900 opacity-0 shadow-[2px_2px_0_0_#111827] transition-opacity hover:bg-orange-100 group-hover:opacity-100 md:flex"
               >
                 <ChevronLeft className="h-5 w-5" />
               </button>
@@ -182,7 +190,7 @@ export default function GroupPhoto() {
                 type="button"
                 onClick={next}
                 aria-label="Ảnh sau"
-                className="absolute right-3 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-gray-900 opacity-0 shadow transition-opacity hover:bg-white group-hover:opacity-100 md:flex"
+                className="absolute right-3 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-sm border border-gray-900 bg-white text-gray-900 opacity-0 shadow-[2px_2px_0_0_#111827] transition-opacity hover:bg-orange-100 group-hover:opacity-100 md:flex"
               >
                 <ChevronRight className="h-5 w-5" />
               </button>

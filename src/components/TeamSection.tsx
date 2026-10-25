@@ -43,7 +43,7 @@ export default function TeamSection({ authors }: Props) {
             <h3 className="mt-3 text-sm font-bold text-gray-900">{author.name}</h3>
             <span className="mt-0.5 text-xs font-medium text-teal-600">{author.role}</span>
             {author.bio && (
-              <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-gray-400">{author.bio}</p>
+              <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-gray-600">{author.bio}</p>
             )}
           </div>
         ))}

@@ -83,14 +83,14 @@ function PostTile({
       <button
         onClick={onEdit}
         aria-label="Sửa bài"
-        className="rounded-full p-2 text-gray-400 hover:bg-teal-50 hover:text-teal-600"
+        className="rounded-sm p-2 text-gray-500 hover:bg-teal-50 hover:text-teal-600"
       >
         <Pencil className="h-4 w-4" />
       </button>
       <button
         onClick={onDelete}
         aria-label="Xóa bài"
-        className="rounded-full p-2 text-gray-400 hover:bg-rose-50 hover:text-rose-600"
+        className="rounded-sm p-2 text-gray-500 hover:bg-rose-50 hover:text-rose-600"
       >
         <Trash2 className="h-4 w-4" />
       </button>
@@ -98,37 +98,37 @@ function PostTile({
   );
   const meta = (
     <>
-      <span>{formatDate(post.created_at)}</span>
-      <span className="inline-flex items-center gap-1">
-        <Heart className="h-3.5 w-3.5" />
+      <span className="font-semibold uppercase tracking-wider text-gray-600">{formatDate(post.created_at)}</span>
+      <span className="inline-flex items-center gap-1 font-serif text-sm font-black tabular-nums text-gray-900">
+        <Heart className={`h-3.5 w-3.5 ${(stat?.likes ?? 0) > 0 ? 'fill-rose-500 text-rose-500' : 'text-gray-500'}`} />
         {stat?.likes ?? 0}
       </span>
-      <span className="inline-flex items-center gap-1">
-        <MessageCircle className="h-3.5 w-3.5" />
+      <span className="inline-flex items-center gap-1 font-serif text-sm font-black tabular-nums text-gray-900">
+        <MessageCircle className="h-3.5 w-3.5 text-teal-600" />
         {stat?.comments ?? 0}
       </span>
     </>
   );
-  const ring = editing ? 'ring-2 ring-teal-400' : 'ring-1 ring-gray-100';
+  const ring = editing ? 'ring-2 ring-teal-400' : '';
 
   if (featured) {
     return (
-      <div className={`overflow-hidden rounded-2xl bg-white shadow-md ${ring}`}>
+      <div className={`overflow-hidden rounded-md border border-gray-900 bg-white shadow-[4px_4px_0_0_#111827] ${ring}`}>
         <button onClick={onOpen} className="relative block h-52 w-full text-left sm:h-60">
           <div className="absolute inset-0 bg-gradient-to-br from-teal-400 to-cyan-500">
             {post.cover_url && <img src={post.cover_url} alt="" className="h-full w-full object-cover" />}
           </div>
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-          <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-amber-400 px-3 py-1 text-xs font-bold text-amber-950 shadow">
+          <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-sm bg-orange-500 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-white shadow">
             <Star className="h-3.5 w-3.5 fill-current" />
             Bài nổi bật
           </span>
           <div className="absolute inset-x-0 bottom-0 p-5">
-            <div className="line-clamp-2 text-xl font-extrabold text-white sm:text-2xl">{label}</div>
+            <div className="line-clamp-2 font-serif text-xl font-black text-white sm:text-2xl">{label}</div>
             {post.title && <p className="mt-1 line-clamp-1 text-sm text-white/80">{makeExcerpt(post.content, 120)}</p>}
           </div>
         </button>
-        <div className="flex items-center gap-3 px-5 py-2 text-xs text-gray-400">
+        <div className="flex items-center gap-3 px-5 py-2 text-xs text-gray-600">
           {meta}
           {actions}
         </div>
@@ -137,17 +137,17 @@ function PostTile({
   }
 
   return (
-    <div className={`flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm transition hover:shadow-md ${ring}`}>
+    <div className={`flex flex-col overflow-hidden rounded-md border border-gray-300 bg-white transition hover:border-gray-900 hover:shadow-[4px_4px_0_0_#111827] ${ring}`}>
       <button onClick={onOpen} className="block text-left">
-        <div className="h-32 w-full overflow-hidden bg-gradient-to-br from-teal-100 to-cyan-100">
+        <div className="h-32 w-full overflow-hidden bg-gray-200">
           {post.cover_url && <img src={post.cover_url} alt="" className="h-full w-full object-cover" />}
         </div>
         <div className="px-4 pt-3">
-          <div className="line-clamp-2 font-bold text-gray-900 hover:text-teal-600">{label}</div>
-          {post.title && <p className="mt-1 line-clamp-2 text-sm text-gray-500">{makeExcerpt(post.content, 100)}</p>}
+          <div className="line-clamp-2 font-serif text-lg font-bold text-gray-900 hover:text-teal-700">{label}</div>
+          {post.title && <p className="mt-1 line-clamp-2 text-sm text-gray-600">{makeExcerpt(post.content, 100)}</p>}
         </div>
       </button>
-      <div className="mt-auto flex items-center gap-3 px-4 pb-3 pt-3 text-xs text-gray-400">
+      <div className="mt-auto flex items-center gap-3 px-4 pb-3 pt-3 text-xs text-gray-600">
         {meta}
         {actions}
       </div>
@@ -460,8 +460,13 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
       </button>
 
       {/* ===== 1. Hồ sơ cá nhân ===== */}
-      <div className="overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-gray-100">
-        <div className="h-28 bg-gradient-to-r from-teal-400 via-cyan-400 to-sky-400 sm:h-36" />
+      <div className="overflow-hidden rounded-md border border-gray-900 bg-white shadow-[6px_6px_0_0_#111827]">
+        <div className="h-28 border-b border-gray-900 bg-[#faf8f3] px-6 pt-4 sm:h-36">
+          <p className="inline-flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-orange-600">
+            <span aria-hidden className="inline-block h-2.5 w-2.5 rotate-45 rounded-sm bg-teal-500" />
+            Trang cá nhân
+          </p>
+        </div>
 
         <div className="px-6 pb-6">
           <div className="-mt-12 flex flex-wrap items-end justify-between gap-4 sm:-mt-14">
@@ -497,7 +502,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
               <button
                 type="button"
                 onClick={startEditProfile}
-                className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-gray-200 hover:bg-gray-50"
+                className={chipBtn}
               >
                 <Pencil className="h-4 w-4" />
                 Sửa hồ sơ
@@ -508,36 +513,37 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
           <div className="mt-4 min-w-0">
             {editingProfile ? (
               <input
-                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-lg font-bold text-gray-900 outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-100"
+                className="w-full rounded-sm border border-gray-300 bg-white px-3 py-2 text-lg font-bold text-gray-900 outline-none focus:border-gray-900"
                 placeholder="Tên hiển thị"
                 value={nameInput}
                 maxLength={50}
                 onChange={(e) => setNameInput(e.target.value)}
               />
             ) : (
-              <h1 className="truncate text-2xl font-extrabold text-gray-900">{profile.name}</h1>
+              <h1 className="truncate font-serif text-3xl font-black tracking-tight text-gray-900">{profile.name}</h1>
             )}
-            {profile.email && <p className="mt-0.5 truncate text-sm text-gray-500">{profile.email}</p>}
+            {profile.email && <p className="mt-0.5 truncate text-sm text-gray-600">{profile.email}</p>}
 
-            {/* Thống kê gọn trên một dòng */}
-            <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm text-gray-600">
-              <span className="inline-flex items-center gap-1.5">
-                <FileText className="h-4 w-4 text-teal-500" />
-                <b className="text-gray-900">{statVal(myPosts.length)}</b> bài viết
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <Heart className="h-4 w-4 text-rose-500" />
-                <b className="text-gray-900">{statVal(totalLikes)}</b> lượt tim
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <MessageCircle className="h-4 w-4 text-cyan-500" />
-                <b className="text-gray-900">{statVal(totalComments)}</b> bình luận
-              </span>
-              <span className="inline-flex items-center gap-1.5 text-gray-400">
-                <CalendarDays className="h-4 w-4" />
-                Tham gia {formatDate(user.created_at)}
-              </span>
+            {/* Thanh số liệu */}
+            <div className="mt-4 grid grid-cols-3 divide-x divide-dashed divide-gray-400 border-y border-dashed border-gray-400 py-3">
+              {[
+                { Icon: FileText, cls: 'text-teal-600', n: myPosts.length, label: 'Bài viết' },
+                { Icon: Heart, cls: 'fill-rose-500 text-rose-500', n: totalLikes, label: 'Lượt tim' },
+                { Icon: MessageCircle, cls: 'text-orange-500', n: totalComments, label: 'Bình luận' },
+              ].map(({ Icon, cls, n, label }) => (
+                <div key={label} className="flex flex-col items-center gap-1 px-2">
+                  <span className="inline-flex items-center gap-2 font-serif text-3xl font-black leading-none text-gray-900">
+                    <Icon className={`h-5 w-5 ${cls}`} />
+                    {statVal(n)}
+                  </span>
+                  <span className="text-xs font-bold uppercase tracking-widest text-gray-600">{label}</span>
+                </div>
+              ))}
             </div>
+            <p className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-gray-600">
+              <CalendarDays className="h-4 w-4" />
+              Tham gia {formatDate(user.created_at)}
+            </p>
           </div>
 
           {editingProfile && (
@@ -546,14 +552,14 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
                 <button
                   type="button"
                   onClick={() => setAvatarInput(googleAvatar)}
-                  className="rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-700 ring-1 ring-gray-200 hover:bg-gray-50"
+                  className={chipBtn}
                 >
                   Dùng lại ảnh Google
                 </button>
               )}
-              {profileError && <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-600">{profileError}</p>}
+              {profileError && <p className="rounded-sm bg-rose-50 px-3 py-2 text-sm text-rose-600">{profileError}</p>}
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-gray-500">
                   Ảnh tối đa {MAX_IMAGE_MB}MB. Tên và ảnh mới sẽ áp dụng cho cả các bài đã đăng.
                 </p>
                 <div className="flex shrink-0 gap-2">
@@ -561,7 +567,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
                     type="button"
                     onClick={cancelEditProfile}
                     disabled={savingProfile}
-                    className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-700 ring-1 ring-gray-200 hover:bg-gray-50 disabled:opacity-60"
+                    className={chipBtn}
                   >
                     <X className="h-4 w-4" />
                     Hủy
@@ -570,7 +576,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
                     type="button"
                     onClick={handleSaveProfile}
                     disabled={savingProfile || avatarUploading}
-                    className="inline-flex items-center gap-2 rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white hover:bg-teal-600 disabled:opacity-60"
+                    className="inline-flex items-center gap-2 rounded-sm bg-gray-900 px-5 py-2 text-sm font-bold uppercase tracking-widest text-white hover:bg-teal-600 disabled:opacity-60"
                   >
                     {savingProfile ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                     Lưu
@@ -756,13 +762,17 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
             <Loader2 className="h-6 w-6 animate-spin text-teal-500" />
           </div>
         ) : myPosts.length === 0 ? (
-          <p className="py-6 text-center text-sm text-gray-400">
+          <p className="py-6 text-center font-serif text-sm italic text-gray-500">
             Bài viết của bạn sẽ xuất hiện ở đây sau khi đăng.
           </p>
         ) : (
           restPosts.length > 0 && (
             <>
-              <h2 className="text-xl font-extrabold text-gray-900">{featured ? 'Các bài viết khác' : 'Bài viết của tôi'}</h2>
+              <h2 className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-gray-900">
+                <span aria-hidden className="h-2.5 w-2.5 bg-orange-500" />
+                {featured ? 'Các bài viết khác' : 'Bài viết của tôi'}
+                <span className="h-px flex-1 bg-gray-300" />
+              </h2>
               <ul className="mt-4 grid gap-4 sm:grid-cols-2">
                 {restPosts.map((p) => (
                   <li key={p.id}>

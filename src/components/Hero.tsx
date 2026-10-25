@@ -72,7 +72,7 @@ export default function Hero() {
               <div className="flex items-center gap-2.5 pr-6 sm:border-r sm:border-dashed sm:border-gray-400">
                 <Heart className="h-5 w-5 fill-rose-500 text-rose-500" />
                 <span className="font-serif text-3xl font-black leading-none text-gray-900">100%</span>
-                <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Đam mê</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-gray-700">Đam mê</span>
               </div>
               {TOPICS.map(({ icon: Icon, label, color }) => (
                 <span
@@ -108,7 +108,7 @@ export default function Hero() {
               <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-orange-500" />
               <div>
                 <div className="font-serif text-lg font-bold leading-tight text-gray-900">Quy Nhơn, Gia Lai</div>
-                <div className="mt-0.5 text-xs font-semibold uppercase tracking-widest text-gray-500">
+                <div className="mt-0.5 text-xs font-semibold uppercase tracking-widest text-gray-700">
                   13.78°B, 109.22°Đ · Điểm đến của chuyến đi
                 </div>
               </div>
