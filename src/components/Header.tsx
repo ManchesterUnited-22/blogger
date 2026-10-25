@@ -201,7 +201,7 @@ export default function Header({
 }: Props) {
   const active = useActiveSection();
 
-  // Mục đang xem: nền gradient + chữ trắng; mục còn lại: chữ xám, rê chuột thì ngả tím
+  // Mục đang xem: nền gradient + chữ trắng; mục còn lại: chữ xám, rê chuột thì ngả xanh rêu
   const linkClass = (id: string | null) =>
     `inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all ${
       active === id
@@ -218,7 +218,7 @@ export default function Header({
 
   return (
     <>
-      {/* Dải trên cùng: gradient đổi màu liên tục, ngày + chữ chạy ngang */}
+      {/* Dải trên cùng: nền nhạt, ngày + chữ chạy ngang */}
       <div className="overflow-hidden border-b border-teal-100/70 bg-soft-gradient text-gray-700">
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-6 py-2">
           <span className="shrink-0 rounded-full bg-white px-3 py-0.5 text-[11px] font-bold tracking-wide text-teal-700 shadow-sm">

@@ -1,9 +1,5 @@
 /** @type {import('tailwindcss').Config} */
 
-// Hệ màu mới: nền sáng, màu nhấn xanh chàm (indigo) dịu + xanh trời nhạt, điểm xuyết đào nhẹ.
-// Giữ nguyên tên lớp cũ (teal, orange, cyan, ...) để không phải sửa hàng trăm chỗ trong code:
-// chỉ cần đổi giá trị ở đây là toàn bộ giao diện đổi theo.
-
 // Hệ màu "biển": dịu, đậm vừa phải, nhiều sắc nhưng không chói, không tím.
 // Giữ nguyên tên lớp cũ (teal, cyan, violet, orange, ...) nên chỉ cần đổi giá trị ở đây.
 
