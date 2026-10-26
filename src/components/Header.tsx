@@ -1,14 +1,14 @@
-import { useEffect, useRef, useState } from 'react';
-import { LogOut, LogIn, UserRound, Trash2, Home, BookOpen, Users, Sparkles, type LucideIcon } from 'lucide-react';
+import { useEffect, useRef, useMemo, useState } from 'react';
+import { LogOut, LogIn, UserRound, Trash2, Home, BookOpen, Users, Search, Sparkles, type LucideIcon } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import { supabase, formatDate, getUserProfile, deleteMyAccount } from '@/lib/supabase';
 import { dateLine } from '@/lib/postMeta';
-
+import type { Member } from '@/components/MembersSection';
 /** Các mục trên thanh menu. id = id của section trong trang chủ (null = đầu trang). */
 const NAV_ITEMS: { label: string; id: string | null; icon: LucideIcon }[] = [
   { label: 'Trang chủ', id: null, icon: Home },
   { label: 'Bài viết', id: 'feed', icon: BookOpen },
-  { label: 'Thành viên', id: 'members', icon: Users },
+  
 ];
 
 /** Theo dõi section nào đang nằm trong màn hình để tô sáng mục menu tương ứng. */
@@ -40,6 +40,8 @@ type Props = {
   onProfileClick: () => void;
   onAccountDeleted: () => void;
   onNavigate: (sectionId: string | null) => void;
+  members: Member[];
+  postCounts: Record<string,number>;
 };
 
 function UserMenu({
@@ -196,6 +198,101 @@ function UserMenu({
     </div>
   );
 }
+const AVATAR_BG = ['bg-teal-500', 'bg-orange-500', 'bg-cyan-500', 'bg-violet-500', 'bg-pink-500', 'bg-amber-500'];
+
+/** Bỏ dấu + hạ chữ thường để tìm "nguyen" ra được "Nguyễn". */
+const fold = (s: string) =>
+  s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd');
+
+function MiniAvatar({ m, i, className }: { m: Member; i: number; className: string }) {
+  const name = m.full_name || 'Thành viên';
+  return (
+    <span
+      className={`${className} ${AVATAR_BG[i % AVATAR_BG.length]} flex shrink-0 items-center justify-center overflow-hidden rounded-full text-xs font-bold text-white`}
+    >
+      {m.avatar_url ? (
+        <img
+          src={m.avatar_url}
+          alt={name}
+          referrerPolicy="no-referrer"
+          loading="lazy"
+          className="h-full w-full object-cover"
+        />
+      ) : (
+        name.charAt(0).toUpperCase()
+      )}
+    </span>
+  );
+}
+
+function MembersPanel({
+  sorted,
+  postCounts,
+  currentUserId,
+}: {
+  sorted: Member[];
+  postCounts: Record<string, number>;
+  currentUserId?: string;
+}) {
+  const [q, setQ] = useState('');
+  const totalPosts = sorted.reduce((n, m) => n + (postCounts[m.id] ?? 0), 0);
+  const query = fold(q.trim());
+  const list = query ? sorted.filter((m) => fold(m.full_name || 'Thành viên').includes(query)) : sorted;
+
+  return (
+    <div className="rounded-2xl border border-violet-100 bg-white p-4 shadow-2xl shadow-violet-500/20">
+      <div className="flex items-center gap-2">
+        <Users className="h-4 w-4 text-violet-500" />
+        <h3 className="font-display text-base font-extrabold text-gray-900">Cây bút đồng hành</h3>
+        <span className="ml-auto text-xs font-semibold text-gray-500">
+          {sorted.length} thành viên · {totalPosts} bài
+        </span>
+      </div>
+
+      {sorted.length > 6 && (
+        <div className="relative mt-3">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-violet-400" />
+          <input
+            type="text"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Tìm thành viên..."
+            className="w-full rounded-full border border-violet-200 bg-white py-2 pl-9 pr-4 text-sm text-gray-700 outline-none placeholder:text-gray-400 focus:border-fuchsia-400"
+          />
+        </div>
+      )}
+
+      <ul className="mt-3 max-h-80 space-y-0.5 overflow-y-auto pr-1">
+        {list.length === 0 ? (
+          <li className="py-6 text-center text-sm italic text-gray-500">Không tìm thấy thành viên.</li>
+        ) : (
+          list.map((m) => {
+            const count = postCounts[m.id] ?? 0;
+            const isMe = m.id === currentUserId;
+            return (
+              <li key={m.id} className="flex items-center gap-3 rounded-xl px-2 py-2 hover:bg-violet-50">
+                <MiniAvatar m={m} i={sorted.indexOf(m)} className="h-10 w-10 text-sm" />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-gray-900">
+                    {m.full_name || 'Thành viên'}
+                    {isMe && (
+                      <span className="ml-2 rounded-full bg-yellow-300 px-2 py-0.5 text-[10px] font-extrabold text-gray-900">
+                        Bạn
+                      </span>
+                    )}
+                  </p>
+                </div>
+                <span className={`shrink-0 text-xs font-semibold ${count > 0 ? 'text-teal-600' : 'text-amber-600'}`}>
+                  {count > 0 ? `${count} bài` : 'Cây bút mới ✨'}
+                </span>
+              </li>
+            );
+          })
+        )}
+      </ul>
+    </div>
+  );
+}
 
 export default function Header({
   user,
@@ -203,10 +300,36 @@ export default function Header({
   onProfileClick,
   onAccountDeleted,
   onNavigate,
+  members,
+  postCounts,
 }: Props) {
   const active = useActiveSection();
+  const [membersOpen, setMembersOpen] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
 
-  // Mục đang xem: nền gradient + chữ trắng; mục còn lại: chữ xám, rê chuột thì ngả xanh rêu
+  // Người đăng nhiều bài nhất đứng đầu
+  const sorted = useMemo(
+    () => [...members].sort((a, b) => (postCounts[b.id] ?? 0) - (postCounts[a.id] ?? 0)),
+    [members, postCounts],
+  );
+
+  // Bấm ra ngoài thanh hoặc nhấn Esc thì đóng bảng
+  useEffect(() => {
+    if (!membersOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) setMembersOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMembersOpen(false);
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [membersOpen]);
+
   const linkClass = (id: string | null) =>
     `inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all ${
       active === id
@@ -215,15 +338,49 @@ export default function Header({
     }`;
 
   const navButtons = NAV_ITEMS.map(({ label, id, icon: Icon }) => (
-    <button key={label} onClick={() => onNavigate(id)} className={linkClass(id)}>
+    <button
+      key={label}
+      onClick={() => {
+        setMembersOpen(false);
+        onNavigate(id);
+      }}
+      className={linkClass(id)}
+    >
       <Icon className="h-4 w-4" />
       {label}
     </button>
   ));
 
+  // Nút thành viên: 3 avatar xếp chồng + số lượng
+  const membersButton = members.length > 0 && (
+    <button
+      onClick={() => setMembersOpen((o) => !o)}
+      aria-expanded={membersOpen}
+      className={`inline-flex shrink-0 items-center gap-2.5 rounded-full py-1.5 pl-2 pr-4 text-sm font-semibold transition-all ${
+        membersOpen
+          ? 'bg-pop text-white shadow-md shadow-teal-500/30'
+          : 'text-gray-600 hover:bg-violet-100 hover:text-violet-700'
+      }`}
+    >
+      <span className="flex -space-x-2">
+        {sorted.slice(0, 3).map((m, i) => (
+          <MiniAvatar key={m.id} m={m} i={i} className="h-7 w-7 ring-2 ring-white" />
+        ))}
+      </span>
+      Thành viên
+      <span
+        className={`rounded-full px-1.5 text-xs font-bold ${
+          membersOpen ? 'bg-white/25 text-white' : 'bg-violet-100 text-violet-700'
+        }`}
+      >
+        {members.length}
+      </span>
+    </button>
+  );
+
   return (
     <>
-      {/* Dải trên cùng: nền nhạt, ngày + chữ chạy ngang */}
+      {/* Dải trên cùng: giữ nguyên như cũ */}
       <div className="overflow-hidden border-b border-teal-100/70 bg-soft-gradient text-gray-700">
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-6 py-2">
           <span className="shrink-0 rounded-full bg-white px-3 py-0.5 text-[11px] font-bold tracking-wide text-teal-700 shadow-sm">
@@ -249,11 +406,13 @@ export default function Header({
         </div>
       </div>
 
-      <nav className="glass sticky top-0 z-50 border-b border-gray-200/70">
+      <nav ref={navRef} className="glass sticky top-0 z-50 border-b border-gray-200/70">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3">
-          {/* Logo: ô gradient + chữ chuyển sắc */}
           <button
-            onClick={() => onNavigate(null)}
+            onClick={() => {
+              setMembersOpen(false);
+              onNavigate(null);
+            }}
             aria-label="Về trang chủ"
             className="group flex shrink-0 items-center gap-2.5"
           >
@@ -265,8 +424,10 @@ export default function Header({
             </span>
           </button>
 
-          {/* Menu giữa (từ md trở lên) */}
-          <div className="hidden items-center gap-1 md:flex">{navButtons}</div>
+          <div className="hidden items-center gap-1 md:flex">
+            {navButtons}
+            {membersButton}
+          </div>
 
           <UserMenu
             user={user}
@@ -276,10 +437,18 @@ export default function Header({
           />
         </div>
 
-        {/* Menu trên điện thoại: một hàng dưới logo, vuốt ngang nếu thiếu chỗ */}
+        {/* Menu trên điện thoại */}
         <div className="flex items-center justify-around gap-1 overflow-x-auto border-t border-violet-100 px-3 py-2 md:hidden">
           {navButtons}
+          {membersButton}
         </div>
+
+        {/* Bảng thành viên thả xuống */}
+        {membersOpen && (
+          <div className="absolute left-3 right-3 top-full mt-2 md:left-1/2 md:right-auto md:w-[26rem] md:-translate-x-1/2">
+            <MembersPanel sorted={sorted} postCounts={postCounts} currentUserId={user?.id} />
+          </div>
+        )}
       </nav>
     </>
   );

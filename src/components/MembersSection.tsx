@@ -13,7 +13,6 @@ type Props = {
   currentUserId?: string;
 };
 
-// Mỗi người một màu: viền vòng ảnh, chữ cái đầu và số bài
 const COLORS = [
   { ring: 'bg-teal-400', solid: 'bg-teal-500', num: 'text-teal-600' },
   { ring: 'bg-orange-400', solid: 'bg-orange-500', num: 'text-orange-600' },
@@ -23,8 +22,8 @@ const COLORS = [
   { ring: 'bg-amber-400', solid: 'bg-amber-500', num: 'text-amber-600' },
 ];
 
-/** Từ chừng này thành viên trở lên mới dùng dải trôi + nút "Xem tất cả". */
-const MARQUEE_MIN = 8;
+/** Số người hiện sẵn ở trạng thái thu gọn */
+const VISIBLE = 7;
 
 type Color = (typeof COLORS)[number];
 
@@ -34,19 +33,17 @@ function MemberChip({
   count,
   isMe,
   large,
-  className,
 }: {
   m: Member;
   color: Color;
   count: number;
   isMe: boolean;
   large?: boolean;
-  className?: string;
 }) {
   const name = m.full_name || 'Thành viên';
   return (
     <li
-      className={`group flex flex-col items-center text-center ${className ?? ''}`}
+      className="group flex w-20 flex-col items-center text-center"
       title={count > 0 ? `${name} · ${count} bài viết` : `${name} · Cây bút mới`}
     >
       <div className="relative">
@@ -77,18 +74,13 @@ function MemberChip({
             )}
           </div>
         </div>
-
-        {/* Bong bóng số bài (✨ nếu là cây bút mới) */}
         <span
           className={`absolute -bottom-1 -right-1 flex h-6 min-w-[1.5rem] items-center justify-center rounded-full bg-white px-1 text-[11px] font-extrabold tabular-nums shadow ring-2 ring-white ${color.num}`}
         >
           {count > 0 ? count : '✨'}
         </span>
       </div>
-
-      <span className="mt-2 w-full truncate text-xs font-semibold text-gray-800">
-        {isMe ? 'Bạn' : name}
-      </span>
+      <span className="mt-2 w-full truncate text-xs font-semibold text-gray-800">{isMe ? 'Bạn' : name}</span>
     </li>
   );
 }
@@ -99,26 +91,25 @@ export default function MembersSection({ members, postCounts, currentUserId }: P
   // Người đăng nhiều bài nhất đứng đầu
   const sorted = [...members].sort((a, b) => (postCounts[b.id] ?? 0) - (postCounts[a.id] ?? 0));
   const totalPosts = members.reduce((n, m) => n + (postCounts[m.id] ?? 0), 0);
-  const expandable = sorted.length >= MARQUEE_MIN;
+  const hidden = sorted.length - VISIBLE;
+  const expandable = hidden > 0;
 
-  const chips = (large: boolean, className: string) =>
-    sorted.map((m, i) => (
+  const renderChips = (list: Member[], large: boolean) =>
+    list.map((m) => (
       <MemberChip
         key={m.id}
         m={m}
-        color={COLORS[i % COLORS.length]}
+        color={COLORS[sorted.indexOf(m) % COLORS.length]}
         count={postCounts[m.id] ?? 0}
         isMe={m.id === currentUserId}
         large={large}
-        className={className}
       />
     ));
 
   return (
     <section id="members" className="scroll-mt-20 py-8">
       <div className="mx-auto max-w-6xl px-6">
-        <div className="rounded-3xl border border-violet-100 bg-white/80 p-5 shadow-sm backdrop-blur sm:p-6">
-          {/* Đầu thẻ: tên mục, số liệu, nút mở rộng */}
+        <div className="rounded-3xl border border-violet-100 bg-white/80 p-5 shadow-sm sm:p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
               <h2 className="font-display text-xl font-extrabold tracking-tight text-ink sm:text-2xl">
@@ -143,41 +134,29 @@ export default function MembersSection({ members, postCounts, currentUserId }: P
           </div>
           <p className="mt-1 text-xs text-gray-500">Mỗi người một câu chuyện, cùng viết nên trang báo này</p>
 
-          {/* Ít thành viên: hiện hết thành một hàng */}
-          {!expandable && (
-            <ul className="mt-5 flex flex-wrap justify-center gap-6">{chips(false, 'w-20')}</ul>
+          {/* Thu gọn: một hàng + ô "+N" */}
+          {!open && (
+            <ul className="mt-5 flex flex-wrap justify-center gap-5">
+              {renderChips(sorted.slice(0, VISIBLE), false)}
+              {expandable && (
+                <li className="flex w-20 flex-col items-center text-center">
+                  <button
+                    type="button"
+                    onClick={() => setOpen(true)}
+                    aria-label={`Xem thêm ${hidden} thành viên`}
+                    className="flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-full border-2 border-dashed border-violet-300 bg-violet-50 font-display text-lg font-extrabold text-violet-600 transition-colors hover:bg-violet-100"
+                  >
+                    +{hidden}
+                  </button>
+                  <span className="mt-2 text-xs font-semibold text-gray-500">Xem thêm</span>
+                </li>
+              )}
+            </ul>
           )}
 
-          {/* Nhiều thành viên, đang thu gọn: dải avatar trôi ngang, rê chuột thì dừng */}
-          {expandable && !open && (
-            <div className="mt-4 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_6%,black_94%,transparent)]">
-              <div
-                className="flex w-max animate-marquee py-2 hover:[animation-play-state:paused] motion-reduce:animate-none"
-                style={{ animationDuration: `${Math.max(30, sorted.length * 4)}s` }}
-              >
-                {[0, 1].map((k) => (
-                  <ul key={k} aria-hidden={k === 1} className="flex shrink-0 gap-5 pr-5">
-                    {chips(false, 'w-20 shrink-0')}
-                  </ul>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Mở rộng: danh bạ đầy đủ xổ xuống tại chỗ */}
-          {expandable && (
-            <div
-              aria-hidden={!open}
-              className={`grid transition-[grid-template-rows] duration-500 ease-out ${
-                open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
-              }`}
-            >
-              <div className="overflow-hidden">
-                <ul className="grid grid-cols-3 gap-x-3 gap-y-6 pt-6 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
-                  {chips(true, 'w-full')}
-                </ul>
-              </div>
-            </div>
+          {/* Mở rộng: danh bạ đầy đủ */}
+          {open && (
+            <ul className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-6">{renderChips(sorted, true)}</ul>
           )}
         </div>
       </div>

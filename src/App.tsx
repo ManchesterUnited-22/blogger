@@ -10,7 +10,8 @@ import AuthModal from '@/components/AuthModal';
 import ProfilePage from '@/components/ProfilePage';
 import PostFrontPage from '@/components/PostFrontPage';
 import PostDetail from '@/components/PostDetail';
-import MembersSection, { type Member } from '@/components/MembersSection';
+// trước: import MembersSection, { type Member } from '@/components/MembersSection';
+import type { Member } from '@/components/MembersSection';
 import { makeExcerpt, type Post } from '@/lib/posts';
 import { dateLine } from '@/lib/postMeta';
 import GroupPhoto from '@/components/GroupPhoto';
@@ -263,6 +264,8 @@ export default function App() {
           onProfileClick={openProfile}
           onAccountDeleted={handleAccountDeleted}
           onNavigate={goToSection}
+          members = {members}
+          postCounts = {postCounts}
         />
         {selectedPost ? (
           <PostDetail
@@ -300,6 +303,8 @@ export default function App() {
         onProfileClick={openProfile}
         onAccountDeleted={handleAccountDeleted}
         onNavigate={goToSection}
+        members = {members}
+        postCounts = {postCounts}
       />
       <Hero />
       <GroupPhoto />
@@ -380,9 +385,7 @@ export default function App() {
       </section>
 
       {/* Thành viên cộng đồng */}
-      {!searchQuery && members.length > 0 && (
-        <MembersSection members={members} postCounts={postCounts} currentUserId={user?.id} />
-      )}
+      
 
       {/* Team section */}
       {!searchQuery && authors.length > 0 && <TeamSection authors={authors} />}
