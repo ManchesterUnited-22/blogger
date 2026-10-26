@@ -59,51 +59,57 @@ export default function Hero() {
 
   return (
     <header className="bg-aurora relative overflow-hidden">
-      {/* Tầng 1: ảnh nền (luôn hiện, làm "poster" cho video) */}
-      {HERO_PHOTO && (
-        <img
-          src={HERO_PHOTO}
-          alt=""
-          aria-hidden
-          decoding="async"
-          className="absolute inset-0 h-full w-full scale-110 object-cover"
-        />
-      )}
+      {/* Khung ảnh + video.
+          - Điện thoại / máy tính bảng: thẻ 16:9 nằm trên cùng, thấy trọn khung hình (video không bị cắt).
+          - Máy tính (lg): trải kín nền hero phía sau chữ. */}
+      <div className="relative mx-6 mt-6 aspect-video overflow-hidden rounded-3xl bg-gray-100 shadow-soft-lg lg:absolute lg:inset-0 lg:m-0 lg:aspect-auto lg:rounded-none lg:bg-transparent lg:shadow-none">
+        {/* Ảnh nền (luôn hiện, làm "poster" cho video) */}
+        {HERO_PHOTO && (
+          <img
+            src={HERO_PHOTO}
+            alt=""
+            aria-hidden
+            decoding="async"
+            className="absolute inset-0 h-full w-full object-cover lg:scale-110"
+          />
+        )}
 
-      {/* Tầng 2: video YouTube (tự phát, tắt tiếng, lặp lại). Chạy được rồi mới hiện dần lên trên ảnh. */}
-      {!reduceMotion && (
-        <div
-          aria-hidden
-          className={`absolute inset-0 transition-opacity duration-1000 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
-        >
-          <YouTubeBackground videoId={YT_ID} onPlaying={() => setVideoReady(true)} />
-        </div>
-      )}
+        {/* Video YouTube (tự phát, tắt tiếng, lặp lại). Chạy được rồi mới hiện dần lên trên ảnh. */}
+        {!reduceMotion && (
+          <div
+            aria-hidden
+            className={`absolute inset-0 transition-opacity duration-1000 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
+          >
+            <YouTubeBackground videoId={YT_ID} onPlaying={() => setVideoReady(true)} />
+          </div>
+        )}
+      </div>
 
-      {/* Tầng 3: lớp phủ giữ chữ dễ đọc.
-          - Điện thoại: phủ đều bg-paper/75.
-          - Máy tính (lg): đậm bên trái (chỗ có chữ), nhạt dần sang phải để ảnh/video lộ rõ.
-          Muốn ảnh/video rõ hơn: giảm các số 90 / 60 / 15. Muốn chữ rõ hơn: tăng lên. */}
+      {/* Lớp phủ giữ chữ dễ đọc: chỉ cần ở máy tính, vì trên điện thoại chữ nằm ngoài ảnh.
+          Đậm bên trái (chỗ có chữ), nhạt dần sang phải. Muốn ảnh/video rõ hơn: giảm 90 / 60 / 15. */}
       <div
         aria-hidden
-        className="absolute inset-0 bg-paper/75 lg:bg-transparent lg:bg-gradient-to-r lg:from-paper/90 lg:via-paper/60 lg:to-paper/15"
+        className="absolute inset-0 hidden bg-gradient-to-r from-paper/90 via-paper/60 to-paper/15 lg:block"
       />
 
-      {/* Lớp mờ dần về màu nền ở chân hero, để mép sóng không lộ đường kẻ.
+      {/* Lớp mờ dần về màu nền ở chân hero (chỉ máy tính).
           Muốn video rõ hơn ở chân: giảm h-40 xuống h-28. */}
       <div
         aria-hidden
-        className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-paper via-paper/80 to-transparent"
+        className="absolute inset-x-0 bottom-0 hidden h-40 bg-gradient-to-t from-paper via-paper/80 to-transparent lg:block"
       />
 
-      {/* 2 mảng màu phẳng nằm yên phía sau (đã bỏ 2 mảng và bỏ hiệu ứng trôi để bớt chuyển động) */}
-      <div aria-hidden className="absolute -left-24 top-10 h-72 w-72 rounded-full bg-violet-200 opacity-30 blur-3xl" />
+      {/* 2 mảng màu phẳng nằm yên phía sau (chỉ máy tính, để không phủ màu lên thẻ ảnh trên điện thoại) */}
       <div
         aria-hidden
-        className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-orange-200 opacity-40 blur-3xl"
+        className="absolute -left-24 top-10 hidden h-72 w-72 rounded-full bg-violet-200 opacity-30 blur-3xl lg:block"
+      />
+      <div
+        aria-hidden
+        className="absolute bottom-0 left-1/3 hidden h-72 w-72 rounded-full bg-orange-200 opacity-40 blur-3xl lg:block"
       />
 
-      <div className="relative mx-auto max-w-6xl px-6 pb-28 pt-14 lg:pb-32 lg:pt-20">
+      <div className="relative mx-auto max-w-6xl px-6 pb-28 pt-8 lg:pb-32 lg:pt-20">
         <div className="grid items-center gap-12 lg:grid-cols-[1.2fr_0.8fr]">
           {/* ===== Cột trái ===== */}
           <div>

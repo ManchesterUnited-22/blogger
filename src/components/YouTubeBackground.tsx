@@ -137,11 +137,11 @@ export default function YouTubeBackground({ videoId, onPlaying }: Props) {
     };
   }, [videoId]);
 
-  return (
+    return (
     <div
       ref={holder}
       aria-hidden
-      className="pointer-events-none absolute inset-0 overflow-hidden [container-type:size] [&>iframe]:absolute [&>iframe]:left-1/2 [&>iframe]:top-1/2 [&>iframe]:h-[max(100cqh,56.25cqw)] [&>iframe]:w-[max(100cqw,177.78cqh)] [&>iframe]:-translate-x-1/2 [&>iframe]:-translate-y-1/2 [&>iframe]:scale-110"
+      className="pointer-events-none absolute inset-0 overflow-hidden [container-type:size] [&>iframe]:absolute [&>iframe]:left-1/2 [&>iframe]:top-1/2 [&>iframe]:h-[max(100cqh,56.25cqw)] [&>iframe]:w-[max(100cqw,177.78cqh)] [&>iframe]:-translate-x-1/2 [&>iframe]:-translate-y-1/2 [&>iframe]:scale-100 lg:[&>iframe]:scale-110"
     />
   );
 }
