@@ -1,13 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MapPin, ArrowDown, Sparkles, Waves, UtensilsCrossed, Landmark, ScrollText } from 'lucide-react';
 import VietnamMap from './VietnamMap';
-import YouTubeBackground from './YouTubeBackground';
-
-// Mã video YouTube làm nền (phần sau v= trong link)
-const YT_ID = 'VDCSJ-QEfS4';
 
 // Ảnh nền hero: bỏ ảnh vào thư mục src/assets/hero/ (tên file nào cũng được).
-// Chưa có ảnh thì hero vẫn chạy bình thường với nền aurora + video.
+// Chưa có ảnh thì hero vẫn chạy bình thường với nền aurora.
 const heroModules = import.meta.glob('../assets/hero/*.{jpg,jpeg,png,webp,JPG,PNG}', {
   eager: true,
   query: '?url',
@@ -34,11 +30,6 @@ const TOPICS = [
 export default function Hero() {
   const [wordIndex, setWordIndex] = useState(0);
   const [visible, setVisible] = useState(true);
-  // Video đã chạy chưa: chạy rồi mới cho hiện dần lên trên ảnh
-  const [videoReady, setVideoReady] = useState(false);
-
-  // Người dùng bật "giảm chuyển động" thì chỉ hiện ảnh, không phát video
-  const reduceMotion = useMemo(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches, []);
 
   useEffect(() => {
     let swap: ReturnType<typeof setTimeout> | undefined;
@@ -59,41 +50,30 @@ export default function Hero() {
 
   return (
     <header className="bg-aurora relative overflow-hidden">
-      {/* Khung ảnh + video.
-          - Điện thoại / máy tính bảng: thẻ 16:9 nằm trên cùng, thấy trọn khung hình (video không bị cắt).
+      {/* Khung ảnh nền.
+          - Điện thoại / máy tính bảng: thẻ 16:9 nằm trên cùng, thấy trọn khung hình.
           - Máy tính (lg): trải kín nền hero phía sau chữ. */}
       <div className="relative mx-6 mt-6 aspect-video overflow-hidden rounded-3xl bg-gray-100 shadow-soft-lg lg:absolute lg:inset-0 lg:m-0 lg:aspect-auto lg:rounded-none lg:bg-transparent lg:shadow-none">
-        {/* Ảnh nền (luôn hiện, làm "poster" cho video) */}
         {HERO_PHOTO && (
           <img
             src={HERO_PHOTO}
             alt=""
             aria-hidden
             decoding="async"
-            className="absolute inset-0 h-full w-full object-cover lg:scale-110"
+            className="absolute inset-0 h-full w-full object-cover"
           />
-        )}
-
-        {/* Video YouTube (tự phát, tắt tiếng, lặp lại). Chạy được rồi mới hiện dần lên trên ảnh. */}
-        {!reduceMotion && (
-          <div
-            aria-hidden
-            className={`absolute inset-0 transition-opacity duration-1000 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
-          >
-            <YouTubeBackground videoId={YT_ID} onPlaying={() => setVideoReady(true)} />
-          </div>
         )}
       </div>
 
       {/* Lớp phủ giữ chữ dễ đọc: chỉ cần ở máy tính, vì trên điện thoại chữ nằm ngoài ảnh.
-          Đậm bên trái (chỗ có chữ), nhạt dần sang phải. Muốn ảnh/video rõ hơn: giảm 90 / 60 / 15. */}
+          Đậm bên trái (chỗ có chữ), nhạt dần sang phải. Muốn ảnh rõ hơn: giảm 90 / 60 / 15. */}
       <div
         aria-hidden
         className="absolute inset-0 hidden bg-gradient-to-r from-paper/90 via-paper/60 to-paper/15 lg:block"
       />
 
       {/* Lớp mờ dần về màu nền ở chân hero (chỉ máy tính).
-          Muốn video rõ hơn ở chân: giảm h-40 xuống h-28. */}
+          Muốn ảnh rõ hơn ở chân: giảm h-40 xuống h-28. */}
       <div
         aria-hidden
         className="absolute inset-x-0 bottom-0 hidden h-40 bg-gradient-to-t from-paper via-paper/80 to-transparent lg:block"
@@ -111,8 +91,9 @@ export default function Hero() {
 
       <div className="relative mx-auto max-w-6xl px-6 pb-28 pt-8 lg:pb-32 lg:pt-20">
         <div className="grid items-center gap-12 lg:grid-cols-[1.2fr_0.8fr]">
-          {/* ===== Cột trái ===== */}
-          <div>
+          {/* ===== Cột trái: trên máy tính nằm trên nền kính mờ cho dễ đọc =====
+              Muốn chữ rõ hơn: tăng lg:bg-white/60 lên /75. Muốn thấy ảnh rõ hơn: giảm xuống /45. */}
+          <div className="lg:rounded-3xl lg:bg-white/60 lg:p-8 lg:shadow-soft-lg lg:ring-1 lg:ring-white/70 lg:backdrop-blur-md">
             <p className="glass inline-flex items-center gap-2 rounded-full border border-white px-4 py-1.5 text-sm font-semibold text-violet-700 shadow-sm">
               <Sparkles className="h-4 w-4 text-teal-500" />
               Bản tin chuyến đi
@@ -130,7 +111,7 @@ export default function Hero() {
               </span>
             </h1>
 
-            <p className="mt-5 max-w-xl text-lg leading-relaxed text-gray-600">
+            <p className="mt-5 max-w-xl text-lg font-medium leading-relaxed text-gray-800">
               Một chuyến đi, một nhóm sinh viên và rất nhiều kỷ niệm. VTD.News là nơi bọn mình kể lại Quy Nhơn: những
               nơi đã đi, những người đã gặp và những khoảnh khắc không có trong sách hướng dẫn.
             </p>
