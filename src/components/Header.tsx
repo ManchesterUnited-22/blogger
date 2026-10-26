@@ -1,5 +1,5 @@
 import { useEffect, useRef, useMemo, useState } from 'react';
-import { LogOut, LogIn, UserRound, Trash2, Home, BookOpen, Users, Search, Sparkles, type LucideIcon } from 'lucide-react';
+import { LogOut, LogIn, UserRound, Trash2, Home, BookOpen, Users, Sparkles, type LucideIcon } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import { supabase, formatDate, getUserProfile, deleteMyAccount } from '@/lib/supabase';
 import { dateLine } from '@/lib/postMeta';
@@ -199,11 +199,6 @@ function UserMenu({
   );
 }
 const AVATAR_BG = ['bg-teal-500', 'bg-orange-500', 'bg-cyan-500', 'bg-violet-500', 'bg-pink-500', 'bg-amber-500'];
-
-/** Bỏ dấu + hạ chữ thường để tìm "nguyen" ra được "Nguyễn". */
-const fold = (s: string) =>
-  s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd');
-
 function MiniAvatar({ m, i, className }: { m: Member; i: number; className: string }) {
   const name = m.full_name || 'Thành viên';
   return (
@@ -232,10 +227,6 @@ function MembersPanel({
   sorted: Member[];
   currentUserId?: string;
 }) {
-  const [q, setQ] = useState('');
-  const query = fold(q.trim());
-  const list = query ? sorted.filter((m) => fold(m.full_name || 'Thành viên').includes(query)) : sorted;
-
   return (
     <div className="rounded-2xl border border-violet-100 bg-white p-4 shadow-2xl shadow-violet-500/20">
       <div className="flex items-center gap-2">
@@ -243,28 +234,15 @@ function MembersPanel({
         <h3 className="font-display text-base font-extrabold text-gray-900">Cây bút đồng hành</h3>
       </div>
 
-      {sorted.length > 6 && (
-        <div className="relative mt-3">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-violet-400" />
-          <input
-            type="text"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Tìm thành viên..."
-            className="w-full rounded-full border border-violet-200 bg-white py-2 pl-9 pr-4 text-sm text-gray-700 outline-none placeholder:text-gray-400 focus:border-fuchsia-400"
-          />
-        </div>
-      )}
-
       <ul className="mt-3 max-h-80 space-y-0.5 overflow-y-auto pr-1">
-        {list.length === 0 ? (
-          <li className="py-6 text-center text-sm italic text-gray-500">Không tìm thấy thành viên.</li>
+        {sorted.length === 0 ? (
+          <li className="py-6 text-center text-sm italic text-gray-500">Chưa có thành viên.</li>
         ) : (
-          list.map((m) => {
+          sorted.map((m, i) => {
             const isMe = m.id === currentUserId;
             return (
               <li key={m.id} className="flex items-center gap-3 rounded-xl px-2 py-2 hover:bg-violet-50">
-                <MiniAvatar m={m} i={sorted.indexOf(m)} className="h-10 w-10 text-sm" />
+                <MiniAvatar m={m} i={i} className="h-10 w-10 text-sm" />
                 <p className="min-w-0 flex-1 truncate text-sm font-semibold text-gray-900">
                   {m.full_name || 'Thành viên'}
                   {isMe && (
