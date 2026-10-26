@@ -69,14 +69,14 @@ export default function Hero() {
           Đậm bên trái (chỗ có chữ), nhạt dần sang phải. Muốn ảnh rõ hơn: giảm 90 / 60 / 15. */}
       <div
         aria-hidden
-        className="absolute inset-0 hidden bg-gradient-to-r from-paper/90 via-paper/60 to-paper/15 lg:block"
+        className="absolute inset-0 hidden bg-gradient-to-r from-paper/60 via-paper/25 to-transparent lg:block"
       />
 
       {/* Lớp mờ dần về màu nền ở chân hero (chỉ máy tính).
           Muốn ảnh rõ hơn ở chân: giảm h-40 xuống h-28. */}
       <div
         aria-hidden
-        className="absolute inset-x-0 bottom-0 hidden h-40 bg-gradient-to-t from-paper via-paper/80 to-transparent lg:block"
+        className="absolute inset-x-0 bottom-0 hidden h-28 bg-gradient-to-t from-paper via-paper/60 to-transparent lg:block"
       />
 
       {/* 2 mảng màu phẳng nằm yên phía sau (chỉ máy tính, để không phủ màu lên thẻ ảnh trên điện thoại) */}
@@ -93,7 +93,7 @@ export default function Hero() {
         <div className="grid items-center gap-12 lg:grid-cols-[1.2fr_0.8fr]">
           {/* ===== Cột trái: trên máy tính nằm trên nền kính mờ cho dễ đọc =====
               Muốn chữ rõ hơn: tăng lg:bg-white/60 lên /75. Muốn thấy ảnh rõ hơn: giảm xuống /45. */}
-          <div className="lg:rounded-3xl lg:bg-white/60 lg:p-8 lg:shadow-soft-lg lg:ring-1 lg:ring-white/70 lg:backdrop-blur-md">
+          <div className="lg:rounded-3xl lg:bg-white/40 lg:p-8 lg:shadow-soft-lg lg:ring-1 lg:ring-white/60 lg:backdrop-blur-md">
             <p className="glass inline-flex items-center gap-2 rounded-full border border-white px-4 py-1.5 text-sm font-semibold text-violet-700 shadow-sm">
               <Sparkles className="h-4 w-4 text-teal-500" />
               Bản tin chuyến đi
