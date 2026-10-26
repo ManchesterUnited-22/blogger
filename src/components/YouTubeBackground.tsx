@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 
 type YTPlayer = {
   playVideo: () => void;
+  pauseVideo: () => void;
   mute: () => void;
   destroy: () => void;
   getPlayerState: () => number;
@@ -37,15 +38,28 @@ function loadYouTubeApi(): Promise<YTApi> {
   return apiPromise;
 }
 
-export default function YouTubeBackground({ videoId }: { videoId: string }) {
+type Props = {
+  videoId: string;
+  /** Gọi khi video thực sự bắt đầu chạy (để Hero cho video hiện dần lên trên ảnh) */
+  onPlaying?: () => void;
+};
+
+export default function YouTubeBackground({ videoId, onPlaying }: Props) {
   const holder = useRef<HTMLDivElement>(null);
+  const onPlayingRef = useRef(onPlaying);
+  // Hero đang nằm trong màn hình hay không. Ra khỏi màn hình thì tạm dừng video
+  const inView = useRef(true);
+
+  useEffect(() => {
+    onPlayingRef.current = onPlaying;
+  });
 
   useEffect(() => {
     let player: YTPlayer | undefined;
     let cancelled = false;
 
     const kick = () => {
-      if (!player || document.hidden) return;
+      if (!player || document.hidden || !inView.current) return;
       try {
         player.mute();
         player.playVideo();
@@ -76,15 +90,32 @@ export default function YouTubeBackground({ videoId }: { videoId: string }) {
         events: {
           onReady: (e: YTEvent) => {
             e.target.mute();
-            e.target.playVideo();
+            if (inView.current) e.target.playVideo();
           },
-          // Bị dừng / hết video / chưa bắt đầu thì phát lại ngay
           onStateChange: (e: YTEvent) => {
+            // data === 1: video đã chạy -> báo cho Hero cho video hiện lên
+            if (e.data === 1) onPlayingRef.current?.();
+            // Đang tạm dừng vì ra khỏi màn hình thì không tự phát lại
+            if (!inView.current) return;
+            // Bị dừng / hết video / chưa bắt đầu thì phát lại ngay
             if (e.data === 0 || e.data === 2 || e.data === 5) e.target.playVideo();
           },
         },
       });
     });
+
+    // Hero ra khỏi màn hình thì dừng video, quay lại thì chạy tiếp
+    const io = new IntersectionObserver(([entry]) => {
+      inView.current = entry.isIntersecting;
+      if (!player) return;
+      try {
+        if (entry.isIntersecting) player.playVideo();
+        else player.pauseVideo();
+      } catch {
+        /* player chưa sẵn sàng */
+      }
+    });
+    if (holder.current) io.observe(holder.current);
 
     // Cứ 2 giây kiểm tra một lần, nếu không đang phát thì bật lại
     const timer = setInterval(() => {
@@ -99,6 +130,7 @@ export default function YouTubeBackground({ videoId }: { videoId: string }) {
     return () => {
       cancelled = true;
       clearInterval(timer);
+      io.disconnect();
       events.forEach((ev) => window.removeEventListener(ev, kick));
       document.removeEventListener('visibilitychange', kick);
       player?.destroy();
@@ -109,7 +141,7 @@ export default function YouTubeBackground({ videoId }: { videoId: string }) {
     <div
       ref={holder}
       aria-hidden
-      className="pointer-events-none absolute inset-0 overflow-hidden [container-type:size] [&>iframe]:absolute [&>iframe]:left-1/2 [&>iframe]:top-1/2 [&>iframe]:h-[max(100cqh,56.25cqw)] [&>iframe]:w-[max(100cqw,177.78cqh)] [&>iframe]:-translate-x-1/2 [&>iframe]:-translate-y-1/2 [&>iframe]:scale-110 [&>iframe]:blur-[2px]"
+      className="pointer-events-none absolute inset-0 overflow-hidden [container-type:size] [&>iframe]:absolute [&>iframe]:left-1/2 [&>iframe]:top-1/2 [&>iframe]:h-[max(100cqh,56.25cqw)] [&>iframe]:w-[max(100cqw,177.78cqh)] [&>iframe]:-translate-x-1/2 [&>iframe]:-translate-y-1/2 [&>iframe]:scale-110"
     />
   );
 }

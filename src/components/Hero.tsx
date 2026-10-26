@@ -1,10 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { MapPin, ArrowDown, Sparkles, Waves, UtensilsCrossed, Landmark, ScrollText } from 'lucide-react';
 import VietnamMap from './VietnamMap';
 import YouTubeBackground from './YouTubeBackground';
 
 // Mã video YouTube làm nền (phần sau v= trong link)
 const YT_ID = 'VDCSJ-QEfS4';
+
+// Ảnh nền hero: bỏ ảnh vào thư mục src/assets/hero/ (tên file nào cũng được).
+// Chưa có ảnh thì hero vẫn chạy bình thường với nền aurora + video.
+const heroModules = import.meta.glob('../assets/hero/*.{jpg,jpeg,png,webp,JPG,PNG}', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+}) as Record<string, string>;
+const HERO_PHOTO: string | undefined = Object.values(heroModules)[0];
 
 // Mỗi từ xoay vòng có màu riêng, trùng màu với chip chủ đề bên dưới
 const WORDS = [
@@ -25,6 +34,11 @@ const TOPICS = [
 export default function Hero() {
   const [wordIndex, setWordIndex] = useState(0);
   const [visible, setVisible] = useState(true);
+  // Video đã chạy chưa: chạy rồi mới cho hiện dần lên trên ảnh
+  const [videoReady, setVideoReady] = useState(false);
+
+  // Người dùng bật "giảm chuyển động" thì chỉ hiện ảnh, không phát video
+  const reduceMotion = useMemo(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches, []);
 
   useEffect(() => {
     let swap: ReturnType<typeof setTimeout> | undefined;
@@ -45,36 +59,48 @@ export default function Hero() {
 
   return (
     <header className="bg-aurora relative overflow-hidden">
-      {/* Video nền YouTube: tự phát, tắt tiếng, lặp lại */}
-      <YouTubeBackground videoId={YT_ID} />
+      {/* Tầng 1: ảnh nền (luôn hiện, làm "poster" cho video) */}
+      {HERO_PHOTO && (
+        <img
+          src={HERO_PHOTO}
+          alt=""
+          aria-hidden
+          decoding="async"
+          className="absolute inset-0 h-full w-full scale-110 object-cover"
+        />
+      )}
 
-      {/* Lớp phủ làm video mờ nhẹ. Muốn rõ video hơn: giảm /70 xuống /60 hoặc /50.
-          Muốn mờ hơn: tăng lên /80. */}
-      <div aria-hidden className="absolute inset-0 bg-paper/70" />
+      {/* Tầng 2: video YouTube (tự phát, tắt tiếng, lặp lại). Chạy được rồi mới hiện dần lên trên ảnh. */}
+      {!reduceMotion && (
+        <div
+          aria-hidden
+          className={`absolute inset-0 transition-opacity duration-1000 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
+        >
+          <YouTubeBackground videoId={YT_ID} onPlaying={() => setVideoReady(true)} />
+        </div>
+      )}
 
-      {/* Lớp mờ dần về màu nền ở chân video, để mép sóng không lộ đường kẻ.
+      {/* Tầng 3: lớp phủ giữ chữ dễ đọc.
+          - Điện thoại: phủ đều bg-paper/75.
+          - Máy tính (lg): đậm bên trái (chỗ có chữ), nhạt dần sang phải để ảnh/video lộ rõ.
+          Muốn ảnh/video rõ hơn: giảm các số 90 / 60 / 15. Muốn chữ rõ hơn: tăng lên. */}
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-paper/75 lg:bg-transparent lg:bg-gradient-to-r lg:from-paper/90 lg:via-paper/60 lg:to-paper/15"
+      />
+
+      {/* Lớp mờ dần về màu nền ở chân hero, để mép sóng không lộ đường kẻ.
           Muốn video rõ hơn ở chân: giảm h-40 xuống h-28. */}
       <div
         aria-hidden
         className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-paper via-paper/80 to-transparent"
       />
 
-      {/* Các mảng màu phẳng trôi nhẹ phía sau */}
+      {/* 2 mảng màu phẳng nằm yên phía sau (đã bỏ 2 mảng và bỏ hiệu ứng trôi để bớt chuyển động) */}
+      <div aria-hidden className="absolute -left-24 top-10 h-72 w-72 rounded-full bg-violet-200 opacity-30 blur-3xl" />
       <div
         aria-hidden
-        className="absolute -left-24 top-10 h-72 w-72 animate-float rounded-full bg-violet-200 opacity-30 blur-3xl"
-      />
-      <div
-        aria-hidden
-        className="absolute -right-20 top-0 h-80 w-80 animate-float-slow rounded-full bg-cyan-200 opacity-30 blur-3xl"
-      />
-      <div
-        aria-hidden
-        className="absolute bottom-0 left-1/3 h-72 w-72 animate-float rounded-full bg-orange-200 opacity-40 blur-3xl"
-      />
-      <div
-        aria-hidden
-        className="absolute bottom-10 right-1/4 h-64 w-64 animate-float-slow rounded-full bg-pink-200 opacity-35 blur-3xl"
+        className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-orange-200 opacity-40 blur-3xl"
       />
 
       <div className="relative mx-auto max-w-6xl px-6 pb-28 pt-14 lg:pb-32 lg:pt-20">
@@ -118,10 +144,10 @@ export default function Hero() {
 
             <a
               href="#feed"
-              className="mt-8 inline-flex items-center gap-2 rounded-full bg-ink px-8 py-4 text-base font-bold text-white shadow-lg shadow-gray-900/20 transition-all hover:-translate-y-1 hover:bg-gray-800"
+              className="group mt-8 inline-flex items-center gap-2 rounded-full bg-ink px-8 py-4 text-base font-bold text-white shadow-lg shadow-gray-900/20 transition-all hover:-translate-y-1 hover:bg-gray-800"
             >
               Khám phá bài viết
-              <ArrowDown className="h-5 w-5 animate-bounce" />
+              <ArrowDown className="h-5 w-5 group-hover:animate-bounce" />
             </a>
           </div>
 
