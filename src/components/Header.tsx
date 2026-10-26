@@ -227,15 +227,12 @@ function MiniAvatar({ m, i, className }: { m: Member; i: number; className: stri
 
 function MembersPanel({
   sorted,
-  postCounts,
   currentUserId,
 }: {
   sorted: Member[];
-  postCounts: Record<string, number>;
   currentUserId?: string;
 }) {
   const [q, setQ] = useState('');
-  const totalPosts = sorted.reduce((n, m) => n + (postCounts[m.id] ?? 0), 0);
   const query = fold(q.trim());
   const list = query ? sorted.filter((m) => fold(m.full_name || 'Thành viên').includes(query)) : sorted;
 
@@ -244,9 +241,6 @@ function MembersPanel({
       <div className="flex items-center gap-2">
         <Users className="h-4 w-4 text-violet-500" />
         <h3 className="font-display text-base font-extrabold text-gray-900">Cây bút đồng hành</h3>
-        <span className="ml-auto text-xs font-semibold text-gray-500">
-          {sorted.length} thành viên · {totalPosts} bài
-        </span>
       </div>
 
       {sorted.length > 6 && (
@@ -267,24 +261,18 @@ function MembersPanel({
           <li className="py-6 text-center text-sm italic text-gray-500">Không tìm thấy thành viên.</li>
         ) : (
           list.map((m) => {
-            const count = postCounts[m.id] ?? 0;
             const isMe = m.id === currentUserId;
             return (
               <li key={m.id} className="flex items-center gap-3 rounded-xl px-2 py-2 hover:bg-violet-50">
                 <MiniAvatar m={m} i={sorted.indexOf(m)} className="h-10 w-10 text-sm" />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-gray-900">
-                    {m.full_name || 'Thành viên'}
-                    {isMe && (
-                      <span className="ml-2 rounded-full bg-yellow-300 px-2 py-0.5 text-[10px] font-extrabold text-gray-900">
-                        Bạn
-                      </span>
-                    )}
-                  </p>
-                </div>
-                <span className={`shrink-0 text-xs font-semibold ${count > 0 ? 'text-teal-600' : 'text-amber-600'}`}>
-                  {count > 0 ? `${count} bài` : 'Cây bút mới ✨'}
-                </span>
+                <p className="min-w-0 flex-1 truncate text-sm font-semibold text-gray-900">
+                  {m.full_name || 'Thành viên'}
+                  {isMe && (
+                    <span className="ml-2 rounded-full bg-yellow-300 px-2 py-0.5 text-[10px] font-extrabold text-gray-900">
+                      Bạn
+                    </span>
+                  )}
+                </p>
               </li>
             );
           })
@@ -446,7 +434,7 @@ export default function Header({
         {/* Bảng thành viên thả xuống */}
         {membersOpen && (
           <div className="absolute left-3 right-3 top-full mt-2 md:left-1/2 md:right-auto md:w-[26rem] md:-translate-x-1/2">
-            <MembersPanel sorted={sorted} postCounts={postCounts} currentUserId={user?.id} />
+            <MembersPanel sorted={sorted} currentUserId={user?.id} />
           </div>
         )}
       </nav>
