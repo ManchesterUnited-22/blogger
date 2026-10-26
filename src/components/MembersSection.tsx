@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import { ChevronDown } from 'lucide-react';
+
 export type Member = {
   id: string;
   full_name: string | null;
@@ -10,134 +13,173 @@ type Props = {
   currentUserId?: string;
 };
 
-// Mỗi người một màu phẳng riêng: viền vòng ảnh, chữ cái đầu và số bài
-const GRADIENTS = [
-  { bg: 'bg-teal-400', solid: 'bg-teal-500', shadow: 'shadow-teal-300/60', num: 'text-teal-600' },
-  { bg: 'bg-orange-400', solid: 'bg-orange-500', shadow: 'shadow-orange-300/60', num: 'text-orange-600' },
-  { bg: 'bg-cyan-400', solid: 'bg-cyan-500', shadow: 'shadow-cyan-300/60', num: 'text-cyan-600' },
-  { bg: 'bg-violet-400', solid: 'bg-violet-500', shadow: 'shadow-violet-300/60', num: 'text-violet-600' },
-  { bg: 'bg-pink-400', solid: 'bg-pink-500', shadow: 'shadow-pink-300/60', num: 'text-pink-600' },
-  { bg: 'bg-amber-400', solid: 'bg-amber-500', shadow: 'shadow-amber-300/60', num: 'text-amber-600' },
+// Mỗi người một màu: viền vòng ảnh, chữ cái đầu và số bài
+const COLORS = [
+  { ring: 'bg-teal-400', solid: 'bg-teal-500', num: 'text-teal-600' },
+  { ring: 'bg-orange-400', solid: 'bg-orange-500', num: 'text-orange-600' },
+  { ring: 'bg-cyan-400', solid: 'bg-cyan-500', num: 'text-cyan-600' },
+  { ring: 'bg-violet-400', solid: 'bg-violet-500', num: 'text-violet-600' },
+  { ring: 'bg-pink-400', solid: 'bg-pink-500', num: 'text-pink-600' },
+  { ring: 'bg-amber-400', solid: 'bg-amber-500', num: 'text-amber-600' },
 ];
 
-export default function MembersSection({ members, postCounts, currentUserId }: Props) {
-  const totalPosts = members.reduce((n, m) => n + (postCounts[m.id] ?? 0), 0);
-  const topCount = members.reduce((max, m) => Math.max(max, postCounts[m.id] ?? 0), 0);
+/** Từ chừng này thành viên trở lên mới dùng dải trôi + nút "Xem tất cả". */
+const MARQUEE_MIN = 8;
 
+type Color = (typeof COLORS)[number];
+
+function MemberChip({
+  m,
+  color,
+  count,
+  isMe,
+  large,
+  className,
+}: {
+  m: Member;
+  color: Color;
+  count: number;
+  isMe: boolean;
+  large?: boolean;
+  className?: string;
+}) {
+  const name = m.full_name || 'Thành viên';
   return (
-    <section id="members" className="relative scroll-mt-20 overflow-hidden py-20">
-      {/* Nền: các mảng màu mờ */}
-      <div
-        aria-hidden
-        className="absolute -left-32 top-20 h-96 w-96 animate-float-slow rounded-full bg-cyan-200 opacity-30 blur-3xl"
-      />
-      <div
-        aria-hidden
-        className="absolute -right-32 bottom-10 h-96 w-96 animate-float rounded-full bg-orange-200 opacity-30 blur-3xl"
-      />
-      <div
-        aria-hidden
-        className="absolute left-1/3 top-0 h-80 w-80 animate-float-slow rounded-full bg-violet-200 opacity-30 blur-3xl"
-      />
-
-      <div className="relative mx-auto max-w-6xl px-6">
-        {/* Đầu mục */}
-        <div className="text-center">
-          <span className="bg-pop inline-block rounded-full px-4 py-1 text-xs font-bold tracking-wide text-white shadow-md shadow-teal-500/25">
-            Danh bạ cây bút
-          </span>
-          <h2 className="mt-4 font-display text-4xl font-extrabold tracking-tight text-ink sm:text-5xl">
-            Những cây bút <span className="text-pop">đồng hành</span>
-          </h2>
-
-          {/* Câu nói: viết hoa, giãn chữ, có đường kẻ hai bên */}
-          <p className="mx-auto mt-4 flex max-w-xl items-center justify-center gap-3 text-[11px] font-semibold uppercase leading-relaxed tracking-[0.22em] text-gray-500 sm:text-xs">
-            <span aria-hidden className="hidden h-px w-8 bg-gray-300 sm:block" />
-            <span>Mỗi người một câu chuyện, cùng viết nên trang báo này</span>
-            <span aria-hidden className="hidden h-px w-8 bg-gray-300 sm:block" />
-          </p>
-
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
-            <span className="rounded-full bg-violet-100 px-4 py-1.5 text-sm font-semibold text-violet-700">
-              <b className="font-display text-base">{members.length}</b> thành viên
-            </span>
-            <span className="rounded-full bg-pink-100 px-4 py-1.5 text-sm font-semibold text-pink-700">
-              <b className="font-display text-base">{totalPosts}</b> bài viết
-            </span>
+    <li
+      className={`group flex flex-col items-center text-center ${className ?? ''}`}
+      title={count > 0 ? `${name} · ${count} bài viết` : `${name} · Cây bút mới`}
+    >
+      <div className="relative">
+        <div
+          className={`rounded-full p-1 shadow-md transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-105 ${color.ring} ${
+            isMe ? 'ring-2 ring-yellow-300 ring-offset-2 ring-offset-white' : ''
+          }`}
+        >
+          <div
+            className={`overflow-hidden rounded-full border-2 border-white bg-white ${
+              large ? 'h-16 w-16' : 'h-14 w-14'
+            }`}
+          >
+            {m.avatar_url ? (
+              <img
+                src={m.avatar_url}
+                alt={name}
+                referrerPolicy="no-referrer"
+                loading="lazy"
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div
+                className={`flex h-full w-full items-center justify-center font-display text-xl font-extrabold text-white ${color.solid}`}
+              >
+                {name.charAt(0).toUpperCase()}
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Lưới thành viên: mỗi người một vòng tròn */}
-        <ul className="mt-14 grid grid-cols-2 gap-x-6 gap-y-12 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {members.map((m, i) => {
-            const name = m.full_name || 'Thành viên';
-            const count = postCounts[m.id] ?? 0;
-            const g = GRADIENTS[i % GRADIENTS.length];
-            const isMe = m.id === currentUserId;
-            const isTop = topCount >= 2 && count === topCount;
+        {/* Bong bóng số bài (✨ nếu là cây bút mới) */}
+        <span
+          className={`absolute -bottom-1 -right-1 flex h-6 min-w-[1.5rem] items-center justify-center rounded-full bg-white px-1 text-[11px] font-extrabold tabular-nums shadow ring-2 ring-white ${color.num}`}
+        >
+          {count > 0 ? count : '✨'}
+        </span>
+      </div>
 
-            return (
-              <li key={m.id} className="group flex flex-col items-center text-center">
-                {/* Vòng tròn ảnh */}
-                <div className="relative w-full max-w-[9.5rem]">
-                  <div
-                    className={`aspect-square w-full rounded-full p-1.5 shadow-lg transition-all duration-300 group-hover:-translate-y-1.5 group-hover:scale-105 group-hover:shadow-xl ${g.bg} ${g.shadow} ${
-                      isMe ? 'ring-2 ring-teal-300 ring-offset-2 ring-offset-white' : ''
-                    }`}
-                  >
-                    <div className="h-full w-full overflow-hidden rounded-full border-4 border-white bg-white">
-                      {m.avatar_url ? (
-                        <img
-                          src={m.avatar_url}
-                          alt={name}
-                          referrerPolicy="no-referrer"
-                          loading="lazy"
-                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        />
-                      ) : (
-                        <div
-                          className={`flex h-full w-full items-center justify-center font-display text-5xl font-extrabold text-white ${g.solid}`}
-                        >
-                          {name.charAt(0).toUpperCase()}
-                        </div>
-                      )}
-                    </div>
-                  </div>
+      <span className="mt-2 w-full truncate text-xs font-semibold text-gray-800">
+        {isMe ? 'Bạn' : name}
+      </span>
+    </li>
+  );
+}
 
-                  {/* Bong bóng tròn: số bài viết (hoặc ✨ nếu là cây bút mới) */}
-                  <span
-                    className={`absolute -bottom-1 -right-1 flex h-11 w-11 items-center justify-center rounded-full bg-white font-display text-base font-extrabold tabular-nums shadow-md ring-4 ring-white ${g.num}`}
-                    title={count > 0 ? `${count} bài viết` : 'Cây bút mới'}
-                  >
-                    {count > 0 ? count : '✨'}
-                  </span>
+export default function MembersSection({ members, postCounts, currentUserId }: Props) {
+  const [open, setOpen] = useState(false);
 
-                  {/* Nhãn nhỏ phía trên vòng tròn */}
-                  {(isMe || isTop) && (
-                    <span
-                      className={`absolute -top-3 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full px-3 py-0.5 text-[10px] font-extrabold tracking-wide shadow-sm ${
-                        isMe ? 'bg-yellow-300 text-gray-900' : 'bg-white text-teal-600 ring-1 ring-teal-100'
-                      }`}
-                    >
-                      {isMe ? 'Bạn' : 'Nhiều bài nhất'}
-                    </span>
-                  )}
-                </div>
+  // Người đăng nhiều bài nhất đứng đầu
+  const sorted = [...members].sort((a, b) => (postCounts[b.id] ?? 0) - (postCounts[a.id] ?? 0));
+  const totalPosts = members.reduce((n, m) => n + (postCounts[m.id] ?? 0), 0);
+  const expandable = sorted.length >= MARQUEE_MIN;
 
-                {/* Tên */}
-                <h3
-                  className="mt-4 line-clamp-2 max-w-[10rem] font-serif text-base font-bold leading-snug text-gray-900"
-                  title={name}
-                >
-                  {name}
-                </h3>
-                <p className={`mt-0.5 text-xs font-semibold ${count > 0 ? g.num : 'text-amber-600'}`}>
-                  {count > 0 ? 'bài viết' : 'Cây bút mới'}
-                </p>
-              </li>
-            );
-          })}
-        </ul>
+  const chips = (large: boolean, className: string) =>
+    sorted.map((m, i) => (
+      <MemberChip
+        key={m.id}
+        m={m}
+        color={COLORS[i % COLORS.length]}
+        count={postCounts[m.id] ?? 0}
+        isMe={m.id === currentUserId}
+        large={large}
+        className={className}
+      />
+    ));
+
+  return (
+    <section id="members" className="scroll-mt-20 py-8">
+      <div className="mx-auto max-w-6xl px-6">
+        <div className="rounded-3xl border border-violet-100 bg-white/80 p-5 shadow-sm backdrop-blur sm:p-6">
+          {/* Đầu thẻ: tên mục, số liệu, nút mở rộng */}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <h2 className="font-display text-xl font-extrabold tracking-tight text-ink sm:text-2xl">
+                Cây bút <span className="text-pop">đồng hành</span>
+              </h2>
+              <span className="rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700">
+                {members.length} thành viên · {totalPosts} bài
+              </span>
+            </div>
+
+            {expandable && (
+              <button
+                type="button"
+                onClick={() => setOpen((o) => !o)}
+                aria-expanded={open}
+                className="inline-flex items-center gap-1.5 rounded-full border border-violet-200 bg-white px-4 py-1.5 text-sm font-semibold text-gray-700 transition-colors hover:bg-violet-50 hover:text-violet-700"
+              >
+                {open ? 'Thu gọn' : `Xem tất cả ${members.length}`}
+                <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${open ? 'rotate-180' : ''}`} />
+              </button>
+            )}
+          </div>
+          <p className="mt-1 text-xs text-gray-500">Mỗi người một câu chuyện, cùng viết nên trang báo này</p>
+
+          {/* Ít thành viên: hiện hết thành một hàng */}
+          {!expandable && (
+            <ul className="mt-5 flex flex-wrap justify-center gap-6">{chips(false, 'w-20')}</ul>
+          )}
+
+          {/* Nhiều thành viên, đang thu gọn: dải avatar trôi ngang, rê chuột thì dừng */}
+          {expandable && !open && (
+            <div className="mt-4 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_6%,black_94%,transparent)]">
+              <div
+                className="flex w-max animate-marquee py-2 hover:[animation-play-state:paused] motion-reduce:animate-none"
+                style={{ animationDuration: `${Math.max(30, sorted.length * 4)}s` }}
+              >
+                {[0, 1].map((k) => (
+                  <ul key={k} aria-hidden={k === 1} className="flex shrink-0 gap-5 pr-5">
+                    {chips(false, 'w-20 shrink-0')}
+                  </ul>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Mở rộng: danh bạ đầy đủ xổ xuống tại chỗ */}
+          {expandable && (
+            <div
+              aria-hidden={!open}
+              className={`grid transition-[grid-template-rows] duration-500 ease-out ${
+                open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+              }`}
+            >
+              <div className="overflow-hidden">
+                <ul className="grid grid-cols-3 gap-x-3 gap-y-6 pt-6 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
+                  {chips(true, 'w-full')}
+                </ul>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );
