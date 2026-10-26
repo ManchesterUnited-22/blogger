@@ -5,10 +5,11 @@ import PostContent from '@/components/PostContent';
 import type { User } from '@supabase/supabase-js';
 import CommentSection from '@/components/CommentSection';
 import PostActions from '@/components/PostActions';
+import RelatedPosts from '@/components/RelatedPosts';
+type Props = { post: Post; user: User | null; onLoginClick: () => void; onBack: () => void,posts: Post[];
+  onOpenPost: (post: Post) => void; };
 
-type Props = { post: Post; user: User | null; onLoginClick: () => void; onBack: () => void };
-
-export default function PostDetail({ post, user, onLoginClick, onBack }: Props) {
+export default function PostDetail({ post, user, onLoginClick, onBack, posts, onOpenPost }: Props) {
   return (
     <article className="mx-auto max-w-3xl px-6 py-10">
       <button
@@ -52,6 +53,7 @@ export default function PostDetail({ post, user, onLoginClick, onBack }: Props) 
 
       <PostActions post={post} user={user} onLoginClick={onLoginClick} />
       <CommentSection postId={post.id} postOwnerId={post.user_id} user={user} onLoginClick={onLoginClick} />
+      <RelatedPosts current={post} posts={posts} onOpen={onOpenPost} />
     </article>
   );
 }

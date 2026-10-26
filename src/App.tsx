@@ -270,6 +270,8 @@ export default function App() {
             user={user}
             onLoginClick={() => setAuthOpen(true)}
             onBack={goBack}
+            posts={posts}
+            onOpenPost={openPost}
           />
         ) : (
           user && (
