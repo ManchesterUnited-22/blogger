@@ -148,13 +148,12 @@ export default function App() {
     fetchPosts();
   }, [fetchPosts]);
 
-  // Danh sách thành viên (người đã đăng ký / đăng nhập blog)
-   // Danh sách thành viên: chỉ những người đã được công nhận (is_member = true)
+  // Danh sách thành viên: chỉ những người đã được công nhận (is_member = true)
   const fetchMembers = useCallback(async () => {
     const { data, error } = await supabase
       .from('profiles')
       .select('id, full_name, avatar_url')
-      .eq('is_member', true) // [SỬA] người chỉ đăng nhập/xem/thả tim/bình luận thì không hiện
+      .eq('is_member', true) // [SỬA] người ngoài chỉ đăng nhập/xem/thả tim/bình luận thì không hiện
       .order('created_at', { ascending: true })
       .limit(60);
     if (!error) setMembers((data as Member[]) ?? []);
@@ -253,7 +252,7 @@ export default function App() {
   // F5 đang ở trang cá nhân: chờ biết đã đăng nhập chưa rồi mới vẽ, tránh chớp trang chủ
   if (view === 'profile' && !authReady) {
     return (
-            <div className="flex min-h-screen items-center justify-center bg-paper">
+      <div className="flex min-h-screen items-center justify-center bg-paper">
         <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
       </div>
     );
@@ -262,15 +261,15 @@ export default function App() {
   // Các trang con: chi tiết bài viết, trang cá nhân
   if (selectedPost || (view === 'profile' && user)) {
     return (
-            <div className="min-h-screen bg-paper">   {/* trang con: trước là bg-white */}
+      <div className="min-h-screen bg-paper">{/* trang con: trước là bg-white */}
         <Header
           user={user}
           onLoginClick={() => setAuthOpen(true)}
           onProfileClick={openProfile}
           onAccountDeleted={handleAccountDeleted}
           onNavigate={goToSection}
-          members = {members}
-          postCounts = {postCounts}
+          members={members}
+          postCounts={postCounts}
         />
         {selectedPost ? (
           <PostDetail
@@ -301,22 +300,22 @@ export default function App() {
     );
   }
 
-    return (
-        <div className="min-h-screen bg-paper">     {/* trang chủ: trước là bg-ink */}
+  return (
+    <div className="min-h-screen bg-paper">{/* trang chủ: trước là bg-ink */}
       <Header
         user={user}
         onLoginClick={() => setAuthOpen(true)}
         onProfileClick={openProfile}
         onAccountDeleted={handleAccountDeleted}
         onNavigate={goToSection}
-        members = {members}
-        postCounts = {postCounts}
+        members={members}
+        postCounts={postCounts}
       />
       <Hero />
       <GroupPhoto />
 
       {/* ===== Góc cộng đồng: trang nhất của bài cộng đồng ===== */}
-           <section id="feed" className="scroll-mt-20">
+      <section id="feed" className="scroll-mt-20">
         <div className="mx-auto max-w-6xl px-6 pb-20 pt-10">
           {/* Đầu mục: vạch gradient + dòng ngày và số liệu */}
           <div>
@@ -399,7 +398,6 @@ export default function App() {
       </section>
 
       {/* Thành viên cộng đồng */}
-      
 
       {/* Team section */}
       {!searchQuery && authors.length > 0 && <TeamSection authors={authors} />}
