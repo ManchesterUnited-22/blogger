@@ -149,11 +149,15 @@ export default function App() {
   }, [fetchPosts]);
 
   // Danh sách thành viên: chỉ những người đã được công nhận (is_member = true)
+  // Mốc thời gian: ai đã có tài khoản trước mốc này thì giữ nguyên trong danh sách thành viên.
+  // Người đăng ký sau mốc chỉ vào danh sách khi được công nhận (is_member = true).
+  const MEMBERS_CUTOFF = '2026-10-28T12:40:00Z'; // 19:40 ngày 28/10/2026 (giờ VN)
+
   const fetchMembers = useCallback(async () => {
     const { data, error } = await supabase
       .from('profiles')
       .select('id, full_name, avatar_url')
-      .eq('is_member', true) // [SỬA] người ngoài chỉ đăng nhập/xem/thả tim/bình luận thì không hiện
+      .or(`is_member.eq.true,created_at.lt.${MEMBERS_CUTOFF}`)
       .order('created_at', { ascending: true })
       .limit(60);
     if (!error) setMembers((data as Member[]) ?? []);
