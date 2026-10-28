@@ -150,11 +150,13 @@ export default function App() {
 
   // Danh sách thành viên: chỉ người có show_in_members = true.
   // Nếu cột chưa có / truy vấn lỗi thì lấy danh sách đầy đủ như cũ, để nút thành viên không bị mất.
+    // Danh sách thành viên: chỉ người có role = 'member'.
+  // Nếu cột chưa có / truy vấn lỗi thì lấy danh sách đầy đủ như cũ, để nút thành viên không bị mất.
   const fetchMembers = useCallback(async () => {
     let res = await supabase
       .from('profiles')
       .select('id, full_name, avatar_url')
-      .eq('show_in_members', true)
+      .eq('role', 'member')
       .order('created_at', { ascending: true })
       .limit(60);
 
