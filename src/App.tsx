@@ -149,10 +149,12 @@ export default function App() {
   }, [fetchPosts]);
 
   // Danh sách thành viên (người đã đăng ký / đăng nhập blog)
+   // Danh sách thành viên: chỉ những người đã được công nhận (is_member = true)
   const fetchMembers = useCallback(async () => {
     const { data, error } = await supabase
       .from('profiles')
       .select('id, full_name, avatar_url')
+      .eq('is_member', true) // [SỬA] người chỉ đăng nhập/xem/thả tim/bình luận thì không hiện
       .order('created_at', { ascending: true })
       .limit(60);
     if (!error) setMembers((data as Member[]) ?? []);
