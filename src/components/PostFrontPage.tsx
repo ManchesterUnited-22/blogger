@@ -11,7 +11,7 @@ type Props = {
   stats: Record<string, { likes: number; comments: number }>;
   onOpen: (post: Post) => void;
   /** Bấm "Viết bài" ở khung Gửi bài */
-  onWrite: () => void;
+  onWrite?: () => void;
 };
 
 /** Gạch chân cam trượt ra khi rê chuột lên tiêu đề (hoạt động cả khi tiêu đề xuống dòng). */
@@ -457,7 +457,7 @@ export default function PostFrontPage({ posts, stats, onOpen, onWrite }: Props) 
 
       {/* Gửi bài: to khi ít bài để trang không trống, gọn khi nhiều bài */}
       <ScrollReveal>
-        <SubmitStrip big={posts.length <= 5} onWrite={onWrite} />
+        {onWrite && <SubmitStrip big={posts.length <= 5} onWrite={onWrite} />}
       </ScrollReveal>
     </div>
   );

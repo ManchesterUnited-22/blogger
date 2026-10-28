@@ -15,6 +15,7 @@ import type { Member } from '@/components/MembersSection';
 import { makeExcerpt, type Post } from '@/lib/posts';
 import { dateLine } from '@/lib/postMeta';
 import GroupPhoto from '@/components/GroupPhoto';
+import { useIsMember } from '@/lib/member'; // [MỚI]
 
 // ===== Ghi trang đang xem vào địa chỉ + lịch sử, để nút Back của trình duyệt chạy đúng =====
 // 'article' vẫn nằm trong danh sách để dọn các link cũ còn tham số này
@@ -37,6 +38,8 @@ export default function App() {
   const [authors, setAuthors] = useState<Author[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [user, setUser] = useState<User | null>(null);
+  const isMember = useIsMember(user); // [MỚI] true = thành viên, false = người ngoài, null = đang kiểm tra
+  const canWrite = isMember === true; // [MỚI]
   const [authOpen, setAuthOpen] = useState(false);
   const [view, setView] = useState<'home' | 'profile'>(() =>
     new URLSearchParams(window.location.search).get('page') === 'profile' ? 'profile' : 'home',
@@ -209,7 +212,7 @@ export default function App() {
     }, 100);
   };
 
-  // Nút "Viết bài" ở khu cộng đồng: chưa đăng nhập thì mở hộp đăng nhập
+  // Nút "Viết bài" ở khu cộng đồng (chỉ hiện với thành viên): chưa đăng nhập thì mở hộp đăng nhập
   const handleWrite = () => {
     if (!user) {
       setAuthOpen(true);
@@ -280,6 +283,7 @@ export default function App() {
           user && (
             <ProfilePage
               user={user}
+              canWrite={isMember} // [MỚI]
               onBack={goBack}
               onOpenPost={openPost}
               onPostsChanged={() => {
@@ -367,19 +371,27 @@ export default function App() {
               ) : (
                 <>
                   <p className="font-serif text-lg italic">Chưa có bài viết nào. Hãy là người đầu tiên chia sẻ!</p>
-                  <button
-                    type="button"
-                    onClick={handleWrite}
-                    className="bg-pop-anim mt-5 inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold text-white shadow-lg shadow-teal-500/30 transition-all hover:-translate-y-0.5"
-                  >
-                    <PenLine className="h-4 w-4" />
-                    Viết bài đầu tiên
-                  </button>
+                  {/* [MỚI] chỉ thành viên mới thấy nút viết bài */}
+                  {canWrite && (
+                    <button
+                      type="button"
+                      onClick={handleWrite}
+                      className="bg-pop-anim mt-5 inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold text-white shadow-lg shadow-teal-500/30 transition-all hover:-translate-y-0.5"
+                    >
+                      <PenLine className="h-4 w-4" />
+                      Viết bài đầu tiên
+                    </button>
+                  )}
                 </>
               )}
             </div>
           ) : (
-            <PostFrontPage posts={filteredPosts} stats={stats} onOpen={openPost} onWrite={handleWrite} />
+            <PostFrontPage
+              posts={filteredPosts}
+              stats={stats}
+              onOpen={openPost}
+              onWrite={canWrite ? handleWrite : undefined} // [MỚI]
+            />
           )}
         </div>
       </section>

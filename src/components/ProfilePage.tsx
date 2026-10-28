@@ -37,6 +37,7 @@ import PostContent from '@/components/PostContent';
 
 type Props = {
   user: User;
+  canWrite: boolean | null; // [MỚI] true = thành viên được đăng bài, false = người ngoài, null = đang kiểm tra
   onBack: () => void;
   onOpenPost: (post: Post) => void;
   onPostsChanged: () => void;
@@ -156,7 +157,7 @@ function PostTile({
 }
 
 /* ====================== TRANG CÁ NHÂN ====================== */
-export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }: Props) {
+export default function ProfilePage({ user, canWrite, onBack, onOpenPost, onPostsChanged }: Props) {
   const profile = getUserProfile(user);
   // Ảnh gốc của Google (nếu có) để người dùng quay lại dùng
   const rawMeta = (user.user_metadata ?? {}) as Record<string, unknown>;
@@ -246,6 +247,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
   };
 
   const openComposer = () => {
+    if (!canWrite) return; // [MỚI] người ngoài không mở được khung soạn
     setError(null);
     setSuccess(null);
     setComposerOpen(true);
@@ -269,6 +271,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
   };
 
   const startEdit = (post: Post) => {
+    if (!canWrite) return; // [MỚI]
     setError(null);
     setSuccess(null);
     setEditingId(post.id);
@@ -311,6 +314,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
 
   // ===== Đăng / lưu / xóa bài =====
   const handlePublish = async () => {
+    if (!canWrite) return; // [MỚI]
     setError(null);
     setSuccess(null);
     if (!content.trim()) return setError('Bạn chưa viết nội dung.');
@@ -338,6 +342,7 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
   };
 
   const handleSave = async () => {
+    if (!canWrite) return; // [MỚI]
     if (!editingId) return;
     setError(null);
     setSuccess(null);
@@ -611,26 +616,33 @@ export default function ProfilePage({ user, onBack, onOpenPost, onPostsChanged }
         )}
 
         {!composerOpen ? (
-          <button
-            type="button"
-            onClick={openComposer}
-            className="group flex w-full items-center gap-4 rounded-xl border border-gray-200 bg-white p-4 text-left transition-colors hover:border-teal-500 hover:bg-teal-50/40"
-          >
-            <Avatar url={profile.avatarUrl} name={profile.name} className="h-12 w-12 text-base" />
-            <span className="min-w-0 flex-1">
-              
-              <span className="mt-0.5 block font-serif text-xl font-bold leading-snug text-gray-900">
-                Hôm nay bạn muốn chia sẻ điều gì?{' '}
-                <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-teal-700 underline decoration-teal-300 decoration-2 underline-offset-4 transition-colors group-hover:decoration-teal-600">
-                  <PenLine className="h-5 w-5" />
-                  Kể ngay
-                  <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1.5" />
+          canWrite === false ? (
+            // [MỚI] người ngoài cộng đồng: chỉ thấy thông báo, không có khung viết bài
+            <div className="rounded-xl border border-gray-200 bg-white p-5 text-sm text-gray-600">
+              Tài khoản của bạn chưa thuộc cộng đồng nên chưa thể đăng bài. Bạn vẫn có thể đọc, bình luận và thả tim.
+            </div>
+          ) : canWrite ? (
+            <button
+              type="button"
+              onClick={openComposer}
+              className="group flex w-full items-center gap-4 rounded-xl border border-gray-200 bg-white p-4 text-left transition-colors hover:border-teal-500 hover:bg-teal-50/40"
+            >
+              <Avatar url={profile.avatarUrl} name={profile.name} className="h-12 w-12 text-base" />
+              <span className="min-w-0 flex-1">
+                
+                <span className="mt-0.5 block font-serif text-xl font-bold leading-snug text-gray-900">
+                  Hôm nay bạn muốn chia sẻ điều gì?{' '}
+                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-teal-700 underline decoration-teal-300 decoration-2 underline-offset-4 transition-colors group-hover:decoration-teal-600">
+                    <PenLine className="h-5 w-5" />
+                    Kể ngay
+                    <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1.5" />
+                  </span>
                 </span>
               </span>
-            </span>
-            <ImagePlus className="hidden h-5 w-5 text-gray-400 sm:block" />
-            <Video className="hidden h-5 w-5 text-gray-400 sm:block" />
-          </button>
+              <ImagePlus className="hidden h-5 w-5 text-gray-400 sm:block" />
+              <Video className="hidden h-5 w-5 text-gray-400 sm:block" />
+            </button>
+          ) : null
         ) : (
           <div className="rounded-xl border border-gray-200 border-t-4 border-t-teal-500 bg-white p-6">
             <div className="flex items-start justify-between gap-3">
