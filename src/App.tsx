@@ -151,6 +151,8 @@ export default function App() {
   // Danh sách thành viên: chỉ những người đã được công nhận (is_member = true)
   // Mốc thời gian: ai đã có tài khoản trước mốc này thì giữ nguyên trong danh sách thành viên.
   // Người đăng ký sau mốc chỉ vào danh sách khi được công nhận (is_member = true).
+   // Ai có tài khoản trước mốc này thì giữ nguyên trong danh sách thành viên.
+  // Người đăng ký sau mốc chỉ vào danh sách khi được công nhận (is_member = true).
   const MEMBERS_CUTOFF = '2026-10-28T12:40:00Z'; // 19:40 ngày 28/10/2026 (giờ VN)
 
   const fetchMembers = useCallback(async () => {
