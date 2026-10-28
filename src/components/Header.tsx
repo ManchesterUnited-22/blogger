@@ -44,6 +44,7 @@ type Props = {
   postCounts: Record<string,number>;
   isAdmin?: boolean; // [ADMIN]
   onAdminClick?: () => void; // [ADMIN]
+  pendingCount?: number; // [DUYỆT]
 };
 
 function UserMenu({
@@ -53,6 +54,7 @@ function UserMenu({
   onAccountDeleted,
   isAdmin,
   onAdminClick,
+  pendingCount = 0,
 }: {
   user: User | null;
   onLoginClick: () => void;
@@ -60,6 +62,7 @@ function UserMenu({
   onAccountDeleted: () => void;
   isAdmin?: boolean; // [ADMIN]
   onAdminClick?: () => void; // [ADMIN]
+  pendingCount?: number; // [DUYỆT]
 }) {
   const [open, setOpen] = useState(false);
   const [confirming, setConfirming] = useState(false);
@@ -164,6 +167,11 @@ function UserMenu({
               className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-amber-100 py-2.5 text-sm font-semibold text-amber-700 transition-colors hover:bg-amber-200"
             >
               <ShieldCheck className="h-4 w-4" /> Trang quản trị
+              {pendingCount > 0 && (
+                <span className="rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-extrabold text-white">
+                  {pendingCount} chờ duyệt
+                </span>
+              )}
             </button>
           )}
           <button
@@ -287,6 +295,7 @@ export default function Header({
   postCounts,
   isAdmin,
   onAdminClick,
+  pendingCount,
 }: Props) {
   const active = useActiveSection();
   const [membersOpen, setMembersOpen] = useState(false);
@@ -421,6 +430,7 @@ export default function Header({
             onAccountDeleted={onAccountDeleted}
             isAdmin={isAdmin}
             onAdminClick={onAdminClick}
+            pendingCount={pendingCount}
           />
         </div>
 

@@ -17,6 +17,7 @@ import { dateLine } from '@/lib/postMeta';
 import GroupPhoto from '@/components/GroupPhoto';
 import { useIsMember } from '@/lib/member'; // [MỚI]
 import AdminPage from '@/components/AdminPage'; // [ADMIN]
+import PendingApproval from '@/components/PendingApproval'; // [DUYỆT]
 import { useIsAdmin } from '@/lib/admin'; // [ADMIN]
 
 // ===== Ghi trang đang xem vào địa chỉ + lịch sử, để nút Back của trình duyệt chạy đúng =====
@@ -52,6 +53,7 @@ export default function App() {
   const [authOpen, setAuthOpen] = useState(false);
   const [view, setView] = useState<View>(viewFromUrl); // [ADMIN] thêm 'admin'
   const isAdmin = useIsAdmin(user); // [ADMIN]
+  const [pendingCount, setPendingCount] = useState(0); // [DUYỆT] số người đang chờ duyệt (chỉ admin thấy)
   const [authReady, setAuthReady] = useState(false); // đã biết đăng nhập hay chưa
   const [posts, setPosts] = useState<Post[]>([]);
   const [postsLoading, setPostsLoading] = useState(true);
@@ -156,15 +158,13 @@ export default function App() {
     fetchPosts();
   }, [fetchPosts]);
 
-  // Danh sách thành viên: chỉ người có show_in_members = true.
-  // Nếu cột chưa có / truy vấn lỗi thì lấy danh sách đầy đủ như cũ, để nút thành viên không bị mất.
-    // Danh sách thành viên: chỉ người có role = 'member'.
-  // Nếu cột chưa có / truy vấn lỗi thì lấy danh sách đầy đủ như cũ, để nút thành viên không bị mất.
+  // Danh sách thành viên: chỉ người đã được duyệt (is_member = true).
+  // Nếu truy vấn lỗi thì lấy danh sách đầy đủ như cũ, để nút thành viên không bị mất.
   const fetchMembers = useCallback(async () => {
     let res = await supabase
       .from('profiles')
       .select('id, full_name, avatar_url')
-      .eq('role', 'member')
+      .eq('is_member', true)
       .order('created_at', { ascending: true })
       .limit(60);
 
@@ -181,6 +181,20 @@ export default function App() {
   useEffect(() => {
     fetchMembers();
   }, [fetchMembers]);
+
+  // [DUYỆT] Admin: đếm số tài khoản đang chờ duyệt để hiện chấm đỏ ở nút "Trang quản trị"
+  const fetchPending = useCallback(async () => {
+    const { count, error } = await supabase
+      .from('profiles')
+      .select('id', { count: 'exact', head: true })
+      .eq('is_member', false)
+      .eq('is_admin', false);
+    if (!error) setPendingCount(count ?? 0);
+  }, []);
+
+  useEffect(() => {
+    if (isAdmin === true) fetchPending();
+  }, [isAdmin, view, fetchPending]);
 
   // Danh sách đội ngũ (hiện ở cuối trang)
   const fetchAuthors = useCallback(async () => {
@@ -285,6 +299,19 @@ export default function App() {
     return acc;
   }, {});
 
+  // [DUYỆT] Đã đăng nhập: chờ biết có phải thành viên / admin chưa
+  if (user && (isMember === null || isAdmin === null)) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-paper">
+        <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
+      </div>
+    );
+  }
+  // [DUYỆT] Người mới chưa được quản trị viên duyệt -> chỉ thấy màn hình chờ
+  if (user && isMember === false && isAdmin === false) {
+    return <PendingApproval user={user} />;
+  }
+
   // F5 đang ở trang cá nhân: chờ biết đã đăng nhập chưa rồi mới vẽ, tránh chớp trang chủ
   if ((view === 'profile' || view === 'admin') && !authReady) {
     return (
@@ -308,6 +335,7 @@ export default function App() {
           postCounts={postCounts}
           isAdmin={isAdmin === true} // [ADMIN]
           onAdminClick={openAdmin} // [ADMIN]
+          pendingCount={pendingCount} // [DUYỆT]
         />
         {selectedPost ? (
           <PostDetail
@@ -327,6 +355,7 @@ export default function App() {
               onDataChanged={() => {
                 fetchPosts();
                 fetchMembers();
+                fetchPending(); // [DUYỆT]
               }}
             />
           )
@@ -362,6 +391,7 @@ export default function App() {
         postCounts={postCounts}
         isAdmin={isAdmin === true} // [ADMIN]
         onAdminClick={openAdmin} // [ADMIN]
+        pendingCount={pendingCount} // [DUYỆT]
       />
       <Hero />
       <GroupPhoto />

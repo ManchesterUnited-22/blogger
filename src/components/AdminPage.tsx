@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ArrowLeft,
+  Check,
   FileText,
   Heart,
   LayoutDashboard,
@@ -10,6 +11,7 @@ import {
   ShieldCheck,
   Trash2,
   Users,
+  X,
   type LucideIcon,
 } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
@@ -106,6 +108,11 @@ export default function AdminPage({ user, onBack, onOpenPost, onDataChanged }: P
     (p) =>
       !q || (p.full_name ?? '').toLowerCase().includes(q) || (p.email ?? '').toLowerCase().includes(q),
   );
+  // [DUYỆT] Tài khoản mới chưa được duyệt (không tính quản trị viên)
+  const isPending = (p: AdminProfile) => p.is_member !== true && p.is_admin !== true;
+  const pendingAll = profiles.filter(isPending);
+  const shownPending = shownProfiles.filter(isPending);
+  const shownApproved = shownProfiles.filter((p) => !isPending(p));
 
   const run = async (id: string, fn: () => Promise<void>, okMsg: string) => {
     setBusyId(id);
@@ -153,6 +160,17 @@ export default function AdminPage({ user, onBack, onOpenPost, onDataChanged }: P
   const toggleMember = (p: AdminProfile) => {
     const next = p.is_member !== true;
     run(p.id, () => adminSetMember(p.id, next), next ? 'Đã cấp quyền thành viên.' : 'Đã gỡ quyền thành viên.');
+  };
+
+  // [DUYỆT] Duyệt: cho vào. Từ chối: xóa tài khoản (người đó đăng nhập lại sẽ phải chờ duyệt lần nữa)
+  const approveUser = (p: AdminProfile) => {
+    run(p.id, () => adminSetMember(p.id, true), `Đã duyệt ${p.full_name || p.email || 'tài khoản'}.`);
+  };
+
+  const rejectUser = (p: AdminProfile) => {
+    const name = p.full_name || p.email || 'người dùng này';
+    if (!window.confirm(`Từ chối và xóa tài khoản "${name}"?`)) return;
+    run(p.id, () => adminDeleteUser(p.id), 'Đã từ chối và xóa tài khoản.');
   };
 
   const deleteUser = (p: AdminProfile) => {
@@ -240,6 +258,11 @@ export default function AdminPage({ user, onBack, onOpenPost, onDataChanged }: P
             }`}
           >
             <Icon className="h-4 w-4" /> {label}
+            {id === 'members' && pendingAll.length > 0 && (
+              <span className="rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-extrabold text-white">
+                {pendingAll.length}
+              </span>
+            )}
           </button>
         ))}
       </div>
@@ -388,9 +411,53 @@ export default function AdminPage({ user, onBack, onOpenPost, onDataChanged }: P
 
           {/* ===== Thành viên ===== */}
           {tab === 'members' && (
+            <div className="space-y-6">
+              {/* [DUYỆT] Danh sách chờ duyệt */}
+              {shownPending.length > 0 && (
+                <div className="overflow-hidden rounded-2xl border-2 border-amber-200 bg-amber-50/40">
+                  <h2 className="border-b border-amber-200 bg-amber-50 px-4 py-2.5 text-sm font-extrabold text-amber-800">
+                    Chờ duyệt ({shownPending.length})
+                  </h2>
+                  <ul className="divide-y divide-amber-100">
+                    {shownPending.map((p) => {
+                      const name = p.full_name || 'Chưa đặt tên';
+                      return (
+                        <li key={p.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
+                          <div className="flex min-w-0 flex-1 items-center gap-3">
+                            <Avatar name={name} url={p.avatar_url} />
+                            <div className="min-w-0">
+                              <p className="truncate text-sm font-bold text-gray-900">{name}</p>
+                              <p className="truncate text-xs text-gray-500">
+                                {p.email ?? '—'} · đăng ký {timeAgo(p.created_at)}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => approveUser(p)}
+                              disabled={busyId === p.id}
+                              className={`${iconBtn} bg-teal-600 text-white hover:bg-teal-700`}
+                            >
+                              <Check className="h-3.5 w-3.5" /> Duyệt
+                            </button>
+                            <button
+                              onClick={() => rejectUser(p)}
+                              disabled={busyId === p.id}
+                              className={`${iconBtn} border border-red-200 text-red-600 hover:bg-red-50`}
+                            >
+                              <X className="h-3.5 w-3.5" /> Từ chối
+                            </button>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              )}
+
             <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
               <ul className="divide-y divide-gray-100">
-                {shownProfiles.map((p) => {
+                {shownApproved.map((p) => {
                   const name = p.full_name || 'Chưa đặt tên';
                   const isMe = p.id === user.id;
                   const locked = isMe || p.is_admin === true; // không tự xóa / xóa quản trị viên khác
@@ -438,10 +505,11 @@ export default function AdminPage({ user, onBack, onOpenPost, onDataChanged }: P
                     </li>
                   );
                 })}
-                {shownProfiles.length === 0 && (
+                {shownApproved.length === 0 && (
                   <li className="px-4 py-10 text-center text-sm italic text-gray-500">Không có tài khoản.</li>
                 )}
               </ul>
+            </div>
             </div>
           )}
         </>
