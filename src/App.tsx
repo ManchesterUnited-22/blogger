@@ -158,6 +158,7 @@ export default function App() {
     const { data, error } = await supabase
       .from('profiles')
       .select('id, full_name, avatar_url')
+      .eq('show_in_members', true)
       .order('created_at', { ascending: true })
       .limit(60);
     if (!error) setMembers((data as Member[]) ?? []);
