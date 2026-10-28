@@ -148,21 +148,26 @@ export default function App() {
     fetchPosts();
   }, [fetchPosts]);
 
-  // Danh sách thành viên: chỉ những người đã được công nhận (is_member = true)
-  // Mốc thời gian: ai đã có tài khoản trước mốc này thì giữ nguyên trong danh sách thành viên.
-  // Người đăng ký sau mốc chỉ vào danh sách khi được công nhận (is_member = true).
-   // Ai có tài khoản trước mốc này thì giữ nguyên trong danh sách thành viên.
-  // Người đăng ký sau mốc chỉ vào danh sách khi được công nhận (is_member = true). const MEMBERS_CUTOFF = '2026-10-28T12:40:00Z'; // 19:40 ngày 28/10/2026 (giờ VN)
-  // Danh sách thành viên (người đã đăng ký / đăng nhập blog)
+  // Danh sách thành viên: chỉ người có show_in_members = true.
+  // Nếu cột chưa có / truy vấn lỗi thì lấy danh sách đầy đủ như cũ, để nút thành viên không bị mất.
   const fetchMembers = useCallback(async () => {
-    const { data, error } = await supabase
+    let res = await supabase
       .from('profiles')
       .select('id, full_name, avatar_url')
       .eq('show_in_members', true)
       .order('created_at', { ascending: true })
       .limit(60);
-    if (!error) setMembers((data as Member[]) ?? []);
+
+    if (res.error) {
+      res = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .order('created_at', { ascending: true })
+        .limit(60);
+    }
+    if (!res.error) setMembers((res.data as Member[]) ?? []);
   }, []);
+
   useEffect(() => {
     fetchMembers();
   }, [fetchMembers]);
