@@ -16,6 +16,8 @@ import { makeExcerpt, type Post } from '@/lib/posts';
 import { dateLine } from '@/lib/postMeta';
 import GroupPhoto from '@/components/GroupPhoto';
 import { useIsMember } from '@/lib/member'; // [MỚI]
+import AdminPage from '@/components/AdminPage'; // [ADMIN]
+import { useIsAdmin } from '@/lib/admin'; // [ADMIN]
 
 // ===== Ghi trang đang xem vào địa chỉ + lịch sử, để nút Back của trình duyệt chạy đúng =====
 // 'article' vẫn nằm trong danh sách để dọn các link cũ còn tham số này
@@ -34,6 +36,13 @@ function replaceUrl(params: Record<string, string>) {
   window.history.replaceState(window.history.state, '', buildUrl(params));
 }
 
+// [ADMIN] Đọc ?page=... để biết đang ở trang nào
+type View = 'home' | 'profile' | 'admin';
+function viewFromUrl(): View {
+  const page = new URLSearchParams(window.location.search).get('page');
+  return page === 'profile' || page === 'admin' ? page : 'home';
+}
+
 export default function App() {
   const [authors, setAuthors] = useState<Author[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -41,9 +50,8 @@ export default function App() {
   const isMember = useIsMember(user); // [MỚI] true = thành viên, false = người ngoài, null = đang kiểm tra
   const canWrite = isMember === true; // [MỚI]
   const [authOpen, setAuthOpen] = useState(false);
-  const [view, setView] = useState<'home' | 'profile'>(() =>
-    new URLSearchParams(window.location.search).get('page') === 'profile' ? 'profile' : 'home',
-  );
+  const [view, setView] = useState<View>(viewFromUrl); // [ADMIN] thêm 'admin'
+  const isAdmin = useIsAdmin(user); // [ADMIN]
   const [authReady, setAuthReady] = useState(false); // đã biết đăng nhập hay chưa
   const [posts, setPosts] = useState<Post[]>([]);
   const [postsLoading, setPostsLoading] = useState(true);
@@ -91,7 +99,7 @@ export default function App() {
     const onPop = () => {
       const params = new URLSearchParams(window.location.search);
       const postId = params.get('post');
-      setView(params.get('page') === 'profile' ? 'profile' : 'home');
+      setView(viewFromUrl()); // [ADMIN]
       if (!postId) {
         setSelectedPost(null);
         return;
@@ -192,6 +200,15 @@ export default function App() {
     }
   }, [authReady, user, view, selectedPost]);
 
+  // [ADMIN] Không phải quản trị viên mà vào ?page=admin -> về trang chủ
+  useEffect(() => {
+    if (view !== 'admin' || !authReady) return;
+    if (!user || isAdmin === false) {
+      setView('home');
+      replaceUrl({});
+    }
+  }, [view, authReady, user, isAdmin]);
+
   // Sau khi xóa tài khoản: về trang chủ và tải lại danh sách thành viên + bài viết
   const handleAccountDeleted = () => {
     replaceUrl({});
@@ -213,9 +230,17 @@ export default function App() {
     pushUrl({ page: 'profile' });
   };
 
+  // [ADMIN] Mở trang quản trị
+  const openAdmin = () => {
+    if (view === 'admin' && !selectedPost) return;
+    setSelectedPost(null);
+    setView('admin');
+    pushUrl({ page: 'admin' });
+  };
+
   // Bấm logo: từ trang con tự về trang chủ rồi cuộn tới mục
   const goToSection = (id: string | null) => {
-    if (selectedPost || view === 'profile') pushUrl({});
+    if (selectedPost || view !== 'home') pushUrl({});
     setSelectedPost(null);
     setView('home');
     setTimeout(() => {
@@ -261,7 +286,7 @@ export default function App() {
   }, {});
 
   // F5 đang ở trang cá nhân: chờ biết đã đăng nhập chưa rồi mới vẽ, tránh chớp trang chủ
-  if (view === 'profile' && !authReady) {
+  if ((view === 'profile' || view === 'admin') && !authReady) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-paper">
         <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
@@ -270,7 +295,7 @@ export default function App() {
   }
 
   // Các trang con: chi tiết bài viết, trang cá nhân
-  if (selectedPost || (view === 'profile' && user)) {
+  if (selectedPost || ((view === 'profile' || view === 'admin') && user)) {
     return (
       <div className="min-h-screen bg-paper">{/* trang con: trước là bg-white */}
         <Header
@@ -281,6 +306,8 @@ export default function App() {
           onNavigate={goToSection}
           members={members}
           postCounts={postCounts}
+          isAdmin={isAdmin === true} // [ADMIN]
+          onAdminClick={openAdmin} // [ADMIN]
         />
         {selectedPost ? (
           <PostDetail
@@ -291,6 +318,18 @@ export default function App() {
             posts={posts}
             onOpenPost={openPost}
           />
+        ) : view === 'admin' ? (
+          user && (
+            <AdminPage
+              user={user}
+              onBack={goBack}
+              onOpenPost={openPost}
+              onDataChanged={() => {
+                fetchPosts();
+                fetchMembers();
+              }}
+            />
+          )
         ) : (
           user && (
             <ProfilePage
@@ -321,6 +360,8 @@ export default function App() {
         onNavigate={goToSection}
         members={members}
         postCounts={postCounts}
+        isAdmin={isAdmin === true} // [ADMIN]
+        onAdminClick={openAdmin} // [ADMIN]
       />
       <Hero />
       <GroupPhoto />

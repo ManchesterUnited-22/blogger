@@ -1,5 +1,5 @@
 import { useEffect, useRef, useMemo, useState } from 'react';
-import { LogOut, LogIn, UserRound, Trash2, Home, BookOpen, Users, Sparkles, type LucideIcon } from 'lucide-react';
+import { LogOut, LogIn, UserRound, ShieldCheck, Trash2, Home, BookOpen, Users, Sparkles, type LucideIcon } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import { supabase, formatDate, getUserProfile, deleteMyAccount } from '@/lib/supabase';
 import { dateLine } from '@/lib/postMeta';
@@ -42,6 +42,8 @@ type Props = {
   onNavigate: (sectionId: string | null) => void;
   members: Member[];
   postCounts: Record<string,number>;
+  isAdmin?: boolean; // [ADMIN]
+  onAdminClick?: () => void; // [ADMIN]
 };
 
 function UserMenu({
@@ -49,11 +51,15 @@ function UserMenu({
   onLoginClick,
   onProfileClick,
   onAccountDeleted,
+  isAdmin,
+  onAdminClick,
 }: {
   user: User | null;
   onLoginClick: () => void;
   onProfileClick: () => void;
   onAccountDeleted: () => void;
+  isAdmin?: boolean; // [ADMIN]
+  onAdminClick?: () => void; // [ADMIN]
 }) {
   const [open, setOpen] = useState(false);
   const [confirming, setConfirming] = useState(false);
@@ -149,6 +155,17 @@ function UserMenu({
           >
             <UserRound className="h-4 w-4" /> Trang cá nhân
           </button>
+          {isAdmin && (
+            <button
+              onClick={() => {
+                onAdminClick?.();
+                setOpen(false);
+              }}
+              className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-amber-100 py-2.5 text-sm font-semibold text-amber-700 transition-colors hover:bg-amber-200"
+            >
+              <ShieldCheck className="h-4 w-4" /> Trang quản trị
+            </button>
+          )}
           <button
             onClick={() => {
               supabase.auth.signOut();
@@ -268,6 +285,8 @@ export default function Header({
   onNavigate,
   members,
   postCounts,
+  isAdmin,
+  onAdminClick,
 }: Props) {
   const active = useActiveSection();
   const [membersOpen, setMembersOpen] = useState(false);
@@ -400,6 +419,8 @@ export default function Header({
             onLoginClick={onLoginClick}
             onProfileClick={onProfileClick}
             onAccountDeleted={onAccountDeleted}
+            isAdmin={isAdmin}
+            onAdminClick={onAdminClick}
           />
         </div>
 
