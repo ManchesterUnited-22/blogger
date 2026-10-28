@@ -90,8 +90,9 @@ export async function adminLoadAll() {
 }
 
 export async function adminSetMember(userId: string, value: boolean) {
-  const { error } = await supabase.from('profiles').update({ is_member: value }).eq('id', userId);
-  if (error) throw new Error(error.message);
+  // Gọi hàm trong DB (chỉ admin mới chạy được) thay vì update thẳng bảng profiles
+  const { error } = await supabase.rpc('admin_set_member', { target: userId, value });
+  if (error) throw new Error('Duyệt thất bại: ' + error.message);
 }
 
 export async function adminDeleteUser(userId: string) {
